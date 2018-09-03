@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <!--Import Materialize CSS-->
+    <link rel="stylesheet" href="{% static 'css/materialize.css' %}"/>
+    <title>{% block title %}{% endblock %} | CarDump</title>
+    </head>
+
+<body>
+
+  <ul id='dropdown1' class='dropdown-content'>
+    <li><a href="customers">View Customers</a></li>
+    <li><a href="visualisecustomers">Customer Data Visualisation</a></li>
+  </ul>
+
+<ul id='dropdown2' class='dropdown-content'>
+    <li><a href="rentals">View Rentals</a></li>
+    <li><a href="visualiserentals">Rental Data Visualisation</a></li>
+  </ul>
+
+<ul id='dropdown3' class='dropdown-content'>
+    <li><a href="visualisevehicles">Vehicle Data Visualisation</a></li>
+  </ul>
+
+ <nav>
+    <div class="nav-wrapper">
+      <a href="#" class="brand-logo">Logo</a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li><a class='dropdown-trigger btn' href='#' data-target='dropdown1'>Customers</a></li>
+        <li><a class='dropdown-trigger btn' href='#' data-target='dropdown2'>Rentals</a></li>
+        <li><a class='dropdown-trigger btn' href='#' data-target='dropdown3'>Vechiles</a></li>
+      </ul>
+    </div>
+  </nav>
+
+<main class="">
+    <div id="background">
+        {% block content %}
+        {% endblock %}
+    </div>
+</main>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/js/materialize.min.js"></script>
+<script>
+      document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('.dropdown-trigger');
+    var instances = M.Dropdown.init(elems, options);
+  });
+      
+  $('.dropdown-trigger').dropdown();
+</script>
+</html>
