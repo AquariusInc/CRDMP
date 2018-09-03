@@ -75,10 +75,11 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'aidankinzett$CRDBM',
+        'NAME': 'RentalApp',
         'USER': 'aidankinzett',
-        'PASSWORD': 'IFB299db',
-        'HOST': 'aidankinzett.mysql.pythonanywhere-services.com',
+        'PASSWORD': 'ifb299aidan',
+        'HOST': 'mydbinstance.cojymbxlom9f.ap-southeast-2.rds.amazonaws.com',
+        'PORT': '3306'
     }
 }
 
