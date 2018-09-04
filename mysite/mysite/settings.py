@@ -28,14 +28,14 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 # Application definition
-
 INSTALLED_APPS = [
+    'RentalApp',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'django.contrib.staticfiles'
 ]
 
 MIDDLEWARE = [
@@ -75,10 +75,11 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'aidankinzett$CRDBM',
+        'NAME': 'RentalApp',
         'USER': 'aidankinzett',
-        'PASSWORD': 'IFB299db',
-        'HOST': 'aidankinzett.mysql.pythonanywhere-services.com',
+        'PASSWORD': 'ifb299aidan',
+        'HOST': 'mydbinstance.cojymbxlom9f.ap-southeast-2.rds.amazonaws.com',
+        'PORT': '3306'
     }
 }
 
@@ -120,4 +121,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+    '/var/www/static/',
+]
+
+

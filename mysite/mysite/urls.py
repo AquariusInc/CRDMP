@@ -15,9 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from . import views
+import RentalApp.views as views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.test, name='test')
-]
+    path('', views.home, name='home'),
+    path('customers', views.customers_table, name="customers_table"),
+    path('rentals', views.rental_table, name="rentals_table"),
+    path('visualisecustomers', views.customer_data),
+    path('visualiserentals', views.rental_data),
+    path('visualisevehicles', views.vehicle_data)
+
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
