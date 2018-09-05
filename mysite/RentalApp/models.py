@@ -20,7 +20,8 @@ class Customer(models.Model):
 
 
 class Store(models.Model):
-    name = models.CharField(max_length=50, primary_key=True)
+    id = models.IntegerField(primary_key=True)
+    name = models.CharField(max_length=50)
     address = models.TextField()
     phone = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
@@ -59,6 +60,13 @@ class Car(models.Model):
 
 class Order(models.Model):
     id = models.IntegerField(primary_key=True)
+    customer = models.ForeignKey('Customer', on_delete=models.CASCADE)
+    car = models.ForeignKey('Car', on_delete=models.CASCADE)
+    createDate = models.DateField()
+    pickupDate = models.DateField()
+    pickupStore = models.ForeignKey('Store', on_delete=models.CASCADE, related_name='%(class)s_pickup_store')
+    returnDate = models.DateField()
+    returnStore = models.ForeignKey('Store', on_delete=models.CASCADE, related_name='return_store')
 
     def __str__(self):
         return str(self.id)
