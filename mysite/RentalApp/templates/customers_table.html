@@ -4,38 +4,49 @@
 {% block content %}
 <div class="container">
     <h3>Customer Data</h2>
-    <table id="table-id" class="striped">
-        <thead>
-          <tr>
-              <th data-sort-default>ID</th>
-              <th>Name</th>
-              <th>Phone</th>
-              <th>Address</th>
-              <th>DOB</th>
-              <th>Occupation</th>
-              <th>Gender</th>
-          </tr>
-        </thead>
+        <form>
+            <div class="row">
+                <div class="input-field col l11 m10 s9">
+                    <input id="search_box" type="text" class="validate">
+                    <label for="search_box">Search</label>
+                </div>
+                <a id="search_button" class="waves-effect waves-light btn col l1 m2 s3"><i class="material-icons">search</i></a>
+            </div>
+        </form>
 
-        <tbody>
-         {% for item in data %}
-         <tr>
-             <td>{{ item.id }}</td>
-             <td>{{ item.name }}</td>
-             <td>{{ item.phone }}</td>
-             <td>{{ item.address }}</td>
-             <td>{{ item.dob }}</td>
-             <td>{{ item.occupation }}</td>
-             <td>{{ item.gender }}</td>
-         </tr>
-         {% endfor %}
-        </tbody>
-    </table>
+
+        <table id="table-id" class="striped">
+            <thead>
+            <tr>
+                <th data-sort-default>ID</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>DOB</th>
+                <th>Occupation</th>
+                <th>Gender</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for item in data %}
+            <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.phone }}</td>
+                <td>{{ item.address }}</td>
+                <td>{{ item.dob }}</td>
+                <td>{{ item.occupation }}</td>
+                <td>{{ item.gender }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
 </div>
 {% endblock %}
 
 {% block extrascripts %}
 <script>
-  new Tablesort(document.getElementById('table-id'));
+    new Tablesort(document.getElementById('table-id'));
 </script>
 {% endblock %}
