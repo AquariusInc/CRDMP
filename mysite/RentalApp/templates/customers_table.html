@@ -4,10 +4,10 @@
 {% block content %}
 <div class="container">
     <h3>Customer Data</h2>
-    <table>
+    <table id="table-id" class="striped">
         <thead>
           <tr>
-              <th>ID</th>
+              <th data-sort-default>ID</th>
               <th>Name</th>
               <th>Phone</th>
               <th>Address</th>
@@ -32,4 +32,10 @@
         </tbody>
     </table>
 </div>
+{% endblock %}
+
+{% block extrascripts %}
+<script>
+  new Tablesort(document.getElementById('table-id'));
+</script>
 {% endblock %}
