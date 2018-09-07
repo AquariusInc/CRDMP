@@ -3,6 +3,33 @@
 {% block title %}Customers{% endblock %}
 {% block content %}
 <div class="container">
-    <p>insert customer table here</p>
+    <h3>Customer Data</h2>
+    <table>
+        <thead>
+          <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Address</th>
+              <th>DOB</th>
+              <th>Occupation</th>
+              <th>Gender</th>
+          </tr>
+        </thead>
+
+        <tbody>
+         {% for item in data %}
+         <tr>
+             <td>{{ item.id }}</td>
+             <td>{{ item.name }}</td>
+             <td>{{ item.phone }}</td>
+             <td>{{ item.address }}</td>
+             <td>{{ item.dob }}</td>
+             <td>{{ item.occupation }}</td>
+             <td>{{ item.gender }}</td>
+         </tr>
+         {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}

@@ -26,6 +26,6 @@ urlpatterns = [
     path('rentals', views.rental_table, name="rentals_table"),
     path('visualisecustomers', views.customer_data),
     path('visualiserentals', views.rental_data),
-    path('visualisevehicles', views.vehicle_data)
-
+    path('visualisevehicles', views.vehicle_data),
+    path('readcentral', views.read_central_db)
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
