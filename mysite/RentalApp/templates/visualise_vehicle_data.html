@@ -67,7 +67,7 @@ body {font-family: Arial;}
 		var myChart = new Chart(ctx, {
 			type: 'pie',
 			data: {
-				labels: [],
+				labels: {{ bodytypes.labels }},
 				datasets: [{
 					label: '# of Votes',
 					data: {{ bodytypes.data }},
