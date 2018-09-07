@@ -17,7 +17,8 @@ def customers_table(request):
 
 
 def rental_table(request):
-    return render(request, 'rental_table.html')
+    # data = Order.objects.all()
+    return render(request, 'rental_table.html') # , {'data': data}
 
 
 def customer_data(request):
