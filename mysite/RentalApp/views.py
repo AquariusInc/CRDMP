@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 import csv
 from .models import Store, Customer, Order, Car
+from django.db.models import Count
 import datetime
 import re
 # Create your views here.
@@ -29,7 +30,18 @@ def rental_data(request):
 
 
 def vehicle_data(request):
-    return render(request, 'visualise_vehicle_data.html')
+    #data = Car.objects.all()
+    data = Car.objects.all().values('bodyType').annotate(total=Count('bodyType'))
+	
+    bodytypes = {}
+    bodytypes["labels"] = list(data.values_list("bodyType", flat=True))
+    bodytypes["data"] = list(data.values_list("total", flat=True))
+	
+    print(bodytypes["labels"])
+    print(bodytypes["data"])
+	
+	
+    return render(request, 'visualise_vehicle_data.html', {'bodytypes': bodytypes})
 
 
 def read_store_data(request):
