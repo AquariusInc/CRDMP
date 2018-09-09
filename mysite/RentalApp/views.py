@@ -3,6 +3,7 @@ from django.http import HttpResponse
 import csv
 from .models import Store, Customer, Order, Car
 from django.db.models import Count
+import json
 import datetime
 import re
 # Create your views here.
@@ -30,18 +31,102 @@ def rental_data(request):
 
 
 def vehicle_data(request):
-    #data = Car.objects.all()
-    data = Car.objects.all().values('bodyType').annotate(total=Count('bodyType'))
+    data = Car.objects.all()
+		
+    colours =  ['#ffbebe', '#dcffbe', '#bec7ff', '#ff4141', '#8dff41', '#4180ff',
+				'#8e3924', '#248e5c', '#79248e', '#24558e', '#808e24', '#b341ff',
+				'#41ffff', '#ffcc41', '#f6beff', '#beffe9', '#ffe9be',
+                ]
+
+    bodytypesSQL = data.values('bodyType').annotate(total=Count('bodyType')).order_by('-total')
+    bodyTypes = {
+        'type': "pie",
+        'data': {
+            'labels': list(bodytypesSQL.values_list("bodyType", flat=True)),
+            'datasets': [{
+                'label': "Body Type Count",
+                'data': list(bodytypesSQL.values_list("total", flat=True)),
+                'backgroundColor': colours
+            }]
+        },
+    }
+
+    makeSQL = data.values('make').annotate(total=Count('make')).order_by('-total')
+    make = {
+        'type': "pie",
+        'data': {
+            'labels': list(makeSQL.values_list("make", flat=True)),
+            'datasets': [{
+                'label': "Make Count",
+                'data': list(makeSQL.values_list("total", flat=True)),
+                'backgroundColor': colours
+            }]
+        }
+    }
 	
-    bodytypes = {}
-    bodytypes["labels"] = list(data.values_list("bodyType", flat=True))
-    bodytypes["data"] = list(data.values_list("total", flat=True))
+    modelSQL = data.values('model').annotate(total=Count('model')).order_by('-total')
+    model = {
+        'type': "pie",
+        'data': {
+            'labels': list(modelSQL.values_list("model", flat=True))[:20],
+            'datasets': [{
+                'label': "Model Count",
+                'data': list(modelSQL.values_list("total", flat=True))[:20],
+                'backgroundColor': colours
+            }]
+        }
+    }
+
+    yearSQL = data.values('year').annotate(total=Count('year')).order_by('-total')
+    year = {
+        'type': "pie",
+        'data': {
+            'labels': list(yearSQL.values_list("year", flat=True)),
+            'datasets': [{
+                'label': "Year Count",
+                'data': list(yearSQL.values_list("total", flat=True)),
+                'backgroundColor': colours
+            }]
+        }
+    }
 	
-    print(bodytypes["labels"])
-    print(bodytypes["data"])
+    seatingSQL = data.values('seatingCapacity').annotate(total=Count('seatingCapacity')).order_by('-total')
+    seating = {
+        'type': "pie",
+        'data': {
+            'labels': list(seatingSQL.values_list("seatingCapacity")),
+            'datasets': [{
+                'label': "Seating Count",
+                'data': list(seatingSQL.values_list("total", flat=True)),
+                'backgroundColor': colours
+            }]
+        }
+    }
 	
+    driveTrainSQL = data.values('standardTransmission').annotate(total=Count('standardTransmission')).order_by('-total')
+    driveTrain = {
+        'type': "pie",
+        'data': {
+            'labels': list(driveTrainSQL.values_list("standardTransmission", flat=True)),
+            'datasets': [{
+                'label': "driveTrain Count",
+                'data': list(driveTrainSQL.values_list("total", flat=True)),
+                'backgroundColor': colours
+            }]
+        }
+    }
+
+    js_dict = {
+            'bodyTypes': bodyTypes,
+            'make': make,
+			'model': model,
+			'year': year,
+			'seating': seating,
+			'driveTrain': driveTrain
+    }
+    js_data = json.dumps(js_dict)
 	
-    return render(request, 'visualise_vehicle_data.html', {'bodytypes': bodytypes})
+    return render(request, 'visualise_vehicle_data.html', {'js_data': js_data})
 
 
 def read_store_data(request):
