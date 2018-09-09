@@ -137,6 +137,9 @@ body {font-family: Arial;}
 		evt.currentTarget.className += " active";
 		
 		<!-- charts -->
+		if (typeof charts[chartName] != "undefined") {
+			charts[chartName].destroy();
+		}
 		var chartType = chartObj.type;
 		charts[chartName] = createGraph(chartName, chartType, chartObj);
 	}
