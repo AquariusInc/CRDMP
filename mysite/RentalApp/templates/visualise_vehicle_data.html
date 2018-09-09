@@ -48,55 +48,82 @@ body {font-family: Arial;}
 
 <div class="container">
 	<div class="tab">
-	  <button class="tablinks" onclick="openTab(event, 'Body Type')">Body Type</button>
-	  <button class="tablinks" onclick="openTab(event, 'Make')">Make</button>
-	  <button class="tablinks" onclick="openTab(event, 'Model')">Model</button>
-	  <button class="tablinks" onclick="openTab(event, 'Year')">Year</button>
-	  <button class="tablinks" onclick="openTab(event, 'Price')">Price</button>
-	  <button class="tablinks" onclick="openTab(event, 'Seating')">Seating</button>
-	  <button class="tablinks" onclick="openTab(event, 'Drive Train')">Drive Train</button>
+	  <button class="tablinks" onclick="openTab(event, 'Body Type', 'bodyTypeChart', obj.bodyTypes)">Body Type</button>
+	  <button class="tablinks" onclick="openTab(event, 'Make', 'makeChart', obj.make)">Make</button>
+	  <button class="tablinks" onclick="openTab(event, 'Model', 'modelChart', obj.model)">Model</button>
+	  <button class="tablinks" onclick="openTab(event, 'Year', 'yearChart', obj.year)">Year</button>
+	  <button class="tablinks" onclick="openTab(event, 'Price', 'priceChart', obj.price)">Price</button>
+	  <button class="tablinks" onclick="openTab(event, 'Seating', 'seatingChart', obj.seating)">Seating</button>
+	  <button class="tablinks" onclick="openTab(event, 'Drive Train', 'driveTrainChart', obj.driveTrain)">Drive Train</button>
+	  
 	</div>
 	
 	<div id="Body Type" class="tabcontent">
-	  <p>{{ bodytypes.labels }}</p>
-	  <p>{{ bodytypes.data }}</p>
-	  <canvas id="myChart" width="900" height="400"></canvas>
-		<script>
-		var ctx = document.getElementById("myChart");
-		
-		var myChart = new Chart(ctx, {
-			type: 'pie',
-			data: {
-				labels: {{ bodytypes.labels }},
-				datasets: [{
-					label: '# of Votes',
-					data: {{ bodytypes.data }},
-				}]
-			},
-		});
-		</script>
+	  <button class="tablinks" onclick="changeGraph(event, 'bodyTypeChart', 'bar', obj.bodyTypes)">Bar</button>
+	  <button class="tablinks" onclick="changeGraph(event, 'bodyTypeChart', 'pie', obj.bodyTypes)">Pie</button>
+	  <p id="dicks"> hello </p>
+	  <canvas id="bodyTypeChart" width="900" height="400"></canvas>
 	</div>
 
 	<div id="Make" class="tabcontent">
+		<canvas id="makeChart" width="900" height="400"></canvas>
 	</div>
 
 	<div id="Model" class="tabcontent">
+		<p>top 15</p>
+		<canvas id="modelChart" width="900" height="400"></canvas>
 	</div>
 	
 	<div id="Year" class="tabcontent">
+		<p>year brackets</p>
+		<canvas id="yearChart" width="900" height="400"></canvas>
 	</div>
 	
 	<div id="Price" class="tabcontent">
+		<p>price brackets</p>
+		<canvas id="priceChart" width="900" height="400"></canvas>
 	</div>
 	
 	<div id="Seating" class="tabcontent">
+		<canvas id="seatingChart" width="900" height="400"></canvas>
 	</div>
 	
 	<div id="Drive Train" class="tabcontent">
+		<canvas id="driveTrainChart" width="900" height="400"></canvas>
 	</div>
 	
 	<script>
-	function openTab(evt, tabName) {
+	var obj = {{ js_data|safe }};
+	var charts = {};
+	
+	function createGraph(chartName, chartType, chartObj) {
+		var ctx = document.getElementById(chartName);
+		var legendDisplay = false;
+		if (chartType == 'pie') {
+			legendDisplay = true;
+		}
+		
+		var chart = new Chart(ctx, {
+			type: chartType,
+			data: {
+				labels: chartObj.data.labels,
+				datasets: [{
+					label: chartObj.data.datasets[0].label,
+					data: chartObj.data.datasets[0].data,
+					backgroundColor: chartObj.data.datasets[0].backgroundColor
+				}]
+			},
+			options: {
+				legend: {
+					display: legendDisplay
+				}
+			}
+		});
+		
+		return chart;
+	}
+	
+	function openTab(evt, tabName, chartName, chartObj) {
 		var i, tabcontent, tablinks;
 		tabcontent = document.getElementsByClassName("tabcontent");
 		for (i = 0; i < tabcontent.length; i++) {
@@ -108,6 +135,15 @@ body {font-family: Arial;}
 		}
 		document.getElementById(tabName).style.display = "block";
 		evt.currentTarget.className += " active";
+		
+		<!-- charts -->
+		var chartType = chartObj.type;
+		charts[chartName] = createGraph(chartName, chartType, chartObj);
+	}
+
+	function changeGraph(evt, chartName, chartType, chartObj) {		
+		charts[chartName].destroy();
+		charts[chartName] = createGraph(chartName, chartType, chartObj);
 	}
 	</script>
 	
