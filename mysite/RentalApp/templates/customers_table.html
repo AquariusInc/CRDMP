@@ -6,11 +6,21 @@
     <h3>Customer Data</h2>
         <form>
             <div class="row">
-                <div class="input-field col l11 m10 s9">
+                <div class="input-field col l2 m3 s4">
+                    <select>
+                        <option value="" disabled selected>Search Field</option>
+                        <option value="1">Option 1</option>
+                        <option value="2">Option 2</option>
+                        <option value="3">Option 3</option>
+                    </select>
+                    <label>Field to Search</label>
+                </div>
+                <div class="input-field col l9 m7 s5">
                     <input id="search_box" type="text" class="validate">
                     <label for="search_box">Search</label>
                 </div>
-                <a id="search_button" class="waves-effect waves-light btn col l1 m2 s3"><i class="material-icons">search</i></a>
+                <a id="search_button" class="waves-effect waves-light btn col l1 m2 s3"><i
+                        class="material-icons">search</i></a>
             </div>
         </form>
 
@@ -48,5 +58,14 @@
 {% block extrascripts %}
 <script>
     new Tablesort(document.getElementById('table-id'));
+    document.addEventListener('DOMContentLoaded', function () {
+        var elems = document.querySelectorAll('select');
+        var instances = M.FormSelect.init(elems, options);
+    });
+
+
+    $(document).ready(function () {
+        $('select').formSelect();
+    });
 </script>
 {% endblock %}
