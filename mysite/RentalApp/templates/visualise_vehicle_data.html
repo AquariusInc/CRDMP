@@ -6,14 +6,12 @@
 <style>
 body {font-family: Arial;}
 
-/* Style the tab */
 .tab {
 	overflow: hidden;
 	border: 1px solid #ccc;
 	background-color: #f1f1f1;
 }
 
-/* Style the buttons inside the tab */
 .tab button {
 	background-color: inherit;
 	float: left;
@@ -25,22 +23,36 @@ body {font-family: Arial;}
 	font-size: 17px;
 }
 
-/* Change background color of buttons on hover */
 .tab button:hover {
 	background-color: #ddd;
 }
 
-/* Create an active/current tablink class */
 .tab button.active {
 	background-color: #ccc;
 }
 
-/* Style the tab content */
 .tabcontent {
 	display: none;
 	padding: 6px 12px;
 	border: 1px solid #ccc;
 	border-top: none;
+}
+
+.buttonContainer {
+	text-align: center;
+	width: 100%;
+	margin: 15px;
+}
+	
+.buttonGraph {
+	border: none;
+	background-color: #324A5F;
+	color: white;
+	cursor: pointer;
+	font-size: 140%;
+	padding: 2px 15px;
+	font-family: "Segoe UI", monospace;
+	border-radius: 2px;
 }
 </style>
 
@@ -55,41 +67,69 @@ body {font-family: Arial;}
 	  <button class="tablinks" onclick="openTab(event, 'Price', 'priceChart', obj.price)">Price</button>
 	  <button class="tablinks" onclick="openTab(event, 'Seating', 'seatingChart', obj.seating)">Seating</button>
 	  <button class="tablinks" onclick="openTab(event, 'Drive Train', 'driveTrainChart', obj.driveTrain)">Drive Train</button>
-	  
 	</div>
 	
 	<div id="Body Type" class="tabcontent">
-	  <button class="tablinks" onclick="changeGraph(event, 'bodyTypeChart', 'bar', obj.bodyTypes)">Bar</button>
-	  <button class="tablinks" onclick="changeGraph(event, 'bodyTypeChart', 'pie', obj.bodyTypes)">Pie</button>
-	  <p id="dicks"> hello </p>
+	  <h3>...</h3>
 	  <canvas id="bodyTypeChart" width="900" height="400"></canvas>
+	  <div class="buttonContainer">
+	    <button class="buttonGraph" onclick="changeGraph(event, 'bodyTypeChart', 'bar', obj.bodyTypes)">BAR</button>
+	    <button class="buttonGraph" onclick="changeGraph(event, 'bodyTypeChart', 'pie', obj.bodyTypes)">PIE</button>		
+	  </div>
 	</div>
 
 	<div id="Make" class="tabcontent">
-		<canvas id="makeChart" width="900" height="400"></canvas>
+	  <h3>...</h3>
+	  <canvas id="makeChart" width="900" height="400"></canvas>
+	  <div class="buttonContainer">
+	    <button class="buttonGraph" onclick="changeGraph(event, 'makeChart', 'bar', obj.make)">BAR</button>
+	    <button class="buttonGraph" onclick="changeGraph(event, 'makeChart', 'pie', obj.make)">PIE</button>		
+	  </div>
 	</div>
 
 	<div id="Model" class="tabcontent">
-		<p>top 15</p>
-		<canvas id="modelChart" width="900" height="400"></canvas>
+	  <h3>top 15</h3>
+	  <canvas id="modelChart" width="900" height="400"></canvas>
+	  <div class="buttonContainer">
+	    <button class="buttonGraph" onclick="changeGraph(event, 'modelChart', 'bar', obj.model)">BAR</button>
+	    <button class="buttonGraph" onclick="changeGraph(event, 'modelChart', 'pie', obj.model)">PIE</button>		
+	  </div>
 	</div>
 	
 	<div id="Year" class="tabcontent">
-		<p>year brackets</p>
-		<canvas id="yearChart" width="900" height="400"></canvas>
+	  <h3>year brackets</h3>
+	  <canvas id="yearChart" width="900" height="400"></canvas>
+	  <div class="buttonContainer">
+	    <button class="buttonGraph" onclick="changeGraph(event, 'yearChart', 'bar', obj.year)">BAR</button>
+	    <button class="buttonGraph" onclick="changeGraph(event, 'yearChart', 'pie', obj.year)">PIE</button>		
+	  </div>
 	</div>
 	
 	<div id="Price" class="tabcontent">
-		<p>price brackets</p>
-		<canvas id="priceChart" width="900" height="400"></canvas>
+	  <h3>price brackets</h3>
+	  <canvas id="priceChart" width="900" height="400"></canvas>
+	  <div class="buttonContainer">
+	    <button class="buttonGraph" onclick="changeGraph(event, 'priceChart', 'bar', obj.price)">BAR</button>
+	    <button class="buttonGraph" onclick="changeGraph(event, 'priceChart', 'pie', obj.price)">PIE</button>		
+	  </div>
 	</div>
 	
 	<div id="Seating" class="tabcontent">
-		<canvas id="seatingChart" width="900" height="400"></canvas>
+	  <h3>...</h3>
+	  <canvas id="seatingChart" width="900" height="400"></canvas>
+	  <div class="buttonContainer">
+	    <button class="buttonGraph" onclick="changeGraph(event, 'seatingChart', 'bar', obj.seating)">BAR</button>
+	    <button class="buttonGraph" onclick="changeGraph(event, 'seatingChart', 'pie', obj.seating)">PIE</button>		
+	  </div>
 	</div>
 	
 	<div id="Drive Train" class="tabcontent">
-		<canvas id="driveTrainChart" width="900" height="400"></canvas>
+	  <h3>...</h3>
+	  <canvas id="driveTrainChart" width="900" height="400"></canvas>
+	  <div class="buttonContainer">
+	    <button class="buttonGraph" onclick="changeGraph(event, 'driveTrainChart', 'bar', obj.driveTrain)">BAR</button>
+	    <button class="buttonGraph" onclick="changeGraph(event, 'driveTrainChart', 'pie', obj.driveTrain)">PIE</button>		
+	  </div>
 	</div>
 	
 	<script>
@@ -99,8 +139,10 @@ body {font-family: Arial;}
 	function createGraph(chartName, chartType, chartObj) {
 		var ctx = document.getElementById(chartName);
 		var legendDisplay = false;
+		var gridLinesDisplay = true;
 		if (chartType == 'pie') {
 			legendDisplay = true;
+			gridLinesDisplay = false;
 		}
 		
 		var chart = new Chart(ctx, {
@@ -116,7 +158,19 @@ body {font-family: Arial;}
 			options: {
 				legend: {
 					display: legendDisplay
-				}
+				},
+				scales: {
+					yAxes: [{
+						ticks: {
+							beginAtZero: true,
+							display: gridLinesDisplay
+							
+						},
+						gridLines: {
+							display: gridLinesDisplay
+						}
+					}]
+				}				
 			}
 		});
 		

@@ -35,7 +35,7 @@ def vehicle_data(request):
 		
     colours =  ['#ffbebe', '#dcffbe', '#bec7ff', '#ff4141', '#8dff41', '#4180ff',
 				'#8e3924', '#248e5c', '#79248e', '#24558e', '#808e24', '#b341ff',
-				'#41ffff', '#ffcc41', '#f6beff', '#beffe9', '#ffe9be',
+				'#41ffff', '#ffcc41', '#f6beff', '#beffe9', '#ffe9be', '#dfa152'
                 ]
 
     bodytypesSQL = data.values('bodyType').annotate(total=Count('bodyType')).order_by('-total')
@@ -68,23 +68,70 @@ def vehicle_data(request):
     model = {
         'type': "pie",
         'data': {
-            'labels': list(modelSQL.values_list("model", flat=True))[:20],
+            'labels': list(modelSQL.values_list("model", flat=True))[:18],
             'datasets': [{
                 'label': "Model Count",
-                'data': list(modelSQL.values_list("total", flat=True))[:20],
+                'data': list(modelSQL.values_list("total", flat=True))[:18],
                 'backgroundColor': colours
             }]
         }
     }
 
     yearSQL = data.values('year').annotate(total=Count('year')).order_by('-total')
+    bracketYearSQL = {'1960-1969':0, '1970-1979':0, '1980-1989':0, '1990-1999':0, '2000-2009':0, '2010-2019':0}
+    yearKeys = list(yearSQL.values_list("year", flat=True))
+    yearVals = list(yearSQL.values_list("total", flat=True))
+    for i in range(0, len(yearKeys)):
+        if 1960 <= int(yearKeys[i]) <= 1969:
+            bracketYearSQL['1960-1969'] += yearVals[i]
+        if 1970 <= int(yearKeys[i]) <= 1979:
+            bracketYearSQL['1970-1979'] += yearVals[i]
+        if 1980 <= int(yearKeys[i]) <= 1989:
+            bracketYearSQL['1980-1989'] += yearVals[i]
+        if 1990 <= int(yearKeys[i]) <= 1999:
+            bracketYearSQL['1990-1999'] += yearVals[i]
+        if 2000 <= int(yearKeys[i]) <= 2009:
+            bracketYearSQL['2000-2009'] += yearVals[i]
+        if 2010 <= int(yearKeys[i]) <= 2019:
+            bracketYearSQL['2010-2019'] += yearVals[i]
+    bracketYearSQL = dict(sorted(bracketYearSQL.items(), key=lambda kv: kv[1], reverse=True))
     year = {
         'type': "pie",
         'data': {
-            'labels': list(yearSQL.values_list("year", flat=True)),
+            'labels': list(bracketYearSQL.keys()),
             'datasets': [{
                 'label': "Year Count",
-                'data': list(yearSQL.values_list("total", flat=True)),
+                'data': list(bracketYearSQL.values()),
+                'backgroundColor': colours
+            }]
+        }
+    }
+	
+    priceSQL = data.values('priceNew').annotate(total=Count('priceNew')).order_by('-total')
+    bracketPriceSQL = 
+    yearKeys = list(yearSQL.values_list("priceNew", flat=True))
+    yearVals = list(yearSQL.values_list("total", flat=True))
+    for i in range(0, len(yearKeys)):
+        if 1960 <= int(yearKeys[i]) <= 1969:
+            bracketYearSQL['1960-1969'] += yearVals[i]
+        if 1970 <= int(yearKeys[i]) <= 1979:
+            bracketYearSQL['1970-1979'] += yearVals[i]
+        if 1980 <= int(yearKeys[i]) <= 1989:
+            bracketYearSQL['1980-1989'] += yearVals[i]
+        if 1990 <= int(yearKeys[i]) <= 1999:
+            bracketYearSQL['1990-1999'] += yearVals[i]
+        if 2000 <= int(yearKeys[i]) <= 2009:
+            bracketYearSQL['2000-2009'] += yearVals[i]
+        if 2010 <= int(yearKeys[i]) <= 2019:
+            bracketYearSQL['2010-2019'] += yearVals[i]
+    bracketPriceSQL = dict(sorted(bracketPriceSQL.items(), key=lambda kv: kv[1], reverse=True))
+    price = {
+        'type': "pie",
+        'data': {
+            'labels': list(priceSQL.keys()),
+            'datasets': [{
+                'label': "Price Count",
+                'data': list(priceSQL.values()),
                 'backgroundColor': colours
             }]
         }
