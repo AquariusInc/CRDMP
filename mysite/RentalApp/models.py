@@ -39,7 +39,7 @@ class Car(models.Model):
     make = models.CharField(max_length=50)
     model = models.CharField(max_length=50)
     series = models.CharField(max_length=50)
-    year = models.CharField(max_length=4)
+    year = models.IntegerField()
     priceNew = models.FloatField()
     engineSize = models.FloatField()
     fuelSystem = models.CharField(max_length=50)
