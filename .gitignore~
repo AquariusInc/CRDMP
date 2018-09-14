@@ -4,7 +4,5 @@
 /.DS_Store
 .DS_Store
 .DS_Store
-
 *.pyc
-
 mysite/RentalApp/__pycache__/
