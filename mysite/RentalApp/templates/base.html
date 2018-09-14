@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="{% static 'css/materialize.css' %}"/>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}"/>
+    {% block extracss %}{% endblock %}
     <title>{% block title %}{% endblock %} | CRDMP</title>
 </head>
 
@@ -100,4 +101,5 @@
         $('.sidenav').sidenav();
     });
 </script>
+{% block extrascripts %}{% endblock %}
 </html>
