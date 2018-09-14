@@ -3,6 +3,7 @@
 <head>
     {% load static %}
     <!--Import Materialize CSS-->
+    <link rel="stylesheet" href="{% static 'css/tablesort.css' %}"/>
     <link rel="stylesheet" href="{% static 'css/materialize.css' %}"/>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}"/>
@@ -82,6 +83,10 @@
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.2/js/materialize.min.js"></script>
+<script src="{% static 'js/tablesort.min.js' %}"></script>
+<script src="{% static 'js/sorts/tablesort.date.min.js' %}"></script>
+<script src="{% static 'js/sorts/tablesort.number.js' %}"></script>
+<script src="{% static 'js/sorts/tablesort.monthname.js' %}"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
