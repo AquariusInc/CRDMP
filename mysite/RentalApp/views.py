@@ -109,34 +109,34 @@ def vehicle_data(request):
     }
 	
     priceSQL = data.values('priceNew').annotate(total=Count('priceNew')).order_by('-total')
-    bracketPriceSQL = 
-    yearKeys = list(yearSQL.values_list("priceNew", flat=True))
-    yearVals = list(yearSQL.values_list("total", flat=True))
-    for i in range(0, len(yearKeys)):
-        if 1960 <= int(yearKeys[i]) <= 1969:
-            bracketYearSQL['1960-1969'] += yearVals[i]
-        if 1970 <= int(yearKeys[i]) <= 1979:
-            bracketYearSQL['1970-1979'] += yearVals[i]
-        if 1980 <= int(yearKeys[i]) <= 1989:
-            bracketYearSQL['1980-1989'] += yearVals[i]
-        if 1990 <= int(yearKeys[i]) <= 1999:
-            bracketYearSQL['1990-1999'] += yearVals[i]
-        if 2000 <= int(yearKeys[i]) <= 2009:
-            bracketYearSQL['2000-2009'] += yearVals[i]
-        if 2010 <= int(yearKeys[i]) <= 2019:
-            bracketYearSQL['2010-2019'] += yearVals[i]
-    bracketPriceSQL = dict(sorted(bracketPriceSQL.items(), key=lambda kv: kv[1], reverse=True))
-    price = {
-        'type': "pie",
-        'data': {
-            'labels': list(priceSQL.keys()),
-            'datasets': [{
-                'label': "Price Count",
-                'data': list(priceSQL.values()),
-                'backgroundColor': colours
-            }]
-        }
-    }
+    # bracketPriceSQL =
+    # yearKeys = list(yearSQL.values_list("priceNew", flat=True))
+    # yearVals = list(yearSQL.values_list("total", flat=True))
+    # for i in range(0, len(yearKeys)):
+    #     if 1960 <= int(yearKeys[i]) <= 1969:
+    #         bracketYearSQL['1960-1969'] += yearVals[i]
+    #     if 1970 <= int(yearKeys[i]) <= 1979:
+    #         bracketYearSQL['1970-1979'] += yearVals[i]
+    #     if 1980 <= int(yearKeys[i]) <= 1989:
+    #         bracketYearSQL['1980-1989'] += yearVals[i]
+    #     if 1990 <= int(yearKeys[i]) <= 1999:
+    #         bracketYearSQL['1990-1999'] += yearVals[i]
+    #     if 2000 <= int(yearKeys[i]) <= 2009:
+    #         bracketYearSQL['2000-2009'] += yearVals[i]
+    #     if 2010 <= int(yearKeys[i]) <= 2019:
+    #         bracketYearSQL['2010-2019'] += yearVals[i]
+    # bracketPriceSQL = dict(sorted(bracketPriceSQL.items(), key=lambda kv: kv[1], reverse=True))
+    # price = {
+    #     'type': "pie",
+    #     'data': {
+    #         'labels': list(priceSQL.keys()),
+    #         'datasets': [{
+    #             'label': "Price Count",
+    #             'data': list(priceSQL.values()),
+    #             'backgroundColor': colours
+    #         }]
+    #     }
+    # }
 	
     seatingSQL = data.values('seatingCapacity').annotate(total=Count('seatingCapacity')).order_by('-total')
     seating = {
