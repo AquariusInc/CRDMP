@@ -3,11 +3,10 @@ from django.http import HttpResponse
 import csv
 from .models import Store, Customer, Order, Car
 from django.db.models import Count
-from django.db.models.expressions import RawSQL
 import json
 import datetime
 import re
-from RentalApp.helperfuncs.helperfuncs import chartJSData, chartJSData_dict, chartJSData_bracket
+from RentalApp.helperfuncs.helperfuncs import chartJSData, chartJSData_bracket
 # Create your views here.
 
 
