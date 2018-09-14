@@ -1,62 +1,16 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Vehicle Visualisation{% endblock %}
-{% block content %}
 
-<style>
-body {font-family: Arial;}
+{% block extracss %}<link rel="stylesheet" href="{% static 'css/visualise-vehicle.css' %}">{% endblock %}
 
-.tab {
-	overflow: hidden;
-	border: 1px solid #ccc;
-	background-color: #f1f1f1;
-}
-
-.tab button {
-	background-color: inherit;
-	float: left;
-	border: none;
-	outline: none;
-	cursor: pointer;
-	padding: 14px 16px;
-	transition: 0.3s;
-	font-size: 17px;
-}
-
-.tab button:hover {
-	background-color: #ddd;
-}
-
-.tab button.active {
-	background-color: #ccc;
-}
-
-.tabcontent {
-	display: none;
-	padding: 6px 12px;
-	border: 1px solid #ccc;
-	border-top: none;
-}
-
-.buttonContainer {
-	text-align: center;
-	width: 100%;
-	margin: 15px;
-}
-	
-.buttonGraph {
-	border: none;
-	background-color: #324A5F;
-	color: white;
-	cursor: pointer;
-	font-size: 140%;
-	padding: 2px 15px;
-	font-family: "Segoe UI", monospace;
-	border-radius: 2px;
-}
-</style>
-
+{% block extrascripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+<script src="{% static 'js/visualise_vehicle.js' %}"></script>
+{% endblock %}
+
+{% block content %}
 
 <div class="container">
 	<div class="tab">
@@ -134,74 +88,6 @@ body {font-family: Arial;}
 	
 	<script>
 	var obj = {{ js_data|safe }};
-	var charts = {};
-	
-	function createGraph(chartName, chartType, chartObj) {
-		var ctx = document.getElementById(chartName);
-		var legendDisplay = false;
-		var gridLinesDisplay = true;
-		if (chartType == 'pie') {
-			legendDisplay = true;
-			gridLinesDisplay = false;
-		}
-		
-		var chart = new Chart(ctx, {
-			type: chartType,
-			data: {
-				labels: chartObj.data.labels,
-				datasets: [{
-					label: chartObj.data.datasets[0].label,
-					data: chartObj.data.datasets[0].data,
-					backgroundColor: chartObj.data.datasets[0].backgroundColor
-				}]
-			},
-			options: {
-				legend: {
-					display: legendDisplay
-				},
-				scales: {
-					yAxes: [{
-						ticks: {
-							beginAtZero: true,
-							display: gridLinesDisplay
-							
-						},
-						gridLines: {
-							display: gridLinesDisplay
-						}
-					}]
-				}				
-			}
-		});
-		
-		return chart;
-	}
-	
-	function openTab(evt, tabName, chartName, chartObj) {
-		var i, tabcontent, tablinks;
-		tabcontent = document.getElementsByClassName("tabcontent");
-		for (i = 0; i < tabcontent.length; i++) {
-			tabcontent[i].style.display = "none";
-		}
-		tablinks = document.getElementsByClassName("tablinks");
-		for (i = 0; i < tablinks.length; i++) {
-			tablinks[i].className = tablinks[i].className.replace(" active", "");
-		}
-		document.getElementById(tabName).style.display = "block";
-		evt.currentTarget.className += " active";
-		
-		<!-- charts -->
-		if (typeof charts[chartName] != "undefined") {
-			charts[chartName].destroy();
-		}
-		var chartType = chartObj.type;
-		charts[chartName] = createGraph(chartName, chartType, chartObj);
-	}
-
-	function changeGraph(evt, chartName, chartType, chartObj) {		
-		charts[chartName].destroy();
-		charts[chartName] = createGraph(chartName, chartType, chartObj);
-	}
 	</script>
 	
 </div>
