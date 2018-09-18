@@ -1,8 +1,60 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Customer Visualisation{% endblock %}
+
+{% block extracss %}<link rel="stylesheet" href="{% static 'css/visualise-customer.css' %}">{% endblock %}
+
+{% block extrascripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+<script src="{% static 'js/visualise_customer.js' %}"></script>
+{% endblock %}
+
 {% block content %}
+
 <div class="container">
-    <p>insert customer visualisation here</p>
+	<div class="tab">
+	  <button class="tablinks" onclick="openTab(event, 'Amount', 'amountChart', obj.id)">Amount</button>
+	  <button class="tablinks" onclick="openTab(event, 'Occupation', 'occupationChart', obj.occupation)">Occupation</button>
+	  <button class="tablinks" onclick="openTab(event, 'Gender', 'genderChart', obj.gender)">Gender</button>
+	  <button class="tablinks" onclick="openTab(event, 'dob', 'dobChart', obj.dob)">Age</button>
+	  <button class="tablinks" onclick="openTab(event, 'dob', 'dobChart', obj.dob)">Repeat Customers</button>
+	 
+	</div>
+	
+	<div id="Occupation" class="tabcontent">
+	  <h3>...</h3>
+	  <canvas id="occupationChart" width="900" height="400"></canvas>
+	  <div class="buttonContainer">
+	    <button class="buttonGraph" onclick="changeGraph(event, 'occupationChart', 'bar', obj.occupation)">BAR</button>
+	    <button class="buttonGraph" onclick="changeGraph(event, 'occupationChart', 'pie', obj.occupation)">PIE</button>		
+	  </div>
+	</div>
+
+	<div id="Gender" class="tabcontent">
+	  <h3>...</h3>
+	  <canvas id="genderChart" width="900" height="400"></canvas>
+	  <div class="buttonContainer">
+	    <button class="buttonGraph" onclick="changeGraph(event, 'genderChart', 'bar', obj.gender)">BAR</button>
+	    <button class="buttonGraph" onclick="changeGraph(event, 'genderChart', 'pie', obj.gender)">PIE</button>		
+	  </div>
+	</div>
+	
+	<div id="Amount" class="tabcontent">
+	  <h3>...</h3>
+	  <canvas id="amountChart" width="900" height="400"></canvas>
+	  <div class="buttonContainer">
+	    <button class="buttonGraph" onclick="changeGraph(event, 'amountChart', 'bar', obj.id)">BAR</button>
+	    <button class="buttonGraph" onclick="changeGraph(event, 'amountChart', 'pie', obj.id)">PIE</button>		
+	  </div>
+	</div>
+	
+
+
+	
+	<script>
+	var obj = {{ js_data|safe }};
+	</script>
+	
 </div>
 {% endblock %}

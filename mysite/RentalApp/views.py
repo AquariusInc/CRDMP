@@ -23,7 +23,32 @@ def rental_table(request):
 
 
 def customer_data(request):
-    return render(request, 'visualise_customer_data.html')
+	data = Customer.objects.all()
+	
+	# Occupation counts 
+	occupationSQL = data.values('occupation').annotate(total=Count('occupation')).order_by('-total')
+	occupation = chartJSData(occupationSQL, 'occupation')
+	
+	# Gender counts
+	genderSQL = data.values ('gender').annotate(total=Count('occupation')).order_by('-total')
+	gender = chartJSData(genderSQL, 'gender')
+	
+	#Customer counts
+	idSQL = data.values ('id').annotate(total=Count('id')).order_by('-total')
+	id = chartJSData(genderSQL, 'id')
+	
+	
+	 # holding dict
+	js_dict = {
+            'occupation': occupation,
+            'gender': gender,
+			'id':id
+			
+	}
+    # Serialize dict into json to use in HTML file
+	js_data = json.dumps(js_dict)
+	
+	return render(request, 'visualise_customer_data.html', {'js_data': js_data})
 
 
 def rental_data(request):
