@@ -2,6 +2,10 @@
     color: #1b2a41 !important;
 }
 
+.page-footer {
+    margin-top: 30px;
+}
+
 #search_button{
     margin-top: 15px;
 }
