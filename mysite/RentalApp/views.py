@@ -27,17 +27,27 @@ def rental_table(request):
 def customer_data(request):
 	data = Customer.objects.all()
 	
-	# Occupation counts 
+	# Occupation counts - done
 	occupationSQL = data.values('occupation').annotate(total=Count('occupation')).order_by('-total')
 	occupation = chartJSData(occupationSQL, 'occupation')
 	
-	# Gender counts
-	genderSQL = data.values ('gender').annotate(total=Count('occupation')).order_by('-total')
+	# Gender counts - done
+	genderSQL = data.values ('gender').annotate(total=Count('gender')).order_by('-total')
 	gender = chartJSData(genderSQL, 'gender')
 	
 	#Customer counts
+	idSQL = data.values ('id').annotate(total=Count('id'))
+	id = chartJSData(idSQL, 'id', chartType="line")
+	
+	#Repeat Customers 
 	idSQL = data.values ('id').annotate(total=Count('id')).order_by('-total')
-	id = chartJSData(genderSQL, 'id')
+	id = chartJSData(idSQL, 'id', chartType="line")
+	#id = chartJSData_bracket(data, 'id', start=0, increment=1, bracketCount=10)
+
+	
+	#Age Counts
+	#dobSQL = data.values ('dob').annotate(total=Count('dob')).order_by('-total')
+	#dob = chartJSData_bracket(data, 'dob', start=1940, increment=10, bracketCount=5)
 	
 	
 	 # holding dict
@@ -45,7 +55,6 @@ def customer_data(request):
             'occupation': occupation,
             'gender': gender,
 			'id':id
-			
 	}
     # Serialize dict into json to use in HTML file
 	js_data = json.dumps(js_dict)
