@@ -6,14 +6,34 @@ from django.db.models import Count
 import json
 import datetime
 import re
+from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 
 
 def home(request):
     return render(request, 'home.html')
 
-
+@csrf_exempt
 def customers_table(request):
+    if request.method == "POST":
+        field = request.POST.get('search_field')
+        query = request.POST.get('search_box')
+
+        if field == "name":
+            data = Customer.objects.filter(name__contains=query)
+        elif field == "id":
+            data = Customer.objects.filter(id__contains=query)
+        elif field == "address":
+            data = Customer.objects.filter(address__contains=query)
+        elif field == "phone":
+            data = Customer.objects.filter(phone__contains=query)
+        elif field == "gender":
+            data = Customer.objects.filter(gender__contains=query)
+        elif field == "occupation":
+            data = Customer.objects.filter(occupation__contains=query)
+
+        return render(request, 'customers_table.html', {'data': data})
+
     data = Customer.objects.all()
     return render(request, 'customers_table.html', {'data': data})
 
@@ -109,34 +129,34 @@ def vehicle_data(request):
     }
 	
     priceSQL = data.values('priceNew').annotate(total=Count('priceNew')).order_by('-total')
-    bracketPriceSQL = 
-    yearKeys = list(yearSQL.values_list("priceNew", flat=True))
-    yearVals = list(yearSQL.values_list("total", flat=True))
-    for i in range(0, len(yearKeys)):
-        if 1960 <= int(yearKeys[i]) <= 1969:
-            bracketYearSQL['1960-1969'] += yearVals[i]
-        if 1970 <= int(yearKeys[i]) <= 1979:
-            bracketYearSQL['1970-1979'] += yearVals[i]
-        if 1980 <= int(yearKeys[i]) <= 1989:
-            bracketYearSQL['1980-1989'] += yearVals[i]
-        if 1990 <= int(yearKeys[i]) <= 1999:
-            bracketYearSQL['1990-1999'] += yearVals[i]
-        if 2000 <= int(yearKeys[i]) <= 2009:
-            bracketYearSQL['2000-2009'] += yearVals[i]
-        if 2010 <= int(yearKeys[i]) <= 2019:
-            bracketYearSQL['2010-2019'] += yearVals[i]
-    bracketPriceSQL = dict(sorted(bracketPriceSQL.items(), key=lambda kv: kv[1], reverse=True))
-    price = {
-        'type': "pie",
-        'data': {
-            'labels': list(priceSQL.keys()),
-            'datasets': [{
-                'label': "Price Count",
-                'data': list(priceSQL.values()),
-                'backgroundColor': colours
-            }]
-        }
-    }
+    # bracketPriceSQL =
+    # yearKeys = list(yearSQL.values_list("priceNew", flat=True))
+    # yearVals = list(yearSQL.values_list("total", flat=True))
+    # for i in range(0, len(yearKeys)):
+    #     if 1960 <= int(yearKeys[i]) <= 1969:
+    #         bracketYearSQL['1960-1969'] += yearVals[i]
+    #     if 1970 <= int(yearKeys[i]) <= 1979:
+    #         bracketYearSQL['1970-1979'] += yearVals[i]
+    #     if 1980 <= int(yearKeys[i]) <= 1989:
+    #         bracketYearSQL['1980-1989'] += yearVals[i]
+    #     if 1990 <= int(yearKeys[i]) <= 1999:
+    #         bracketYearSQL['1990-1999'] += yearVals[i]
+    #     if 2000 <= int(yearKeys[i]) <= 2009:
+    #         bracketYearSQL['2000-2009'] += yearVals[i]
+    #     if 2010 <= int(yearKeys[i]) <= 2019:
+    #         bracketYearSQL['2010-2019'] += yearVals[i]
+    # bracketPriceSQL = dict(sorted(bracketPriceSQL.items(), key=lambda kv: kv[1], reverse=True))
+    # price = {
+    #     'type': "pie",
+    #     'data': {
+    #         'labels': list(priceSQL.keys()),
+    #         'datasets': [{
+    #             'label': "Price Count",
+    #             'data': list(priceSQL.values()),
+    #             'backgroundColor': colours
+    #         }]
+    #     }
+    # }
 	
     seatingSQL = data.values('seatingCapacity').annotate(total=Count('seatingCapacity')).order_by('-total')
     seating = {
