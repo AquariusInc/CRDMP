@@ -6,14 +6,34 @@ from django.db.models import Count
 import json
 import datetime
 import re
+from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 
 
 def home(request):
     return render(request, 'home.html')
 
-
+@csrf_exempt
 def customers_table(request):
+    if request.method == "POST":
+        field = request.POST.get('search_field')
+        query = request.POST.get('search_box')
+
+        if field == "name":
+            data = Customer.objects.filter(name__contains=query)
+        elif field == "id":
+            data = Customer.objects.filter(id__contains=query)
+        elif field == "address":
+            data = Customer.objects.filter(address__contains=query)
+        elif field == "phone":
+            data = Customer.objects.filter(phone__contains=query)
+        elif field == "gender":
+            data = Customer.objects.filter(gender__contains=query)
+        elif field == "occupation":
+            data = Customer.objects.filter(occupation__contains=query)
+
+        return render(request, 'customers_table.html', {'data': data})
+
     data = Customer.objects.all()
     return render(request, 'customers_table.html', {'data': data})
 
