@@ -3,8 +3,30 @@
 {% block title %}Rentals{% endblock %}
 {% block content %}
 <div class="container">
-    <h3>Rental Data</h2>
-    <table>
+    <h3>Rental Data</h3>
+        <form action="rentals" method="get">
+            <div class="row">
+                <div class="input-field col l2 m3 s4">
+                    <select name="search_field">
+                        <option value="" disabled selected>Search Field</option>
+                        <option value="id">ID</option>
+                        <option value="car_id">Car ID</option>
+                        <option value="customer_id">Customer ID</option>
+                        <option value="pickup_id">Pickup Store ID</option>
+                        <option value="return_id">Return Store ID</option>
+                    </select>
+                    <label>Field to Search</label>
+                </div>
+                <div class="input-field col l9 m7 s5">
+                    <input id="search_box" name="search_box" type="text" class="">
+                    <label for="search_box">Search</label>
+                </div>
+                <button id="search_button" class="btn waves-effect waves-light" type="submit" name="action">
+                    <i class="material-icons">search</i>
+                </button>
+            </div>
+        </form>
+    <table id="table-id" class="striped">
         <thead>
           <tr>
               <th>ID</th>
@@ -26,7 +48,7 @@
              <td>{{ item.pickupDate }}</td>
              <td>{{ item.returnDate }}</td>
              <td>{{ item.car }}</td>
-             <td>{{ item.customer }}</td>
+             <td><a href="customers?search_field=id&search_box={{ item.customer }}&action=" >{{ item.customer }}</a></td>
              <td>{{ item.pickupStore }}</td>
              <td>{{ item.returnStore }}</td>
          </tr>
@@ -52,4 +74,19 @@
     </span>
 </div>
 </div>
+{% endblock %}
+
+{% block extrascripts %}
+<script>
+    new Tablesort(document.getElementById('table-id'));
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var elems = document.querySelectorAll('select');
+        var instances = M.FormSelect.init(elems, options);
+    });
+
+    $(document).ready(function () {
+        $('select').formSelect();
+    });
+</script>
 {% endblock %}

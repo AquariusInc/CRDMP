@@ -16,9 +16,9 @@ def home(request):
 
 @csrf_exempt
 def customers_table(request):
-    if request.method == "POST":
-        field = request.POST.get('search_field')
-        query = request.POST.get('search_box')
+    if request.GET['search_field']:
+        field = request.GET['search_field']
+        query = request.GET['search_box']
 
         if field == "name":
             data = Customer.objects.filter(name__contains=query)
@@ -38,8 +38,29 @@ def customers_table(request):
     data = Customer.objects.all()
     return render(request, 'customers_table.html', {'data': data})
 
-
+@csrf_exempt
 def rental_table(request):
+    if request.GET.get('search_field'):
+        field = request.GET.get('search_field')
+        query = request.GET.get('search_box')
+
+        if field == "id":
+            data = Order.objects.filter(id__contains=query)
+        elif field == "car_id":
+            data = Order.objects.filter(car__id__contains=query)
+        elif field == "customer_id":
+            data = Order.objects.filter(customer__id__contains=query)
+        elif field == "pickup_id":
+            data = Order.objects.filter(pickupStore__id__contains=query)
+        elif field == "return_id":
+            data = Order.objects.filter(returnStore__id__contains=query)
+
+        paginator = Paginator(data, 25)  # Show 25 contacts per page
+        page = request.GET.get('page')
+        orders = paginator.get_page(page)
+
+        return render(request, 'rental_table.html', {'orders': orders})
+
     data = Order.objects.all()
 
     paginator = Paginator(data, 25)  # Show 25 contacts per page
