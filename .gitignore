@@ -9,6 +9,12 @@ __pycache__/
 /IFB299env
 /.idea
 .DS_Store
+/.idea/
+/.DS_Store
+.DS_Store
+.DS_Store
+*.pyc
+mysite/RentalApp/__pycache__
 
 # Distribution / packaging
 .Python
