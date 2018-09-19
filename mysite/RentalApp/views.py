@@ -5,10 +5,11 @@ from .models import Store, Customer, Order, Car
 from django.db.models import Count
 import json
 import datetime
+from datetime import date
 import re
-from RentalApp.helperfuncs.helperfuncs import chartJSData, chartJSData_bracket
+from RentalApp.helperfuncs.helperfuncs import chartJSData, chartJSData_bracket, chartJSData_bracket_dt_yr
 # Create your views here.
-
+# from django.core import serializers
 
 def home(request):
     return render(request, 'home.html') 
@@ -40,25 +41,41 @@ def customer_data(request):
 	id = chartJSData(idSQL, 'id', chartType="line")
 	
 	#Repeat Customers 
-	idSQL = data.values ('id').annotate(total=Count('id')).order_by('-total')
-	id = chartJSData(idSQL, 'id', chartType="line")
-	#id = chartJSData_bracket(data, 'id', start=0, increment=1, bracketCount=10)
-
+	#idSQL = data.values ('id').annotate(total=Count('id')).order_by('-total')
+	#id = chartJSData(idSQL, 'id', chartType="line")
+	##id = chartJSData_bracket(data, 'id', start=0, increment=1, bracketCount=10)
 	
-	#Age Counts
-	#dobSQL = data.values ('dob').annotate(total=Count('dob')).order_by('-total')
-	#dob = chartJSData_bracket(data, 'dob', start=1940, increment=10, bracketCount=5)
-	
-	
-	 # holding dict
+	# Age Counts
+	# dobSQL = data.values ('dob').annotate(total=Count('dob')).order_by('-total')
+	dob_data = chartJSData_bracket_dt_yr(data, 'dob', start_date=date(1940,1,1), increment=10, bracketCount=5)
+       
+    # holding dict
 	js_dict = {
             'occupation': occupation,
             'gender': gender,
-			'id':id
+			'id':id,
+            'dob': dob_data
 	}
     # Serialize dict into json to use in HTML file
 	js_data = json.dumps(js_dict)
 	
+	return render(request, 'visualise_customer_data.html', {'js_data': js_data})
+	
+	
+def customer_data_extend (request):
+	data = Order.objects.all()
+	
+	
+	customerSQL = data.values ('customer').annotate(total=Count('customer')).order_by('-total')
+	customer = chartJSData(customerSQL, 'customer', chartType="line")
+	
+	
+	js_dict = {
+			'customer': customer
+	}
+	
+	js_data = json.dumps(js_dict)
+		
 	return render(request, 'visualise_customer_data.html', {'js_data': js_data})
 
 
