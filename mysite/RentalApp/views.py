@@ -16,7 +16,7 @@ def home(request):
 
 @csrf_exempt
 def customers_table(request):
-    if request.GET['search_field']:
+    if request.GET.get('search_field'):
         field = request.GET['search_field']
         query = request.GET['search_box']
 
@@ -33,7 +33,7 @@ def customers_table(request):
         elif field == "occupation":
             data = Customer.objects.filter(occupation__contains=query)
 
-        return render(request, 'customers_table.html', {'data': data})
+        return render(request, 'customers_table.html', {'data': data, 'query': query, 'field': field})
 
     data = Customer.objects.all()
     return render(request, 'customers_table.html', {'data': data})
