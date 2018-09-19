@@ -4,34 +4,52 @@
 {% block content %}
 <div class="container">
     <h3>Rental Data</h2>
-    <!--<table>-->
-        <!--<thead>-->
-          <!--<tr>-->
-              <!--<th>ID</th>-->
-              <!--<th>Create Date</th>-->
-              <!--<th>Pickup Date</th>-->
-              <!--<th>Return Date</th>-->
-              <!--<th>Car ID</th>-->
-              <!--<th>Customer ID</th>-->
-              <!--<th>Pickup Store ID</th>-->
-              <!--<th>Return Store ID</th>-->
-          <!--</tr>-->
-        <!--</thead>-->
+    <table>
+        <thead>
+          <tr>
+              <th>ID</th>
+              <th>Create Date</th>
+              <th>Pickup Date</th>
+              <th>Return Date</th>
+              <th>Car ID</th>
+              <th>Customer ID</th>
+              <th>Pickup Store ID</th>
+              <th>Return Store ID</th>
+          </tr>
+        </thead>
 
-        <!--<tbody>-->
-         <!--{% for item in data %}-->
-         <!--<tr>-->
-             <!--<td>{{ item.id }}</td>-->
-             <!--<td>{{ item.createDate }}</td>-->
-             <!--<td>{{ item.pickupDate }}</td>-->
-             <!--<td>{{ item.returnDate }}</td>-->
-             <!--<td>{{ item.car }}</td>-->
-             <!--<td>{{ item.customer }}</td>-->
-             <!--<td>{{ item.pickupStore }}</td>-->
-             <!--<td>{{ item.returnStore }}</td>-->
-         <!--</tr>-->
-         <!--{% endfor %}-->
-        <!--</tbody>-->
-    <!--</table>-->
+        <tbody>
+         {% for item in orders %}
+         <tr>
+             <td>{{ item.id }}</td>
+             <td>{{ item.createDate }}</td>
+             <td>{{ item.pickupDate }}</td>
+             <td>{{ item.returnDate }}</td>
+             <td>{{ item.car }}</td>
+             <td>{{ item.customer }}</td>
+             <td>{{ item.pickupStore }}</td>
+             <td>{{ item.returnStore }}</td>
+         </tr>
+         {% endfor %}
+        </tbody>
+    </table>
+
+<div class="pagination center-align">
+    <span class="step-links">
+        {% if orders.has_previous %}
+            <a class="waves-effect waves-light btn" href="?page=1">&laquo; first</a>
+            <a class="waves-effect waves-light btn" href="?page={{ orders.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ orders.number }} of {{ orders.paginator.num_pages }}
+        </span>
+
+        {% if orders.has_next %}
+            <a class="waves-effect waves-light btn" href="?page={{ orders.next_page_number }}">next</a>
+            <a class="waves-effect waves-light btn" href="?page={{ orders.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
 </div>
 {% endblock %}

@@ -7,6 +7,7 @@ import json
 import datetime
 import re
 from django.views.decorators.csrf import csrf_exempt
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 # Create your views here.
 
 
@@ -39,8 +40,13 @@ def customers_table(request):
 
 
 def rental_table(request):
-    # data = Order.objects.all()
-    return render(request, 'rental_table.html') # , {'data': data}
+    data = Order.objects.all()
+
+    paginator = Paginator(data, 25)  # Show 25 contacts per page
+    page = request.GET.get('page')
+    orders = paginator.get_page(page)
+
+    return render(request, 'rental_table.html', {'orders': orders})
 
 
 def customer_data(request):
