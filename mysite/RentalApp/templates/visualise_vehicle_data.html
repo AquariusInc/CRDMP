@@ -24,7 +24,7 @@
 	</div>
 	
 	<div id="Body Type" class="tabcontent">
-	  <h3>...</h3>
+	  <h3>Breakdown of Body Types</h3>
 	  <canvas id="bodyTypeChart" width="900" height="400"></canvas>
 	  <div class="buttonContainer">
 	    <button class="buttonGraph" onclick="changeGraph(event, 'bodyTypeChart', 'bar', obj.bodyTypes)">BAR</button>
@@ -33,7 +33,7 @@
 	</div>
 
 	<div id="Make" class="tabcontent">
-	  <h3>...</h3>
+	  <h3>Breakdown of Fleet Make</h3>
 	  <canvas id="makeChart" width="900" height="400"></canvas>
 	  <div class="buttonContainer">
 	    <button class="buttonGraph" onclick="changeGraph(event, 'makeChart', 'bar', obj.make)">BAR</button>
@@ -42,7 +42,7 @@
 	</div>
 
 	<div id="Model" class="tabcontent">
-	  <h3>top 15</h3>
+	  <h3>Breakdown of Top 20 Fleet Models</h3>
 	  <canvas id="modelChart" width="900" height="400"></canvas>
 	  <div class="buttonContainer">
 	    <button class="buttonGraph" onclick="changeGraph(event, 'modelChart', 'bar', obj.model)">BAR</button>
@@ -51,7 +51,7 @@
 	</div>
 	
 	<div id="Year" class="tabcontent">
-	  <h3>year brackets</h3>
+	  <h3>Breakdown of Vehicle Year of Make</h3>
 	  <canvas id="yearChart" width="900" height="400"></canvas>
 	  <div class="buttonContainer">
 	    <button class="buttonGraph" onclick="changeGraph(event, 'yearChart', 'bar', obj.year)">BAR</button>
@@ -60,32 +60,32 @@
 	</div>
 	
 	<div id="Price" class="tabcontent">
-	  <h3>price brackets</h3>
+	  <h3>Breakdown of Initial Vehicle Prices</h3>
 	  <canvas id="priceChart" width="900" height="400"></canvas>
 	  <div class="buttonContainer">
 	    <button class="buttonGraph" onclick="changeGraph(event, 'priceChart', 'bar', obj.price)">BAR</button>
 	    <button class="buttonGraph" onclick="changeGraph(event, 'priceChart', 'pie', obj.price)">PIE</button>		
 	  </div>
 	</div>
-	
+
 	<div id="Seating" class="tabcontent">
-	  <h3>...</h3>
+	  <h3>Breakdown of Fleet Seating</h3>
 	  <canvas id="seatingChart" width="900" height="400"></canvas>
 	  <div class="buttonContainer">
 	    <button class="buttonGraph" onclick="changeGraph(event, 'seatingChart', 'bar', obj.seating)">BAR</button>
 	    <button class="buttonGraph" onclick="changeGraph(event, 'seatingChart', 'pie', obj.seating)">PIE</button>		
 	  </div>
 	</div>
-	
+
 	<div id="Drive Train" class="tabcontent">
-	  <h3>...</h3>
+	  <h3>Breakdown of Top 20 Drive Train Types</h3>
 	  <canvas id="driveTrainChart" width="900" height="400"></canvas>
 	  <div class="buttonContainer">
 	    <button class="buttonGraph" onclick="changeGraph(event, 'driveTrainChart', 'bar', obj.driveTrain)">BAR</button>
 	    <button class="buttonGraph" onclick="changeGraph(event, 'driveTrainChart', 'pie', obj.driveTrain)">PIE</button>		
 	  </div>
 	</div>
-	
+
 	<script>
 	var obj = {{ js_data|safe }};
 	</script>
