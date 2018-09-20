@@ -14,7 +14,7 @@
 
 <div class="container">
 	<div class="tab">
-	  <button class="tablinks" onclick="openTab(event, 'Amount', 'amountChart', obj.id)">Amount</button>
+	  <button class="tablinks" onclick="openTab(event, 'Amount of Customers', 'amountChart', obj.id)">Number of Customers</button>
 	  <button class="tablinks" onclick="openTab(event, 'Occupation', 'occupationChart', obj.occupation)">Occupation</button>
 	  <button class="tablinks" onclick="openTab(event, 'Gender', 'genderChart', obj.gender)">Gender</button>
 	  <button class="tablinks" onclick="openTab(event, 'Repeat Customers', 'repeatChart', obj.customer)">Repeat Customers</button>
@@ -23,15 +23,24 @@
 	 
 	</div>
 	
-		<div id="Amount" class="tabcontent">
-	  <h3>Total Customers</h3>
+		<div id="Amount of Customers" class="tabcontent">
+	  <h3>Total Customers Over Time</h3>
 	  <canvas id="amountChart" width="900" height="400"></canvas>
-	
-	  
+
 	</div>
 	
+		<div id="dob" class="tabcontent">
+	  <h3>Customer Age Brackets</h3>
+	  <canvas id="dobChart" width="900" height="400"></canvas>
+	  <div class="buttonContainer">
+	    <button class="buttonGraph" onclick="changeGraph(event, 'dobChart', 'bar', obj.dob)">BAR</button>
+	    <button class="buttonGraph" onclick="changeGraph(event, 'dobChart', 'pie', obj.dob)">PIE</button>		
+	  </div>
+	</div>
+	
+	
 	<div id="Occupation" class="tabcontent">
-	  <h3>...</h3>
+	  <h3>Customer Occupation</h3>
 	  <canvas id="occupationChart" width="900" height="400"></canvas>
 	  <div class="buttonContainer">
 	    <button class="buttonGraph" onclick="changeGraph(event, 'occupationChart', 'bar', obj.occupation)">BAR</button>
@@ -44,7 +53,8 @@
 	  <canvas id="genderChart" width="900" height="400"></canvas>
 	  <div class="buttonContainer">
 	    <button class="buttonGraph" onclick="changeGraph(event, 'genderChart', 'bar', obj.gender)">BAR</button>
-	    <button class="buttonGraph" onclick="changeGraph(event, 'genderChart', 'pie', obj.gender)">PIE</button>		
+	    <button class="buttonGraph" onclick="changeGraph(event, 'genderChart', 'pie', obj.gender)">PIE</button>	
+			
 	  </div>
 	</div>
 
@@ -52,21 +62,13 @@
 	<div id="Repeat Customers" class="tabcontent">
 	  <h3>Repeat Customers</h3>
 	  <canvas id="repeatChart" width="900" height="400"></canvas>
-	 
+	
 	  
 	</div>
 	
 	
 	
-	<div id="Age" class="tabcontent">
-	  <h3>Customer Age Brackets</h3>
-	  <canvas id="dobChart" width="900" height="400"></canvas>
-	  <div class="buttonContainer">
-	    <button class="buttonGraph" onclick="changeGraph(event, 'dobChart', 'bar', obj.dob)">BAR</button>
-	    <button class="buttonGraph" onclick="changeGraph(event, 'dobChart', 'pie', obj.dob)">PIE</button>		
-	  </div>
-	</div>
-	
+
 	
 	
 	<script>

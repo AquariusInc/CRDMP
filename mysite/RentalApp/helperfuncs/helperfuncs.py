@@ -112,7 +112,7 @@ def chartJSData_bracket_dt_yr(dataSource, columnName, start_date, increment, bra
     dict = {}
     
     for i in range(0, bracketCount):
-        print('ds.filter(' + columnName + '__range=(rg[i][0], rg[i][1])).count()', {'i':i, 'ds':dataSource, 'rg':ranges})
+        print('ds.filter(' + columnName + '__range=(rg[i][0], rg[i][1])).count()', {'i':i, 'ds':dataSource, 'poo':ranges})
         count = eval('ds.filter(' + columnName + '__range=(rg[i][0], rg[i][1])).count()', {'i':i, 'ds':dataSource, 'rg':ranges})
         key = str(ranges[i][0]) + '-' + str(ranges[i][1])
         dict[key] = count

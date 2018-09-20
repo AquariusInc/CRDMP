@@ -26,58 +26,45 @@ def rental_table(request):
 
 
 def customer_data(request):
-	data = Customer.objects.all()
+    data = Customer.objects.all()
+    order = Order.objects.all()
 	
 	# Occupation counts - done
-	occupationSQL = data.values('occupation').annotate(total=Count('occupation')).order_by('-total')
-	occupation = chartJSData(occupationSQL, 'occupation')
+    occupationSQL = data.values('occupation').annotate(total=Count('occupation')).order_by('-total')
+    occupation = chartJSData(occupationSQL, 'occupation')
 	
 	# Gender counts - done
-	genderSQL = data.values ('gender').annotate(total=Count('gender')).order_by('-total')
-	gender = chartJSData(genderSQL, 'gender')
+    genderSQL = data.values ('gender').annotate(total=Count('gender')).order_by('-total')
+    gender = chartJSData(genderSQL, 'gender')
+    
+    #repeat customers - done
+    customerSQL = order.values ('customer').annotate(total=Count('customer')).order_by('total')
+    customer = chartJSData(customerSQL, 'customer', chartType="line")
+       
 	
 	#Customer counts
-	idSQL = data.values ('id').annotate(total=Count('id'))
-	id = chartJSData(idSQL, 'id', chartType="line")
-	
-	#Repeat Customers 
-	#idSQL = data.values ('id').annotate(total=Count('id')).order_by('-total')
-	#id = chartJSData(idSQL, 'id', chartType="line")
-	##id = chartJSData_bracket(data, 'id', start=0, increment=1, bracketCount=10)
+    idSQL = data.values ('id').annotate(total=Count('id'))
+    id = chartJSData(idSQL, 'id', chartType="line")
 	
 	# Age Counts
-	# dobSQL = data.values ('dob').annotate(total=Count('dob')).order_by('-total')
-	dob_data = chartJSData_bracket_dt_yr(data, 'dob', start_date=date(1940,1,1), increment=10, bracketCount=5)
-       
+    dob_data = chartJSData_bracket_dt_yr(data, 'dob', start_date=date(1930,1,1), increment=10, bracketCount=6)
+    
+  
+ 
     # holding dict
-	js_dict = {
+    js_dict = {
             'occupation': occupation,
             'gender': gender,
 			'id':id,
-            'dob': dob_data
-	}
+            'dob': dob_data,
+            'customer':customer
+    }
     # Serialize dict into json to use in HTML file
-	js_data = json.dumps(js_dict)
+    js_data = json.dumps(js_dict)
 	
-	return render(request, 'visualise_customer_data.html', {'js_data': js_data})
-	
-	
-def customer_data_extend (request):
-	data = Order.objects.all()
+    return render(request, 'visualise_customer_data.html', {'js_data': js_data})
 	
 	
-	customerSQL = data.values ('customer').annotate(total=Count('customer')).order_by('-total')
-	customer = chartJSData(customerSQL, 'customer', chartType="line")
-	
-	
-	js_dict = {
-			'customer': customer
-	}
-	
-	js_data = json.dumps(js_dict)
-		
-	return render(request, 'visualise_customer_data.html', {'js_data': js_data})
-
 
 def rental_data(request):
     return render(request, 'visualise_rental_data.html')
