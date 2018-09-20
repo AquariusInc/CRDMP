@@ -7,7 +7,7 @@ from .models import Car
 class visualise_vehicle_data_tests(TestCase):
     # Should dynamically draw from fixtures
     data_names = ['bodyTypes', 'make', 'model', 'year', 'price', 'seating', 'driveTrain']
-    
+
     # Fixtures
     # Contain a dump of database data
     # Should be updated manually
