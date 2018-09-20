@@ -34,7 +34,7 @@ def rental_data(request):
 
 def vehicle_data(request):
     data = Car.objects.all()
-
+    
     # Bodytypes counts
     bodytypesSQL = data.values('bodyType').annotate(total=Count('bodyType')).order_by('-total')
     bodyTypes = chartJSData(bodytypesSQL, 'bodyType')
