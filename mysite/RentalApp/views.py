@@ -7,6 +7,7 @@ import json
 import datetime
 import re
 from django.views.decorators.csrf import csrf_exempt
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 # Create your views here.
 
 
@@ -15,9 +16,9 @@ def home(request):
 
 @csrf_exempt
 def customers_table(request):
-    if request.method == "POST":
-        field = request.POST.get('search_field')
-        query = request.POST.get('search_box')
+    if request.GET.get('search_field'):
+        field = request.GET['search_field']
+        query = request.GET['search_box']
 
         if field == "name":
             data = Customer.objects.filter(name__contains=query)
@@ -32,15 +33,50 @@ def customers_table(request):
         elif field == "occupation":
             data = Customer.objects.filter(occupation__contains=query)
 
-        return render(request, 'customers_table.html', {'data': data})
+        paginator = Paginator(data, 25)  # Show 25 contacts per page
+        page = request.GET.get('page')
+        customers = paginator.get_page(page)
+
+        return render(request, 'customers_table.html', {'data': customers, 'query': query, 'field': field})
 
     data = Customer.objects.all()
-    return render(request, 'customers_table.html', {'data': data})
 
+    paginator = Paginator(data, 25)  # Show 25 contacts per page
+    page = request.GET.get('page')
+    customers = paginator.get_page(page)
 
+    return render(request, 'customers_table.html', {'data': customers})
+
+@csrf_exempt
 def rental_table(request):
-    # data = Order.objects.all()
-    return render(request, 'rental_table.html') # , {'data': data}
+    if request.GET.get('search_field'):
+        field = request.GET.get('search_field')
+        query = request.GET.get('search_box')
+
+        if field == "id":
+            data = Order.objects.filter(id__contains=query)
+        elif field == "car_id":
+            data = Order.objects.filter(car__id__contains=query)
+        elif field == "customer_id":
+            data = Order.objects.filter(customer__id__contains=query)
+        elif field == "pickup_id":
+            data = Order.objects.filter(pickupStore__id__contains=query)
+        elif field == "return_id":
+            data = Order.objects.filter(returnStore__id__contains=query)
+
+        paginator = Paginator(data, 25)  # Show 25 contacts per page
+        page = request.GET.get('page')
+        orders = paginator.get_page(page)
+
+        return render(request, 'rental_table.html', {'orders': orders, 'query': query, 'field': field})
+
+    data = Order.objects.all()
+
+    paginator = Paginator(data, 25)  # Show 25 contacts per page
+    page = request.GET.get('page')
+    orders = paginator.get_page(page)
+
+    return render(request, 'rental_table.html', {'orders': orders})
 
 
 def customer_data(request):
