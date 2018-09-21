@@ -34,7 +34,7 @@ def rental_data(request):
 
 def vehicle_data(request):
     data = Car.objects.all()
-
+    
     # Bodytypes counts
     bodytypesSQL = data.values('bodyType').annotate(total=Count('bodyType')).order_by('-total')
     bodyTypes = chartJSData(bodytypesSQL, 'bodyType')
@@ -45,7 +45,7 @@ def vehicle_data(request):
 	
     # Model counts
     modelSQL = data.values('model').annotate(total=Count('model')).order_by('-total')
-    model = chartJSData(modelSQL, 'model', maxLabels=18)
+    model = chartJSData(modelSQL, 'model', maxLabels=20)
 
     # Year Bracket counts
     year = chartJSData_bracket(data, 'year', start=1950, increment=10, bracketCount=10)
@@ -59,7 +59,7 @@ def vehicle_data(request):
 	
     # DriveTrain counts
     driveTrainSQL = data.values('standardTransmission').annotate(total=Count('standardTransmission')).order_by('-total')
-    driveTrain = chartJSData(driveTrainSQL, 'standardTransmission')
+    driveTrain = chartJSData(driveTrainSQL, 'standardTransmission', maxLabels=20)
 
     # holding dict
     js_dict = {
