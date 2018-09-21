@@ -5,15 +5,17 @@ from .models import Store, Customer, Order, Car
 from django.db.models import Count
 import json
 import datetime
+from datetime import date
+import re
+from RentalApp.helperfuncs.helperfuncs import chartJSData, chartJSData_bracket, chartJSData_bracket_dt_yr
 from datetime import datetime
 import re
 from RentalApp.helperfuncs.helperfuncs import chartJSData, chartJSData_bracket
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
-
 # Create your views here.
-
+# from django.core import serializers
 
 def home(request):
     return render(request, 'home.html')
@@ -128,8 +130,48 @@ def rental_table(request):
 
 
 def customer_data(request):
-    return render(request, 'visualise_customer_data.html')
-
+    data = Customer.objects.all()
+    order = Order.objects.all()
+	
+	# Occupation counts - done
+    occupationSQL = data.values('occupation').annotate(total=Count('occupation')).order_by('-total')
+    occupation = chartJSData(occupationSQL, 'occupation')
+	
+	# Gender counts - done
+    genderSQL = data.values ('gender').annotate(total=Count('gender')).order_by('-total')
+    gender = chartJSData(genderSQL, 'gender')
+    
+    #repeat customers - done
+    customerSQL = order.values ('customer').annotate(total=Count('customer')).order_by('total')
+    customer = chartJSData(customerSQL, 'customer', chartType="line")
+       
+	
+	#Customer counts
+    idSQL = data.values ('id').annotate(total=Count('id'))
+    id = chartJSData(idSQL, 'id', chartType="line")
+	
+	# Age Counts
+    dob_data = chartJSData_bracket_dt_yr(data, 'dob', start_date=date(1930,1,1), increment=10, bracketCount=6)
+   
+    #customer counter over time - temp 
+    orderSQl = chartJSData_bracket_dt_yr(order, 'createDate', start_date=date(2000,1,1), increment=1, bracketCount=10)
+    #poo = chartJSData(orderSQL, 'createDate', chartType="line")
+ 
+    # holding dict
+    js_dict = {
+            'occupation': occupation,
+            'gender': gender,
+			'id':id,
+            'dob': dob_data,
+            'customer':customer,
+            'createDate':orderSQl
+    }
+    # Serialize dict into json to use in HTML file
+    js_data = json.dumps(js_dict)
+	
+    return render(request, 'visualise_customer_data.html', {'js_data': js_data})
+	
+	
 
 def rental_data(request):
     return render(request, 'visualise_rental_data.html')
