@@ -1,6 +1,9 @@
 import datetime
 
 # Kelly's 22 colors of maximum contrast
+colours =  ['#F2F3F4', '#222222', '#F3C300', '#875692', '#F38400', '#A1CAF1',
+            '#BE0032', '#C2B280', '#848482', '#008856', '#E68FAC', '#0067A5',
+
 colours =  ['#919192', '#222222', '#F3C300', '#875692', '#F38400', '#A1CAF1',
             '#BE0032', '#C2B280', '#dcdcdb', '#008856', '#E68FAC', '#0067A5',
             '#F99379', '#604E97', '#F6A600', '#B3446C', '#DCD300', '#882D17',
@@ -95,6 +98,7 @@ def chartJSData_bracket_dt_yr(dataSource, columnName, start_date, increment, bra
     Takes a datasource, columnName, and bracket values
     Will only work on simple count queries
     
+
     dataSource   - django thing - must be data source of format Customer.objects.all()
     columnName   - string   - the column to filter over
     start        - int      - start date
@@ -115,11 +119,13 @@ def chartJSData_bracket_dt_yr(dataSource, columnName, start_date, increment, bra
         print('ds.filter(' + columnName + '__range=(rg[i][0], rg[i][1])).count()', {'i':i, 'ds':dataSource, 'poo':ranges})
         count = eval('ds.filter(' + columnName + '__range=(rg[i][0], rg[i][1])).count()', {'i':i, 'ds':dataSource, 'rg':ranges})
         key = str(datetime.date.today().year - ranges[i][0].year) + '-' + str(datetime.date.today().year - ranges[i][1].year)
+
         dict[key] = count
     
     # delete empty entries
     for i in range(0, bracketCount):
         key = str(datetime.date.today().year - ranges[i][0].year) + '-' + str(datetime.date.today().year - ranges[i][1].year)
+
         if (dict[key] == 0):
             del dict[key]
 

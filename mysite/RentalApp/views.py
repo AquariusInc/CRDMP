@@ -7,12 +7,16 @@ import json
 import datetime
 from datetime import date
 import re
+
+from django.views.decorators.csrf import csrf_exempt
+from RentalApp.helperfuncs.helperfuncs import chartJSData, chartJSData_bracket
 from RentalApp.helperfuncs.helperfuncs import chartJSData, chartJSData_bracket, chartJSData_bracket_dt_yr
 from datetime import datetime
 import re
 from RentalApp.helperfuncs.helperfuncs import chartJSData, chartJSData_bracket
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+
 
 # Create your views here.
 # from django.core import serializers
@@ -40,11 +44,13 @@ def customers_table(request):
         elif field == "occupation":
             data = Customer.objects.filter(occupation__contains=query)
 
+
         paginator = Paginator(data, 25)  # Show 25 contacts per page
         page = request.GET.get('page')
         customers = paginator.get_page(page)
 
         return render(request, 'customers_table.html', {'data': customers, 'query': query, 'field': field})
+
 
     data = Customer.objects.all()
 
@@ -174,7 +180,63 @@ def customer_data(request):
 	
 
 def rental_data(request):
-    return render(request, 'visualise_rental_data.html')
+
+    data = Customer.objects.all()
+    order = Order.objects.all()
+    store = Store.objects.all()
+    car = Car.objects.all()
+
+    returnStoreSQL = order.values('returnStore').annotate(total=Count('returnStore')).order_by('-total')
+    returnStore = chartJSData(returnStoreSQL, 'pickupStore__name',maxLabels = 15)
+
+    pickupStoreSQL = order.values('pickupStore').annotate(total=Count('pickupStore')).order_by('-total')
+    pickupStore = chartJSData(pickupStoreSQL, 'pickupStore__name', maxLabels = 15)
+
+    bodyTypeSQL = car.values('bodyType').annotate(total=Count('bodyType')).order_by('-total')
+    bodyType = chartJSData(bodyTypeSQL, 'bodyType', maxLabels=15)
+
+    # totalCountSQL = order.values('id').annotate(total=Count('id')).order_by('-total')
+    # totalCount = chartJSData(totalCountSQL, 'pickupStore__name', maxLabels=15)
+
+    js_dict = {
+        'returnStore': returnStore,
+        'pickupStore': pickupStore,
+        'bodyType' : bodyType
+    }
+    js_data = json.dumps(js_dict)
+    return render(request, 'visualise_rental_data.html', {'js_data': js_data})
+    # #occupation = chartJSData(occupationSQL, 'occupation')
+    # pie3d = FusionCharts("pie3d","ex2", "100%", "400", "chart-1", "json",
+    #     # The data is passed as a string in the `dataSource` as parameter.
+    # """{
+    #     "chart": {
+    #         "caption": "Rental Returns",
+    #
+    #         "showValues":"1",
+    #         "showPercentInTooltip" : "0",
+    #         "numberPrefix" : "%",
+    #         "enableMultiSlicing":"1",
+    #         "theme": "fusion"
+    #     },
+    #     "data": [{
+    #         "label": "Equity",
+    #         "value": "300000"
+    #     }, {
+    #         "label": "Debt",
+    #         "value": "230000"
+    #     }, {
+    #         "label": "Bullion",
+    #         "value": "180000"
+    #     }, {
+    #         "label": "Real-estate",
+    #         "value": "270000"
+    #     }, {
+    #         "label": "Insurance",
+    #         "value": "20000"
+    #     }]
+    # }""")
+    # return render(request, 'visualise_rental_data.html', {'output': pie3d.render(), 'chartTitle': 'Returns Data Visualization'})
+
 
 
 def vehicle_data(request):

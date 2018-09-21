@@ -2,6 +2,33 @@
 {% load static %}
 
 {% block title %}Vehicle Visualisation{% endblock %}
+{% block content %}
+{% load static %} 
+   	<script type="text/javascript" src="{% static "fusioncharts/js/fusioncharts.js" %}"></script>
+   	<script type="text/javascript" src="{% static "fusioncharts/js/themes/fusioncharts.theme.fusion.js" %}"></script>
+<style>
+body {font-family: Arial;}
+
+.tab {
+	overflow: hidden;
+	border: 1px solid #ccc;
+	background-color: #f1f1f1;
+}
+
+.tab button {
+	background-color: inherit;
+	float: left;
+	border: none;
+	outline: none;
+	cursor: pointer;
+	padding: 14px 16px;
+	transition: 0.3s;
+	font-size: 17px;
+}
+
+.tab button:hover {
+	background-color: #ddd;
+}
 
 {% block extracss %}<link rel="stylesheet" href="{% static 'css/visualise-vehicle.css' %}">{% endblock %}
 
