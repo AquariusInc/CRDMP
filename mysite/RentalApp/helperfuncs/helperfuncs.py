@@ -3,6 +3,9 @@ import datetime
 # Kelly's 22 colors of maximum contrast
 colours =  ['#F2F3F4', '#222222', '#F3C300', '#875692', '#F38400', '#A1CAF1',
             '#BE0032', '#C2B280', '#848482', '#008856', '#E68FAC', '#0067A5',
+
+colours =  ['#919192', '#222222', '#F3C300', '#875692', '#F38400', '#A1CAF1',
+            '#BE0032', '#C2B280', '#dcdcdb', '#008856', '#E68FAC', '#0067A5',
             '#F99379', '#604E97', '#F6A600', '#B3446C', '#DCD300', '#882D17',
             '#8DB600', '#654522', '#E25822', '#2B3D26']
 
@@ -95,11 +98,12 @@ def chartJSData_bracket_dt_yr(dataSource, columnName, start_date, increment, bra
     Takes a datasource, columnName, and bracket values
     Will only work on simple count queries
     
-    dataSource   - django thing - must be data source of format Car.objects.all()
+
+    dataSource   - django thing - must be data source of format Customer.objects.all()
     columnName   - string   - the column to filter over
     start        - int      - start date
     increment    - int      - day increment
-    end date - int      - max end date
+    end date     - int      - max end date
     """
     ranges = []
     
@@ -114,12 +118,14 @@ def chartJSData_bracket_dt_yr(dataSource, columnName, start_date, increment, bra
     for i in range(0, bracketCount):
         print('ds.filter(' + columnName + '__range=(rg[i][0], rg[i][1])).count()', {'i':i, 'ds':dataSource, 'poo':ranges})
         count = eval('ds.filter(' + columnName + '__range=(rg[i][0], rg[i][1])).count()', {'i':i, 'ds':dataSource, 'rg':ranges})
-        key = str(ranges[i][0]) + '-' + str(ranges[i][1])
+        key = str(datetime.date.today().year - ranges[i][0].year) + '-' + str(datetime.date.today().year - ranges[i][1].year)
+
         dict[key] = count
     
     # delete empty entries
     for i in range(0, bracketCount):
-        key = str(ranges[i][0]) + '-' + str(ranges[i][1])
+        key = str(datetime.date.today().year - ranges[i][0].year) + '-' + str(datetime.date.today().year - ranges[i][1].year)
+
         if (dict[key] == 0):
             del dict[key]
 

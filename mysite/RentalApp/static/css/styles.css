@@ -9,3 +9,14 @@
 #search_button{
     margin-top: 15px;
 }
+
+.current {
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+.pagination {
+    margin-top: 30px;
+    margin-left: auto;
+    margin-right: auto;
+}

@@ -4,57 +4,75 @@
 {% block content %}
 <div class="container">
     <h3>Customer Data</h3>
-        <form action="customers" method="post">
-            <div class="row">
-                <div class="input-field col l2 m3 s4">
-                    <select name="search_field">
-                        <option value="" disabled selected>Search Field</option>
-                        <option value="id">ID</option>
-                        <option value="name">Name</option>
-                        <option value="phone">Phone</option>
-                        <option value="address">Address</option>
-                        <option value="occupation">Occupation</option>
-                        <option value="gender">Gender</option>
-                    </select>
-                    <label>Field to Search</label>
-                </div>
-                <div class="input-field col l9 m7 s5">
-                    <input id="search_box" name="search_box" type="text" class="">
-                    <label for="search_box">Search</label>
-                </div>
-                <button id="search_button" class="btn waves-effect waves-light" type="submit" name="action">
-                    <i class="material-icons">search</i>
-                </button>
+    <form action="customers" method="get">
+        <div class="row">
+            <div class="input-field col l2 m3 s4">
+                <select name="search_field">
+                    <option value="" disabled {% if field is not defined %} selected {% endif %}>Search Field</option>
+                    <option value="id" {% if field == 'id' %}selected{% endif %}>ID</option>
+                    <option value="name" {% if field == 'name' %}selected{% endif %}>Name</option>
+                    <option value="phone" {% if field == 'phone' %}selected{% endif %}>Phone</option>
+                    <option value="address" {% if field == 'address' %}selected{% endif %}>Address</option>
+                    <option value="occupation" {% if field == 'occupation' %}selected{% endif %}>Occupation</option>
+                    <option value="gender" {% if field == 'gender' %}selected{% endif %}>Gender</option>
+                </select>
+                <label>Field to Search</label>
             </div>
-        </form>
+            <div class="input-field col l9 m7 s5">
+                <input id="search_box" name="search_box" type="text" class="" {% if query is not defined %}
+                       value="{{ query }}" {% endif %}>
+                <label for="search_box">Search</label>
+            </div>
+            <button id="search_button" class="btn waves-effect waves-light" type="submit" name="action">
+                <i class="material-icons">search</i>
+            </button>
+        </div>
+    </form>
 
-        <table id="table-id" class="striped">
-            <thead>
-            <tr>
-                <th data-sort-default>ID</th>
-                <th>Name</th>
-                <th>Phone</th>
-                <th>Address</th>
-                <th>DOB</th>
-                <th>Occupation</th>
-                <th>Gender</th>
-            </tr>
-            </thead>
+    <table id="table-id" class="striped">
+        <thead>
+        <tr>
+            <th data-sort-default>ID</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th>DOB</th>
+            <th>Occupation</th>
+            <th>Gender</th>
+        </tr>
+        </thead>
 
-            <tbody>
-            {% for item in data %}
-            <tr>
-                <td>{{ item.id }}</td>
-                <td>{{ item.name }}</td>
-                <td>{{ item.phone }}</td>
-                <td>{{ item.address }}</td>
-                <td>{{ item.dob }}</td>
-                <td>{{ item.occupation }}</td>
-                <td>{{ item.gender }}</td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+        <tbody>
+        {% for item in data %}
+        <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.phone }}</td>
+            <td>{{ item.address }}</td>
+            <td>{{ item.dob }}</td>
+            <td>{{ item.occupation }}</td>
+            <td>{{ item.gender }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div class="pagination center-align">
+    <span class="step-links">
+        {% if data.has_previous %}
+            <a class="waves-effect waves-light btn" href="?page=1">&laquo; first</a>
+            <a class="waves-effect waves-light btn" href="?page={{ data.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ data.number }} of {{ data.paginator.num_pages }}
+        </span>
+
+        {% if data.has_next %}
+            <a class="waves-effect waves-light btn" href="?page={{ data.next_page_number }}">next</a>
+            <a class="waves-effect waves-light btn" href="?page={{ data.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+    </div>
 </div>
 {% endblock %}
 

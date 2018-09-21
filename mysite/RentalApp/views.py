@@ -5,21 +5,31 @@ from .models import Store, Customer, Order, Car
 from django.db.models import Count
 import json
 import datetime
+from datetime import date
 import re
+
 from django.views.decorators.csrf import csrf_exempt
 from RentalApp.helperfuncs.helperfuncs import chartJSData, chartJSData_bracket
+from RentalApp.helperfuncs.helperfuncs import chartJSData, chartJSData_bracket, chartJSData_bracket_dt_yr
+from datetime import datetime
+import re
+from RentalApp.helperfuncs.helperfuncs import chartJSData, chartJSData_bracket
+from django.views.decorators.csrf import csrf_exempt
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+
 
 # Create your views here.
-
+# from django.core import serializers
 
 def home(request):
     return render(request, 'home.html')
 
+
 @csrf_exempt
 def customers_table(request):
-    if request.method == "POST":
-        field = request.POST.get('search_field')
-        query = request.POST.get('search_box')
+    if request.GET.get('search_field'):
+        field = request.GET['search_field']
+        query = request.GET['search_box']
 
         if field == "name":
             data = Customer.objects.filter(name__contains=query)
@@ -34,20 +44,140 @@ def customers_table(request):
         elif field == "occupation":
             data = Customer.objects.filter(occupation__contains=query)
 
-        return render(request, 'customers_table.html', {'data': data})
+
+        paginator = Paginator(data, 25)  # Show 25 contacts per page
+        page = request.GET.get('page')
+        customers = paginator.get_page(page)
+
+        return render(request, 'customers_table.html', {'data': customers, 'query': query, 'field': field})
+
 
     data = Customer.objects.all()
-    return render(request, 'customers_table.html', {'data': data})
+
+    paginator = Paginator(data, 25)  # Show 25 contacts per page
+    page = request.GET.get('page')
+    customers = paginator.get_page(page)
+
+    return render(request, 'customers_table.html', {'data': customers})
 
 
+@csrf_exempt
 def rental_table(request):
-    # data = Order.objects.all()
-    return render(request, 'rental_table.html') # , {'data': data}
+    if request.GET.get('start_date') and request.GET.get('search_field'):
+        start_date = request.GET['start_date']
+        end_date = request.GET['end_date']
+
+        start_date_datetime = datetime.strptime(start_date, '%b %d, %Y')
+        end_date_datetime = datetime.strptime(end_date, '%b %d, %Y')
+
+        field = request.GET.get('search_field')
+        query = request.GET.get('search_box')
+
+        if field == "id":
+            data = Order.objects.filter(id__contains=query, createDate__gte=start_date_datetime, createDate__lte=end_date_datetime)
+        elif field == "car_id":
+            data = Order.objects.filter(car__id__contains=query, createDate__gte=start_date_datetime, createDate__lte=end_date_datetime)
+        elif field == "customer_id":
+            data = Order.objects.filter(customer__id__contains=query, createDate__gte=start_date_datetime, createDate__lte=end_date_datetime)
+        elif field == "pickup_id":
+            data = Order.objects.filter(pickupStore__id__contains=query, createDate__gte=start_date_datetime, createDate__lte=end_date_datetime)
+        elif field == "return_id":
+            data = Order.objects.filter(returnStore__id__contains=query, createDate__gte=start_date_datetime, createDate__lte=end_date_datetime)
+
+        paginator = Paginator(data, 25)  # Show 25 contacts per page
+        page = request.GET.get('page')
+        orders = paginator.get_page(page)
+
+        return render(request, 'rental_table.html', {'orders': orders, 'query': query, 'field': field})
+
+    if request.GET.get('start_date'):
+        start_date = request.GET['start_date']
+        end_date = request.GET['end_date']
+
+        start_date_datetime = datetime.strptime(start_date, '%b %d, %Y')
+        end_date_datetime = datetime.strptime(end_date, '%b %d, %Y')
+
+        data = Order.objects.filter(createDate__gte=start_date_datetime, createDate__lte=end_date_datetime)
+
+        paginator = Paginator(data, 25)  # Show 25 contacts per page
+        page = request.GET.get('page')
+        orders = paginator.get_page(page)
+
+        return render(request, 'rental_table.html', {'orders': orders})
+
+    if request.GET.get('search_field'):
+        field = request.GET.get('search_field')
+        query = request.GET.get('search_box')
+
+        if field == "id":
+            data = Order.objects.filter(id__contains=query)
+        elif field == "car_id":
+            data = Order.objects.filter(car__id__contains=query)
+        elif field == "customer_id":
+            data = Order.objects.filter(customer__id__contains=query)
+        elif field == "pickup_id":
+            data = Order.objects.filter(pickupStore__id__contains=query)
+        elif field == "return_id":
+            data = Order.objects.filter(returnStore__id__contains=query)
+
+        paginator = Paginator(data, 25)  # Show 25 contacts per page
+        page = request.GET.get('page')
+        orders = paginator.get_page(page)
+
+        return render(request, 'rental_table.html', {'orders': orders, 'query': query, 'field': field})
+
+    data = Order.objects.all()
+
+    paginator = Paginator(data, 25)  # Show 25 contacts per page
+    page = request.GET.get('page')
+    orders = paginator.get_page(page)
+
+    return render(request, 'rental_table.html', {'orders': orders})
 
 
 def customer_data(request):
-    return render(request, 'visualise_customer_data.html')
-
+    data = Customer.objects.all()
+    order = Order.objects.all()
+	
+	# Occupation counts - done
+    occupationSQL = data.values('occupation').annotate(total=Count('occupation')).order_by('-total')
+    occupation = chartJSData(occupationSQL, 'occupation')
+	
+	# Gender counts - done
+    genderSQL = data.values ('gender').annotate(total=Count('gender')).order_by('-total')
+    gender = chartJSData(genderSQL, 'gender')
+    
+    #repeat customers - done
+    customerSQL = order.values ('customer').annotate(total=Count('customer')).order_by('total')
+    customer = chartJSData(customerSQL, 'customer', chartType="line")
+       
+	
+	#Customer counts
+    idSQL = data.values ('id').annotate(total=Count('id'))
+    id = chartJSData(idSQL, 'id', chartType="line")
+	
+	# Age Counts
+    dob_data = chartJSData_bracket_dt_yr(data, 'dob', start_date=date(1930,1,1), increment=10, bracketCount=6)
+   
+    #customer counter over time - temp 
+    orderSQl = chartJSData_bracket_dt_yr(order, 'createDate', start_date=date(2000,1,1), increment=1, bracketCount=10)
+    #poo = chartJSData(orderSQL, 'createDate', chartType="line")
+ 
+    # holding dict
+    js_dict = {
+            'occupation': occupation,
+            'gender': gender,
+			'id':id,
+            'dob': dob_data,
+            'customer':customer,
+            'createDate':orderSQl
+    }
+    # Serialize dict into json to use in HTML file
+    js_data = json.dumps(js_dict)
+	
+    return render(request, 'visualise_customer_data.html', {'js_data': js_data})
+	
+	
 
 def rental_data(request):
 
@@ -111,147 +241,46 @@ def rental_data(request):
 
 def vehicle_data(request):
     data = Car.objects.all()
-		
-    colours =  ['#ffbebe', '#dcffbe', '#bec7ff', '#ff4141', '#8dff41', '#4180ff',
-				'#8e3924', '#248e5c', '#79248e', '#24558e', '#808e24', '#b341ff',
-				'#41ffff', '#ffcc41', '#f6beff', '#beffe9', '#ffe9be', '#dfa152'
-                ]
 
+    # Bodytypes counts
     bodytypesSQL = data.values('bodyType').annotate(total=Count('bodyType')).order_by('-total')
-    bodyTypes = {
-        'type': "pie",
-        'data': {
-            'labels': list(bodytypesSQL.values_list("bodyType", flat=True)),
-            'datasets': [{
-                'label': "Body Type Count",
-                'data': list(bodytypesSQL.values_list("total", flat=True)),
-                'backgroundColor': colours
-            }]
-        },
-    }
+    bodyTypes = chartJSData(bodytypesSQL, 'bodyType')
 
+    # Make counts
     makeSQL = data.values('make').annotate(total=Count('make')).order_by('-total')
-    make = {
-        'type': "pie",
-        'data': {
-            'labels': list(makeSQL.values_list("make", flat=True)),
-            'datasets': [{
-                'label': "Make Count",
-                'data': list(makeSQL.values_list("total", flat=True)),
-                'backgroundColor': colours
-            }]
-        }
-    }
-	
+    make = chartJSData(makeSQL, 'make')
+
+    # Model counts
     modelSQL = data.values('model').annotate(total=Count('model')).order_by('-total')
-    model = {
-        'type': "pie",
-        'data': {
-            'labels': list(modelSQL.values_list("model", flat=True))[:18],
-            'datasets': [{
-                'label': "Model Count",
-                'data': list(modelSQL.values_list("total", flat=True))[:18],
-                'backgroundColor': colours
-            }]
-        }
-    }
+    model = chartJSData(modelSQL, 'model', maxLabels=20)
 
-    yearSQL = data.values('year').annotate(total=Count('year')).order_by('-total')
-    bracketYearSQL = {'1960-1969':0, '1970-1979':0, '1980-1989':0, '1990-1999':0, '2000-2009':0, '2010-2019':0}
-    yearKeys = list(yearSQL.values_list("year", flat=True))
-    yearVals = list(yearSQL.values_list("total", flat=True))
-    for i in range(0, len(yearKeys)):
-        if 1960 <= int(yearKeys[i]) <= 1969:
-            bracketYearSQL['1960-1969'] += yearVals[i]
-        if 1970 <= int(yearKeys[i]) <= 1979:
-            bracketYearSQL['1970-1979'] += yearVals[i]
-        if 1980 <= int(yearKeys[i]) <= 1989:
-            bracketYearSQL['1980-1989'] += yearVals[i]
-        if 1990 <= int(yearKeys[i]) <= 1999:
-            bracketYearSQL['1990-1999'] += yearVals[i]
-        if 2000 <= int(yearKeys[i]) <= 2009:
-            bracketYearSQL['2000-2009'] += yearVals[i]
-        if 2010 <= int(yearKeys[i]) <= 2019:
-            bracketYearSQL['2010-2019'] += yearVals[i]
-    bracketYearSQL = dict(sorted(bracketYearSQL.items(), key=lambda kv: kv[1], reverse=True))
-    year = {
-        'type': "pie",
-        'data': {
-            'labels': list(bracketYearSQL.keys()),
-            'datasets': [{
-                'label': "Year Count",
-                'data': list(bracketYearSQL.values()),
-                'backgroundColor': colours
-            }]
-        }
-    }
-	
-    priceSQL = data.values('priceNew').annotate(total=Count('priceNew')).order_by('-total')
-    # bracketPriceSQL =
-    # yearKeys = list(yearSQL.values_list("priceNew", flat=True))
-    # yearVals = list(yearSQL.values_list("total", flat=True))
-    # for i in range(0, len(yearKeys)):
-    #     if 1960 <= int(yearKeys[i]) <= 1969:
-    #         bracketYearSQL['1960-1969'] += yearVals[i]
-    #     if 1970 <= int(yearKeys[i]) <= 1979:
-    #         bracketYearSQL['1970-1979'] += yearVals[i]
-    #     if 1980 <= int(yearKeys[i]) <= 1989:
-    #         bracketYearSQL['1980-1989'] += yearVals[i]
-    #     if 1990 <= int(yearKeys[i]) <= 1999:
-    #         bracketYearSQL['1990-1999'] += yearVals[i]
-    #     if 2000 <= int(yearKeys[i]) <= 2009:
-    #         bracketYearSQL['2000-2009'] += yearVals[i]
-    #     if 2010 <= int(yearKeys[i]) <= 2019:
-    #         bracketYearSQL['2010-2019'] += yearVals[i]
-    # bracketPriceSQL = dict(sorted(bracketPriceSQL.items(), key=lambda kv: kv[1], reverse=True))
-    # price = {
-    #     'type': "pie",
-    #     'data': {
-    #         'labels': list(priceSQL.keys()),
-    #         'datasets': [{
-    #             'label': "Price Count",
-    #             'data': list(priceSQL.values()),
-    #             'backgroundColor': colours
-    #         }]
-    #     }
-    # }
-	
+    # Year Bracket counts
+    year = chartJSData_bracket(data, 'year', start=1950, increment=10, bracketCount=10)
+
+    # Price Bracket counts
+    price = chartJSData_bracket(data, 'priceNew', increment=10000, bracketCount=25)
+
+    # Seating counts
     seatingSQL = data.values('seatingCapacity').annotate(total=Count('seatingCapacity')).order_by('-total')
-    seating = {
-        'type': "pie",
-        'data': {
-            'labels': list(seatingSQL.values_list("seatingCapacity")),
-            'datasets': [{
-                'label': "Seating Count",
-                'data': list(seatingSQL.values_list("total", flat=True)),
-                'backgroundColor': colours
-            }]
-        }
-    }
-	
-    driveTrainSQL = data.values('standardTransmission').annotate(total=Count('standardTransmission')).order_by('-total')
-    driveTrain = {
-        'type': "pie",
-        'data': {
-            'labels': list(driveTrainSQL.values_list("standardTransmission", flat=True)),
-            'datasets': [{
-                'label': "driveTrain Count",
-                'data': list(driveTrainSQL.values_list("total", flat=True)),
-                'backgroundColor': colours
-            }]
-        }
-    }
+    seating = chartJSData(seatingSQL, 'seatingCapacity')
 
+    # DriveTrain counts
+    driveTrainSQL = data.values('standardTransmission').annotate(total=Count('standardTransmission')).order_by('-total')
+    driveTrain = chartJSData(driveTrainSQL, 'standardTransmission', maxLabels=20)
+
+    # holding dict
     js_dict = {
-            'bodyTypes': bodyTypes,
-            'make': make,
-			'model': model,
-			'year': year,
-			'seating': seating,
-			'driveTrain': driveTrain
+        'bodyTypes': bodyTypes,
+        'make': make,
+        'model': model,
+        'year': year,
+        'price': price,
+        'seating': seating,
+        'driveTrain': driveTrain
     }
+    # Serialize dict into json to use in HTML file
     js_data = json.dumps(js_dict)
-	
+
     return render(request, 'visualise_vehicle_data.html', {'js_data': js_data})
 
 
@@ -280,7 +309,6 @@ def read_store_data(request):
             # new['Store_Phone'] = row[3].strip()
             # new['Store_City'] = row[4].strip()
             # new['Store_State_Name'] = row[5].strip()
-
 
             # # orders
             #
@@ -406,11 +434,8 @@ def read_store_data(request):
             #
             #     car.save()
 
-
-
-
-
     return HttpResponse("OK")
+
 
 def read_central_db(request):
     with open('/Users/aidan/Desktop/data_in_central_db.txt', newline='') as csvfile:
@@ -437,7 +462,6 @@ def read_central_db(request):
             # new['Store_Phone'] = row[3].strip()
             # new['Store_City'] = row[4].strip()
             # new['Store_State_Name'] = row[5].strip()
-
 
             # # orders
             #
@@ -512,7 +536,6 @@ def read_central_db(request):
 
             print(new)
 
-
             order = Order.objects.get(id=new['Order_ID'])
 
             count = Order.objects.filter(id=new['Order_ID']).exclude(returnStore__isnull=True).count()
@@ -520,70 +543,66 @@ def read_central_db(request):
             if count < 1:
                 order.returnStore = Store.objects.get(id=new['Return_Store'])
                 order.returnDate = datetime.date(int(new['Return_Date'][0:4]),
-                                                         int(new['Return_Date'][4:6]),
-                                                         int(new['Return_Date'][6:8]))
+                                                 int(new['Return_Date'][4:6]),
+                                                 int(new['Return_Date'][6:8]))
                 order.save()
 
             # if not Store.objects.filter(id=new['Store_ID']):
-                # store = Store()
-                # store.id = new['Store_ID']
-                # store.name = new['Store_Name']
-                # store.address = new['Store_Address']
-                # store.phone = new['Store_Phone']
-                # store.state = new['Store_State_Name']
-                # store.city = new['Store_City']
-                #
-                # store.save()
-                # print('new store')
+            # store = Store()
+            # store.id = new['Store_ID']
+            # store.name = new['Store_Name']
+            # store.address = new['Store_Address']
+            # store.phone = new['Store_Phone']
+            # store.state = new['Store_State_Name']
+            # store.city = new['Store_City']
+            #
+            # store.save()
+            # print('new store')
 
             # if not Customer.objects.filter(id=new['Customer_ID']):
-                # customer = Customer()
-                # customer.id = new['Customer_ID']
-                #
-                # print(customer.id)
-                #
-                # customer.name = new['Customer_Name']
-                # customer.phone = new['Customer_Phone']
-                # customer.address = new['Customer_Addresss']
-                # customer.occupation = new['Customer_Occupation']
-                # customer.gender = new['Customer_Gender']
-                #
-                # birthday = new['Customer_Brithday'].split('/')
-                #
-                # print(birthday)
-                #
-                # customer.dob = datetime.datetime(1900+ int(birthday[2]), int(birthday[1]), int(birthday[0]))
-                #
-                #
-                # customer.save()
-                # print('new customer')
+            # customer = Customer()
+            # customer.id = new['Customer_ID']
+            #
+            # print(customer.id)
+            #
+            # customer.name = new['Customer_Name']
+            # customer.phone = new['Customer_Phone']
+            # customer.address = new['Customer_Addresss']
+            # customer.occupation = new['Customer_Occupation']
+            # customer.gender = new['Customer_Gender']
+            #
+            # birthday = new['Customer_Brithday'].split('/')
+            #
+            # print(birthday)
+            #
+            # customer.dob = datetime.datetime(1900+ int(birthday[2]), int(birthday[1]), int(birthday[0]))
+            #
+            #
+            # customer.save()
+            # print('new customer')
 
             # if not Car.objects.filter(id=new['Car_ID']):
-                # car = Car()
-                # car.id = new['Car_ID']
-                #
-                # print(car.id)
-                #
-                # car.make = new['Car_MakeName']
-                # car.model = new['Car_Model']
-                # car.series = new['Car_Series']
-                # car.priceNew = new['Car_PriceNew']
-                # car.engineSize = new['Car_EngineSize']
-                # car.fuelSystem = new['Car_FuelSystem']
-                # car.power = new['Car_Power']
-                # car.seatingCapacity = new['Car_SeatingCapacity']
-                # car.standardTransmission = new['Car_StandardTransmission']
-                # car.bodyType = new['Car_BodyType']
-                # car.drive = new['Car_Drive']
-                # car.wheelBase = new['Car_Wheelbase']
-                # car.tankCapacity = new['Car_TankCapacity']
-                # car.year = new['Car_SeriesYear']
-                #
-                # car.save()
-                # print('new car')
-
-
-
-
+            # car = Car()
+            # car.id = new['Car_ID']
+            #
+            # print(car.id)
+            #
+            # car.make = new['Car_MakeName']
+            # car.model = new['Car_Model']
+            # car.series = new['Car_Series']
+            # car.priceNew = new['Car_PriceNew']
+            # car.engineSize = new['Car_EngineSize']
+            # car.fuelSystem = new['Car_FuelSystem']
+            # car.power = new['Car_Power']
+            # car.seatingCapacity = new['Car_SeatingCapacity']
+            # car.standardTransmission = new['Car_StandardTransmission']
+            # car.bodyType = new['Car_BodyType']
+            # car.drive = new['Car_Drive']
+            # car.wheelBase = new['Car_Wheelbase']
+            # car.tankCapacity = new['Car_TankCapacity']
+            # car.year = new['Car_SeriesYear']
+            #
+            # car.save()
+            # print('new car')
 
     return HttpResponse("OK")
