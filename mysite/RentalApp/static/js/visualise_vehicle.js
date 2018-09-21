@@ -8,6 +8,10 @@ var charts = {};
 			legendDisplay = true;
 			gridLinesDisplay = false;
 		}
+        var colours = chartObj.data.datasets[0].backgroundColor;
+        if (chartType == 'line') {
+            colours = '#8DB600'
+        }
 
 		var chart = new Chart(ctx, {
 			type: chartType,
@@ -16,7 +20,7 @@ var charts = {};
 				datasets: [{
 					label: chartObj.data.datasets[0].label,
 					data: chartObj.data.datasets[0].data,
-					backgroundColor: chartObj.data.datasets[0].backgroundColor
+					backgroundColor: colours
 				}]
 			},
 			options: {

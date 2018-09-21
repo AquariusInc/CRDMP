@@ -8,21 +8,125 @@ import datetime
 from datetime import date
 import re
 from RentalApp.helperfuncs.helperfuncs import chartJSData, chartJSData_bracket, chartJSData_bracket_dt_yr
+from datetime import datetime
+import re
+from RentalApp.helperfuncs.helperfuncs import chartJSData, chartJSData_bracket
+from django.views.decorators.csrf import csrf_exempt
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+
 # Create your views here.
 # from django.core import serializers
 
 def home(request):
-    return render(request, 'home.html') 
+    return render(request, 'home.html')
 
 
+@csrf_exempt
 def customers_table(request):
+    if request.GET.get('search_field'):
+        field = request.GET['search_field']
+        query = request.GET['search_box']
+
+        if field == "name":
+            data = Customer.objects.filter(name__contains=query)
+        elif field == "id":
+            data = Customer.objects.filter(id__contains=query)
+        elif field == "address":
+            data = Customer.objects.filter(address__contains=query)
+        elif field == "phone":
+            data = Customer.objects.filter(phone__contains=query)
+        elif field == "gender":
+            data = Customer.objects.filter(gender__contains=query)
+        elif field == "occupation":
+            data = Customer.objects.filter(occupation__contains=query)
+
+        paginator = Paginator(data, 25)  # Show 25 contacts per page
+        page = request.GET.get('page')
+        customers = paginator.get_page(page)
+
+        return render(request, 'customers_table.html', {'data': customers, 'query': query, 'field': field})
+
     data = Customer.objects.all()
-    return render(request, 'customers_table.html', {'data': data})
+
+    paginator = Paginator(data, 25)  # Show 25 contacts per page
+    page = request.GET.get('page')
+    customers = paginator.get_page(page)
+
+    return render(request, 'customers_table.html', {'data': customers})
 
 
+@csrf_exempt
 def rental_table(request):
-    # data = Order.objects.all()
-    return render(request, 'rental_table.html') # , {'data': data}
+    if request.GET.get('start_date') and request.GET.get('search_field'):
+        start_date = request.GET['start_date']
+        end_date = request.GET['end_date']
+
+        start_date_datetime = datetime.strptime(start_date, '%b %d, %Y')
+        end_date_datetime = datetime.strptime(end_date, '%b %d, %Y')
+
+        field = request.GET.get('search_field')
+        query = request.GET.get('search_box')
+
+        if field == "id":
+            data = Order.objects.filter(id__contains=query, createDate__gte=start_date_datetime, createDate__lte=end_date_datetime)
+        elif field == "car_id":
+            data = Order.objects.filter(car__id__contains=query, createDate__gte=start_date_datetime, createDate__lte=end_date_datetime)
+        elif field == "customer_id":
+            data = Order.objects.filter(customer__id__contains=query, createDate__gte=start_date_datetime, createDate__lte=end_date_datetime)
+        elif field == "pickup_id":
+            data = Order.objects.filter(pickupStore__id__contains=query, createDate__gte=start_date_datetime, createDate__lte=end_date_datetime)
+        elif field == "return_id":
+            data = Order.objects.filter(returnStore__id__contains=query, createDate__gte=start_date_datetime, createDate__lte=end_date_datetime)
+
+        paginator = Paginator(data, 25)  # Show 25 contacts per page
+        page = request.GET.get('page')
+        orders = paginator.get_page(page)
+
+        return render(request, 'rental_table.html', {'orders': orders, 'query': query, 'field': field})
+
+    if request.GET.get('start_date'):
+        start_date = request.GET['start_date']
+        end_date = request.GET['end_date']
+
+        start_date_datetime = datetime.strptime(start_date, '%b %d, %Y')
+        end_date_datetime = datetime.strptime(end_date, '%b %d, %Y')
+
+        data = Order.objects.filter(createDate__gte=start_date_datetime, createDate__lte=end_date_datetime)
+
+        paginator = Paginator(data, 25)  # Show 25 contacts per page
+        page = request.GET.get('page')
+        orders = paginator.get_page(page)
+
+        return render(request, 'rental_table.html', {'orders': orders})
+
+    if request.GET.get('search_field'):
+        field = request.GET.get('search_field')
+        query = request.GET.get('search_box')
+
+        if field == "id":
+            data = Order.objects.filter(id__contains=query)
+        elif field == "car_id":
+            data = Order.objects.filter(car__id__contains=query)
+        elif field == "customer_id":
+            data = Order.objects.filter(customer__id__contains=query)
+        elif field == "pickup_id":
+            data = Order.objects.filter(pickupStore__id__contains=query)
+        elif field == "return_id":
+            data = Order.objects.filter(returnStore__id__contains=query)
+
+        paginator = Paginator(data, 25)  # Show 25 contacts per page
+        page = request.GET.get('page')
+        orders = paginator.get_page(page)
+
+        return render(request, 'rental_table.html', {'orders': orders, 'query': query, 'field': field})
+
+    data = Order.objects.all()
+
+    paginator = Paginator(data, 25)  # Show 25 contacts per page
+    page = request.GET.get('page')
+    orders = paginator.get_page(page)
+
+    return render(request, 'rental_table.html', {'orders': orders})
 
 
 def customer_data(request):
@@ -83,39 +187,38 @@ def vehicle_data(request):
     # Make counts
     makeSQL = data.values('make').annotate(total=Count('make')).order_by('-total')
     make = chartJSData(makeSQL, 'make')
-	
+
     # Model counts
     modelSQL = data.values('model').annotate(total=Count('model')).order_by('-total')
-    model = chartJSData(modelSQL, 'model', maxLabels=18)
+    model = chartJSData(modelSQL, 'model', maxLabels=20)
 
     # Year Bracket counts
     year = chartJSData_bracket(data, 'year', start=1950, increment=10, bracketCount=10)
-	
+
     # Price Bracket counts
     price = chartJSData_bracket(data, 'priceNew', increment=10000, bracketCount=25)
-	
+
     # Seating counts
     seatingSQL = data.values('seatingCapacity').annotate(total=Count('seatingCapacity')).order_by('-total')
     seating = chartJSData(seatingSQL, 'seatingCapacity')
-	
+
     # DriveTrain counts
     driveTrainSQL = data.values('standardTransmission').annotate(total=Count('standardTransmission')).order_by('-total')
-    driveTrain = chartJSData(driveTrainSQL, 'standardTransmission')
+    driveTrain = chartJSData(driveTrainSQL, 'standardTransmission', maxLabels=20)
 
     # holding dict
     js_dict = {
-            'bodyTypes': bodyTypes,
-            'make': make,
-			'model': model,
-			'year': year,
-            'price': price,
-			'seating': seating,
-			'driveTrain': driveTrain
+        'bodyTypes': bodyTypes,
+        'make': make,
+        'model': model,
+        'year': year,
+        'price': price,
+        'seating': seating,
+        'driveTrain': driveTrain
     }
     # Serialize dict into json to use in HTML file
     js_data = json.dumps(js_dict)
-	
-    
+
     return render(request, 'visualise_vehicle_data.html', {'js_data': js_data})
 
 
@@ -144,7 +247,6 @@ def read_store_data(request):
             # new['Store_Phone'] = row[3].strip()
             # new['Store_City'] = row[4].strip()
             # new['Store_State_Name'] = row[5].strip()
-
 
             # # orders
             #
@@ -270,11 +372,8 @@ def read_store_data(request):
             #
             #     car.save()
 
-
-
-
-
     return HttpResponse("OK")
+
 
 def read_central_db(request):
     with open('/Users/aidan/Desktop/data_in_central_db.txt', newline='') as csvfile:
@@ -301,7 +400,6 @@ def read_central_db(request):
             # new['Store_Phone'] = row[3].strip()
             # new['Store_City'] = row[4].strip()
             # new['Store_State_Name'] = row[5].strip()
-
 
             # # orders
             #
@@ -376,7 +474,6 @@ def read_central_db(request):
 
             print(new)
 
-
             order = Order.objects.get(id=new['Order_ID'])
 
             count = Order.objects.filter(id=new['Order_ID']).exclude(returnStore__isnull=True).count()
@@ -384,70 +481,66 @@ def read_central_db(request):
             if count < 1:
                 order.returnStore = Store.objects.get(id=new['Return_Store'])
                 order.returnDate = datetime.date(int(new['Return_Date'][0:4]),
-                                                         int(new['Return_Date'][4:6]),
-                                                         int(new['Return_Date'][6:8]))
+                                                 int(new['Return_Date'][4:6]),
+                                                 int(new['Return_Date'][6:8]))
                 order.save()
 
             # if not Store.objects.filter(id=new['Store_ID']):
-                # store = Store()
-                # store.id = new['Store_ID']
-                # store.name = new['Store_Name']
-                # store.address = new['Store_Address']
-                # store.phone = new['Store_Phone']
-                # store.state = new['Store_State_Name']
-                # store.city = new['Store_City']
-                #
-                # store.save()
-                # print('new store')
+            # store = Store()
+            # store.id = new['Store_ID']
+            # store.name = new['Store_Name']
+            # store.address = new['Store_Address']
+            # store.phone = new['Store_Phone']
+            # store.state = new['Store_State_Name']
+            # store.city = new['Store_City']
+            #
+            # store.save()
+            # print('new store')
 
             # if not Customer.objects.filter(id=new['Customer_ID']):
-                # customer = Customer()
-                # customer.id = new['Customer_ID']
-                #
-                # print(customer.id)
-                #
-                # customer.name = new['Customer_Name']
-                # customer.phone = new['Customer_Phone']
-                # customer.address = new['Customer_Addresss']
-                # customer.occupation = new['Customer_Occupation']
-                # customer.gender = new['Customer_Gender']
-                #
-                # birthday = new['Customer_Brithday'].split('/')
-                #
-                # print(birthday)
-                #
-                # customer.dob = datetime.datetime(1900+ int(birthday[2]), int(birthday[1]), int(birthday[0]))
-                #
-                #
-                # customer.save()
-                # print('new customer')
+            # customer = Customer()
+            # customer.id = new['Customer_ID']
+            #
+            # print(customer.id)
+            #
+            # customer.name = new['Customer_Name']
+            # customer.phone = new['Customer_Phone']
+            # customer.address = new['Customer_Addresss']
+            # customer.occupation = new['Customer_Occupation']
+            # customer.gender = new['Customer_Gender']
+            #
+            # birthday = new['Customer_Brithday'].split('/')
+            #
+            # print(birthday)
+            #
+            # customer.dob = datetime.datetime(1900+ int(birthday[2]), int(birthday[1]), int(birthday[0]))
+            #
+            #
+            # customer.save()
+            # print('new customer')
 
             # if not Car.objects.filter(id=new['Car_ID']):
-                # car = Car()
-                # car.id = new['Car_ID']
-                #
-                # print(car.id)
-                #
-                # car.make = new['Car_MakeName']
-                # car.model = new['Car_Model']
-                # car.series = new['Car_Series']
-                # car.priceNew = new['Car_PriceNew']
-                # car.engineSize = new['Car_EngineSize']
-                # car.fuelSystem = new['Car_FuelSystem']
-                # car.power = new['Car_Power']
-                # car.seatingCapacity = new['Car_SeatingCapacity']
-                # car.standardTransmission = new['Car_StandardTransmission']
-                # car.bodyType = new['Car_BodyType']
-                # car.drive = new['Car_Drive']
-                # car.wheelBase = new['Car_Wheelbase']
-                # car.tankCapacity = new['Car_TankCapacity']
-                # car.year = new['Car_SeriesYear']
-                #
-                # car.save()
-                # print('new car')
-
-
-
-
+            # car = Car()
+            # car.id = new['Car_ID']
+            #
+            # print(car.id)
+            #
+            # car.make = new['Car_MakeName']
+            # car.model = new['Car_Model']
+            # car.series = new['Car_Series']
+            # car.priceNew = new['Car_PriceNew']
+            # car.engineSize = new['Car_EngineSize']
+            # car.fuelSystem = new['Car_FuelSystem']
+            # car.power = new['Car_Power']
+            # car.seatingCapacity = new['Car_SeatingCapacity']
+            # car.standardTransmission = new['Car_StandardTransmission']
+            # car.bodyType = new['Car_BodyType']
+            # car.drive = new['Car_Drive']
+            # car.wheelBase = new['Car_Wheelbase']
+            # car.tankCapacity = new['Car_TankCapacity']
+            # car.year = new['Car_SeriesYear']
+            #
+            # car.save()
+            # print('new car')
 
     return HttpResponse("OK")
