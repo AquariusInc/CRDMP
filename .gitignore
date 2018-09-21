@@ -119,3 +119,9 @@ venv.bak/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+*.pyc
+*.pyc
+mysite/mysite/__pycache__/settings.cpython-36.pyc
+mysite/RentalApp/__pycache__/models.cpython-36.pyc
+mysite/RentalApp/__pycache__/views.cpython-36.pyc
+mysite/RentalApp/migrations/__pycache__/0001_initial.cpython-36.pyc
