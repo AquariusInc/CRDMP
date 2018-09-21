@@ -6,7 +6,7 @@
     <h3>Rental Data</h3>
         <form action="rentals" method="get">
             <div class="row">
-                <div class="input-field col l2 m3 s4">
+                <div class="input-field col l3 m4 s5">
                     <select name="search_field">
                         <option value="" disabled {% if field is not defined %} selected {% endif %}>Search Field</option>
                         <option value="id" {% if field == 'id' %}selected{% endif %}>ID</option>
@@ -21,7 +21,17 @@
                     <input id="search_box" name="search_box" type="text" class="" {% if query is not defined %} value="{{ query }}" {% endif %}>
                     <label for="search_box">Search</label>
                 </div>
-                <button id="search_button" class="btn waves-effect waves-light" type="submit" name="action">
+            </div>
+            <div class="row">
+                <div class="col s5">
+                    <input id='start_date' name="start_date" type="text" class="datepicker">
+                    <label for='start_date'>Start Date</label>
+                </div>
+                <div class="col s5">
+                    <input id='end_date' name="end_date" type="text" class="datepicker">
+                    <label for='end_date'>End Date</label>
+                </div>
+                <button id="search_button" class="btn waves-effect waves-light col s2" type="submit" name="action">
                     <i class="material-icons">search</i>
                 </button>
             </div>
@@ -88,5 +98,12 @@
     $(document).ready(function () {
         $('select').formSelect();
     });
+
+    document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('.datepicker');
+    var instances = M.Datepicker.init(elems, options);
+  });
+
+  // Or with jQuery
 </script>
 {% endblock %}

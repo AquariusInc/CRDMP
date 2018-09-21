@@ -8,7 +8,7 @@ var charts = {};
 			legendDisplay = true;
 			gridLinesDisplay = false;
 		}
-        var colours = chartObj.data.datasets[0].backgroundColor
+        var colours = chartObj.data.datasets[0].backgroundColor;
         if (chartType == 'line') {
             colours = '#8DB600'
         }
