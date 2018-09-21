@@ -95,11 +95,11 @@ def chartJSData_bracket_dt_yr(dataSource, columnName, start_date, increment, bra
     Takes a datasource, columnName, and bracket values
     Will only work on simple count queries
     
-    dataSource   - django thing - must be data source of format Car.objects.all()
+    dataSource   - django thing - must be data source of format Customer.objects.all()
     columnName   - string   - the column to filter over
     start        - int      - start date
     increment    - int      - day increment
-    end date - int      - max end date
+    end date     - int      - max end date
     """
     ranges = []
     
@@ -114,12 +114,12 @@ def chartJSData_bracket_dt_yr(dataSource, columnName, start_date, increment, bra
     for i in range(0, bracketCount):
         print('ds.filter(' + columnName + '__range=(rg[i][0], rg[i][1])).count()', {'i':i, 'ds':dataSource, 'poo':ranges})
         count = eval('ds.filter(' + columnName + '__range=(rg[i][0], rg[i][1])).count()', {'i':i, 'ds':dataSource, 'rg':ranges})
-        key = str(ranges[i][0]) + '-' + str(ranges[i][1])
+        key = str(datetime.date.today().year - ranges[i][0].year) + '-' + str(datetime.date.today().year - ranges[i][1].year)
         dict[key] = count
     
     # delete empty entries
     for i in range(0, bracketCount):
-        key = str(ranges[i][0]) + '-' + str(ranges[i][1])
+        key = str(datetime.date.today().year - ranges[i][0].year) + '-' + str(datetime.date.today().year - ranges[i][1].year)
         if (dict[key] == 0):
             del dict[key]
 

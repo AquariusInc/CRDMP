@@ -48,8 +48,10 @@ def customer_data(request):
 	
 	# Age Counts
     dob_data = chartJSData_bracket_dt_yr(data, 'dob', start_date=date(1930,1,1), increment=10, bracketCount=6)
-    
-  
+   
+    #customer counter over time - temp 
+    orderSQl = chartJSData_bracket_dt_yr(order, 'createDate', start_date=date(2000,1,1), increment=1, bracketCount=10)
+    #poo = chartJSData(orderSQL, 'createDate', chartType="line")
  
     # holding dict
     js_dict = {
@@ -57,7 +59,8 @@ def customer_data(request):
             'gender': gender,
 			'id':id,
             'dob': dob_data,
-            'customer':customer
+            'customer':customer,
+            'createDate':orderSQl
     }
     # Serialize dict into json to use in HTML file
     js_data = json.dumps(js_dict)
