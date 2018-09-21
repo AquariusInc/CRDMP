@@ -2,7 +2,9 @@
 
 {% block title %}Vehicle Visualisation{% endblock %}
 {% block content %}
-
+{% load static %} 
+   	<script type="text/javascript" src="{% static "fusioncharts/js/fusioncharts.js" %}"></script>
+   	<script type="text/javascript" src="{% static "fusioncharts/js/themes/fusioncharts.theme.fusion.js" %}"></script>
 <style>
 body {font-family: Arial;}
 

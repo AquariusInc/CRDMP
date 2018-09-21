@@ -3,27 +3,30 @@
 {% block title %}Customers{% endblock %}
 {% block content %}
 <div class="container">
-    <h3>Customer Data</h2>
-        <form>
+    <h3>Customer Data</h3>
+        <form action="customers" method="post">
             <div class="row">
                 <div class="input-field col l2 m3 s4">
-                    <select>
+                    <select name="search_field">
                         <option value="" disabled selected>Search Field</option>
-                        <option value="1">Option 1</option>
-                        <option value="2">Option 2</option>
-                        <option value="3">Option 3</option>
+                        <option value="id">ID</option>
+                        <option value="name">Name</option>
+                        <option value="phone">Phone</option>
+                        <option value="address">Address</option>
+                        <option value="occupation">Occupation</option>
+                        <option value="gender">Gender</option>
                     </select>
                     <label>Field to Search</label>
                 </div>
                 <div class="input-field col l9 m7 s5">
-                    <input id="search_box" type="text" class="">
+                    <input id="search_box" name="search_box" type="text" class="">
                     <label for="search_box">Search</label>
                 </div>
-                <a id="search_button" class="waves-effect waves-light btn col l1 m2 s3"><i
-                        class="material-icons">search</i></a>
+                <button id="search_button" class="btn waves-effect waves-light" type="submit" name="action">
+                    <i class="material-icons">search</i>
+                </button>
             </div>
         </form>
-
 
         <table id="table-id" class="striped">
             <thead>
