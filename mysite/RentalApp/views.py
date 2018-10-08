@@ -1,21 +1,20 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 import csv
 from .models import Store, Customer, Order, Car
 from django.db.models import Count
 import json
 import datetime
-from datetime import date
+from datetime import date, datetime
 import re
 
-from django.views.decorators.csrf import csrf_exempt
-from RentalApp.helperfuncs.helperfuncs import chartJSData, chartJSData_bracket
-from RentalApp.helperfuncs.helperfuncs import chartJSData, chartJSData_bracket, chartJSData_bracket_dt_yr
-from datetime import datetime
-import re
-from RentalApp.helperfuncs.helperfuncs import chartJSData, chartJSData_bracket
+from .helperfuncs.helperfuncs import chartJSData, chartJSData_bracket, chartJSData_bracket_dt_yr
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+
+from django.contrib.auth import login, authenticate
+from .forms import SignUpForm
+from .models import MyUser
 
 
 # Create your views here.
@@ -23,6 +22,22 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
 def home(request):
     return render(request, 'home.html')
+    
+def signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            # replace this with success message
+            # username = form.cleaned_data.get('username')
+            # raw_password = form.cleaned_data.get('password1')
+            # user = authenticate(username=username, password=raw_password)
+            # login(request, user)
+            # return redirect('home')
+            #
+    else:
+        form = SignUpForm()
+    return render(request, 'signup.html', {'form': form})
 
 
 @csrf_exempt
