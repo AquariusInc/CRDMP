@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'RentalApp',
+        'NAME': 'NewRentalApp',
         'USER': 'aidankinzett',
         'PASSWORD': 'ifb299aidan',
         'HOST': 'mydbinstance.cojymbxlom9f.ap-southeast-2.rds.amazonaws.com',
