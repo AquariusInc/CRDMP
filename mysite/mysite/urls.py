@@ -21,12 +21,13 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('signup/', views.signup, name='signup'),
     path('', views.home, name='home'),
     path('customers', views.customers_table, name="customers_table"),
     path('rentals', views.rental_table, name="rentals_table"),
     path('visualisecustomers', views.customer_data),
     path('visualiserentals', views.rental_data),
     path('visualisevehicles', views.vehicle_data),
-    path('readstore', views.read_store_data)
+    path('readstore', views.read_store_data),
+    path('signup/', views.signup, name='signup'),
+    path('signup/successful', views.signup_success, name='successful signup')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -15,6 +15,7 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.contrib.auth import login, authenticate
 from .forms import SignUpForm
 from .models import MyUser
+from django.contrib import messages
 
 
 # Create your views here.
@@ -28,16 +29,16 @@ def signup(request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             form.save()
-            # replace this with success message
-            # username = form.cleaned_data.get('username')
-            # raw_password = form.cleaned_data.get('password1')
-            # user = authenticate(username=username, password=raw_password)
-            # login(request, user)
-            # return redirect('home')
-            #
+            form_ = form
+            form = SignUpForm()
+            return redirect('/signup/successful')
+            
     else:
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
+    
+def signup_success(request):
+    return render(request, 'signup_success.html')
 
 
 @csrf_exempt
