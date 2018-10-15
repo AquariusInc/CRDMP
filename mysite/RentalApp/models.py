@@ -17,7 +17,18 @@ class Customer(models.Model):
 
     def __unicode__(self):
         return str(self.id)
+    
+class Stock(models.Model):
+    car = models.ForeignKey('Car', on_delete=models.CASCADE)
+    returnDate = models.DateField()
+    returnStore = models.ForeignKey('Store', on_delete=models.CASCADE, related_name='stock_return_store')
 
+    def __str__(self):
+        return str(self.car)
+
+    def __unicode__(self):
+        return str(self.car)
+    
 
 class Store(models.Model):
     id = models.IntegerField(primary_key=True)
