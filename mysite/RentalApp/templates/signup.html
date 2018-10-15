@@ -4,13 +4,106 @@
 
 {% block content %}
 
+<style>
+body {font-family: Arial, Helvetica, sans-serif;}
+
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal_content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.errorlist {
+    color: red;
+    font-weight: bold;
+}
+</style>
+
+<div id="popModal" class="modal">
+  <div class="modal_content">
+    <span class="close">&times;</span>
+        <p id="modal_text"></p>
+  </div>
+</div>
+
 <div class="container">
   <h2>Sign up</h2>
-  <form method="post">
+  <form id="submitForm" method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Sign up</button>
+    <table border="1">
+      {{ form }}
+      <button id="submitBtn" type="button">Sign up</button>
+    </table>
   </form>
 </div>
+
+<script>
+var modal = document.getElementById('popModal');
+var btn = document.getElementById("submitBtn");
+var span = document.getElementsByClassName("close")[0];
+
+btn.onclick = function() {
+    var modal_text = document.getElementById("modal_text");
+    var form_fields = document.forms["submitForm"].getElementsByTagName("input");
+    
+    if (form_fields["id_username"].value == "") {
+        modal_text.innerHTML = "Enter a valid username.";
+    }  else if (form_fields["id_dob"].value == "") {
+        modal_text.innerHTML = "Enter a some date of birth.";
+    } else if (form_fields["id_first_name"].value == "") {
+        modal_text.innerHTML = "Enter a valid first name.";
+    } else if (form_fields["id_last_name"].value == "") {
+        modal_text.innerHTML = "Enter a valid last name.";
+    } else if (form_fields["id_branchID"].value == "" || form_fields["id_branchID"].value < 0) {
+        modal_text.innerHTML = "Enter a valid branch ID.";
+    } else if (form_fields["id_password1"].value == "" || form_fields["id_password2"].value == "") {
+        modal_text.innerHTML = "Enter some password.";
+    } else {
+        document.getElementById("submitForm").submit();
+        return;
+    }
+    modal.style.display = "block";
+}
+
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
   
 {% endblock %}
