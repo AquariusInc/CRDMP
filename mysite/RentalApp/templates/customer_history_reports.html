@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Customer Rental History Report{% endblock %}
+
+{% block extracss %}<link rel="stylesheet" href="{% static 'css/customer_history.css' %}">{% endblock %}
+
+{% block extrascripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+<script src="{% static 'js/customer_history.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+	<div class="tab">
+	  <button class="tablinks" onclick="openTab(event, 'poo', 'amountChart', obj.createDate)">ppp</button>
+	  <button class="tablinks" onclick="openTab(event, 'Occupppion', 'occupationChart', obj.occupation)">Oppp</button>
+	  <button class="tablinks" onclick="openTab(event, 'Gendeppppr', 'genderChart', obj.gender)">Gpp</button>
+	  <button class="tablinks" onclick="openTab(event, 'Repeappppt Customers', 'repeatChart', obj.customer)">Rpp</button>
+	  <button class="tablinks" onclick="openTab(event, 'dopppb', 'dobChart', obj.dob)">poo</button>
+	 
+	 
+	</div>
+	
+	
+	
+	
+
+	
+	
+	<script>
+	var obj = {{ js_data|safe }};
+	</script>
+	
+</div>
+{% endblock %}

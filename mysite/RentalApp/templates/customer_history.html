@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Customer Rental History Report{% endblock %}
+
+{% block extracss %}<link rel="stylesheet" href="{% static 'css/customer_history.css' %}">{% endblock %}
+
+{% block extrascripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+<script src="{% static 'js/customer_history.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+<h3>Customer Rental History Report</h3>
+	<div class="tab">
+	
+	 
+	 
+	</div>
+	
+	
+	
+	
+
+	
+	
+	<script>
+	var obj = {{ js_data|safe }};
+	</script>
+	
+</div>
+{% endblock %}

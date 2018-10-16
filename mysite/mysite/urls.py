@@ -25,6 +25,7 @@ urlpatterns = [
     path('customers', views.customers_table, name="customers_table"),
     path('rentals', views.rental_table, name="rentals_table"),
     path('visualisecustomers', views.customer_data),
+    path('customerhistory', views.customer_history),
     path('visualiserentals', views.rental_data),
     path('visualisevehicles', views.vehicle_data),
     path('readcentral', views.read_central_db)
