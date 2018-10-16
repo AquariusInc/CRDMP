@@ -137,9 +137,18 @@ def rental_table(request):
     
 
 def customer_data(request):
+
+    if request.GET.get('start_date') and request.GET.get('search_field'):
+        start_date = request.GET['start_date']
+        end_date = request.GET['end_date']
+
+        start_date_datetime = datetime.strptime(start_date, '%b %d, %Y')
+        end_date_datetime = datetime.strptime(end_date, '%b %d, %Y')
+        
     data = Customer.objects.all()
     order = Order.objects.all()
 	
+    
 	# Occupation counts - done
     occupationSQL = data.values('occupation').annotate(total=Count('occupation')).order_by('-total')
     occupation = chartJSData(occupationSQL, 'occupation')
@@ -162,6 +171,7 @@ def customer_data(request):
    
     #customer counter over time - temp 
     orderSQl = chartJSData_bracket_dt_yr(order, 'createDate', start_date=date(2000,1,1), increment=1, bracketCount=10)
+    
     #poo = chartJSData(orderSQL, 'createDate', chartType="line")
  
     # holding dict
@@ -179,6 +189,13 @@ def customer_data(request):
     return render(request, 'visualise_customer_data.html', {'js_data': js_data})
 
 def customer_history(request):
+
+    if request.GET.get('start_date') and request.GET.get('search_field'):
+        start_date = request.GET['start_date']
+        end_date = request.GET['end_date']
+
+        start_date_datetime = datetime.strptime(start_date, '%b %d, %Y')
+        end_date_datetime = datetime.strptime(end_date, '%b %d, %Y')
     if request.GET.get('search_field'):
         field = request.GET['search_field']
         query = request.GET['search_box']
@@ -187,21 +204,9 @@ def customer_history(request):
             data = Customer.objects.filter(name__contains=query)
         elif field == "id":
             data = Customer.objects.filter(id__contains=query)
-        elif field == "address":
-            data = Customer.objects.filter(address__contains=query)
-        elif field == "phone":
-            data = Customer.objects.filter(phone__contains=query)
-        elif field == "gender":
-            data = Customer.objects.filter(gender__contains=query)
-        elif field == "occupation":
-            data = Customer.objects.filter(occupation__contains=query)
+      
 
-
-        paginator = Paginator(data, 25)  # Show 25 contacts per page
-        page = request.GET.get('page')
-        customers = paginator.get_page(page)
-
-        return render(request, 'customers_table.html', {'data': customers, 'query': query, 'field': field})
+        #return render(request, 'customer_history.html', {'data': customers, 'query': query, 'field': field})
 
 
     data = Customer.objects.all()
@@ -210,7 +215,7 @@ def customer_history(request):
     page = request.GET.get('page')
     customers = paginator.get_page(page)
 
-    return render(request, 'customers_table.html', {'data': customers})
+    return render(request, 'customer_history.html', {'data': customers})
 
 
 def rental_data(request):

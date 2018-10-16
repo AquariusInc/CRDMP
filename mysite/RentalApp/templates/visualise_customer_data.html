@@ -26,6 +26,15 @@
 	
 		<div id="Amount" class="tabcontent">
 	  <h3>Total Customers Over Time</h3>
+	   <div class="row">
+                <div class="col s5">
+                    <input id='start_date' name="start_date" type="text" class="datepicker">
+                    <label for='start_date'>Start Date</label>
+                </div>
+                <div class="col s5">
+                    <input id='end_date' name="end_date" type="text" class="datepicker">
+                    <label for='end_date'>End Date</label>
+                </div>
 	  <canvas id="amountChart" width="900" height="400"></canvas>
   <div class="buttonContainer">
 	    <button class="buttonGraph" onclick="changeGraph(event, 'amountChart', 'bar', obj.createDate)">BAR</button>
