@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Vehicles{% endblock %}
+{% block content %}
+    <div class="container">
+        <h3>Available Vehicles</h3>
+        <a id="filter-button" class="waves-effect waves-light btn modal-trigger" href="#modal1">Filter Stuff</a>
+        <div id="vehicle_list">
+            <div class="row">
+                {% for item in images %}
+
+                    <div class="col s4">
+                        <div class="card">
+                            <div class="card-image waves-effect waves-block waves-light">
+                                <div class="car-image-div">
+                                    <img class="activator car-image" src="{{ item.0 }}">
+                                </div>
+                            </div>
+                            <div class="card-content">
+                            <span class="card-title activator grey-text text-darken-4">{{ item.1.make }} {{ item.1.model }}<i
+                                    class="material-icons right">info_outline</i></span>
+                                <div class="series">{{ item.1.series }}</div>
+                                <span class="seating"><i class="material-icons">event_seat</i>{{ item.1.seatingCapacity }}</span>
+                                <span><i class="material-icons">directions_car</i>{{ item.1.standardTransmission }}</span>
+                            </div>
+                            <div class="card-reveal">
+                        <span class="card-title grey-text text-darken-4">{{ item.1.make }} {{ item.1.model }} {{ item.1.series }}<i
+                                class="material-icons right">close</i></span>
+                                <div>Seating Capacity: {{ item.1.seatingCapacity }}</div>
+                                <div>Transmission: {{ item.1.standardTransmission }}</div>
+                                <div>Year: {{ item.1.year }}</div>
+                                <div>Body Type: {{ item.1.bodyType }}</div>
+                                <div>Drive: {{ item.1.drive }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% if forloop.counter|divisibleby:3 %}
+                        </div>
+                        <div class="row">
+                    {% endif %}
+                {% endfor %}
+                </div>
+        </div>
+    </div>
+    <div class="pagination center-align">
+    <span class="step-links">
+        {% if data.has_previous %}
+            <a class="waves-effect waves-light btn" href="?page=1">&laquo; first</a>
+            <a class="waves-effect waves-light btn" href="?page={{ data.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ data.number }} of {{ data.paginator.num_pages }}
+        </span>
+
+        {% if data.has_next %}
+            <a class="waves-effect waves-light btn" href="?page={{ data.next_page_number }}">next</a>
+            <a class="waves-effect waves-light btn" href="?page={{ data.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+    </div>
+
+    <div id="modal1" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <div class="container">
+                <h3>Filter Vehicles</h3>
+                <form>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <select id="location-select">
+                                <option value="" disabled selected>Choose your Store</option>
+                                {% for item in list_of_locations %}
+                                <option value="{{ item }}">{{ item }}</option>
+                                {% endfor %}
+                            </select>
+                            <label>Location</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <iframe class="col s12" id="map" height="400" frameborder="0" style="border:0"
+                                src="https://www.google.com/maps/embed/v1/search?q=brisbane&key=AIzaSyAIgrTrt5LaMsC-JUUK-jZXYkZyeLEc3JU"
+                                allowfullscreen></iframe>
+                    </div>
+                    <div class="row">
+                        <label>Seat Number Range</label>
+                        <div id="seat-slider"></div>
+                    </div>
+                    <span value="{{ lowest_seats }}" id="lowest-seats" display="none"></span>
+                     <span value="{{ highest_seats }}" id="highest-seats" display="none"></span>
+                    <div class="row">
+                        <label>Transmission Type</label>
+                        <p>
+                            <label>
+                                <input type="checkbox"/>
+                                <span>Manual</span>
+                            </label>
+                        </p>
+                        <p>
+                            <label>
+                                <input type="checkbox" checked="checked"/>
+                                <span>Automatic</span>
+                            </label>
+                        </p>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <select>
+                                <option value="" disabled selected>Choose the Make</option>
+                                {% for item in list_of_makes %}
+                                <option value="{{ item.make }}">{{ item.make }}</option>
+                                {% endfor %}
+                            </select>
+                            <label>Make</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <select>
+                                <option value="" disabled selected>Choose the Model</option>
+                                {% for item in list_of_models %}
+                                <option value="{{ item.model }}">{{ item.model }}</option>
+                                {% endfor %}
+                            </select>
+                            <label>Model</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <button class="btn waves-effect waves-light" type="submit" name="action">Submit
+                            <i class="material-icons right">send</i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var elems = document.querySelectorAll('.modal');
+            var instances = M.Modal.init(elems, options);
+        });
+
+
+        $(document).ready(function () {
+            $('.modal').modal();
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var elems = document.querySelectorAll('select');
+            var instances = M.FormSelect.init(elems, options);
+        });
+
+
+        $(document).ready(function () {
+            $('select').formSelect();
+        });
+
+
+        var slider = document.getElementById('seat-slider');
+        noUiSlider.create(slider, {
+            start: [2, 5],
+            connect: true,
+            step: 1,
+            orientation: 'horizontal', range: {
+                'min': parseInt($('#lowest-seats').attr('value')),
+                'max': parseInt($('#highest-seats').attr('value'))
+            },
+            format: wNumb({
+                decimals: 0
+            })
+        });
+
+        $("#location-select").change( function () {
+            $("#map").attr('src', "https://www.google.com/maps/embed/v1/search?q=" + encodeURI($("#location-select").val()+ ", australia") + "&key=AIzaSyAIgrTrt5LaMsC-JUUK-jZXYkZyeLEc3JU")
+        })
+    </script>
+
+
+{% endblock %}

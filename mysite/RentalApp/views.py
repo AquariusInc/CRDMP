@@ -2,11 +2,13 @@ from django.shortcuts import render
 from django.http import HttpResponse
 import csv
 from .models import Store, Customer, Order, Car
-from django.db.models import Count
+from django.db.models import Count, Avg, Max, Min, Sum
 import json
 import datetime
 from datetime import date
 import re
+import requests
+import json
 
 from django.views.decorators.csrf import csrf_exempt
 from RentalApp.helperfuncs.helperfuncs import chartJSData, chartJSData_bracket
@@ -24,6 +26,64 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 def home(request):
     return render(request, 'home.html')
 
+def vehicles_table(request):
+    data = Car.objects.all()
+
+    paginator = Paginator(data, 24)  # Show 24 vehicles per page
+    page = request.GET.get('page')
+    vehicles = paginator.get_page(page)
+
+    # get an image for the car if they dont have one in the database
+    car_images_model = []
+    car_images_dict = {}
+    for car in vehicles:
+        if not car.image:
+            make_model = car.make + '%20' + car.model
+            if make_model not in car_images_dict:
+                r = requests.get('https://api.cognitive.microsoft.com/bing/v7.0/images/search?subscription-key=f4fd9e577543487f9d86b8985dff845f&q='+car.make+'%20'+car.model+"%20")
+                image_dict = json.loads(r.text)
+                image = image_dict['value'][0]['contentUrl']
+                car_images_dict[make_model] = image
+            else:
+                image = car_images_dict[make_model]
+            car.image = image
+            car.save()
+        else:
+            image = car.image
+        car_images_model.append([image, car])
+        print(image)
+
+    # fill the modal form in with options
+    # list_of_locations
+
+    list_of_locations = []
+    stores = Store.objects.all()
+    for item in stores:
+        list_of_locations.append(item.name[0:-6])
+
+    # lowest seats, highest seats
+    lowest_seats = data.aggregate(Min('seatingCapacity'))['seatingCapacity__min']
+    highest_seats = data.aggregate(Max('seatingCapacity'))['seatingCapacity__max']
+
+    list_of_models = Car.objects.values('model').distinct()
+    print(list_of_models)
+    list_of_makes = Car.objects.values('make').distinct()
+
+    return render(request, 'vehicles_table.html', {'images': car_images_model, 'data': vehicles, 'list_of_locations': list_of_locations,
+                                                   'lowest_seats': lowest_seats, 'highest_seats':highest_seats, 'list_of_models':list_of_models,
+                                                   'list_of_makes': list_of_makes})
+
+def vehicle_recommend(request):
+    list_of_locations = []
+    stores = Store.objects.all()
+    for item in stores:
+        list_of_locations.append(item.name[0:-6])
+
+    # lowest seats, highest seats
+    data = Car.objects.all()
+    lowest_seats = data.aggregate(Min('seatingCapacity'))['seatingCapacity__min']
+    highest_seats = data.aggregate(Max('seatingCapacity'))['seatingCapacity__max']
+    return render(request, 'recommend_vehicle.html', {'list_of_locations': list_of_locations, 'lowest_seats': lowest_seats, 'highest_seats':highest_seats})
 
 @csrf_exempt
 def customers_table(request):
@@ -282,7 +342,6 @@ def vehicle_data(request):
     js_data = json.dumps(js_dict)
 
     return render(request, 'visualise_vehicle_data.html', {'js_data': js_data})
-
 
 def read_store_data(request):
     with open('/Users/aidan/Desktop/data_in_store.txt', newline='') as csvfile:

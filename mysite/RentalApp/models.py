@@ -46,11 +46,12 @@ class Car(models.Model):
     fuelSystem = models.CharField(max_length=50)
     tankCapacity = models.FloatField()
     power = models.FloatField()
-    seatingCapacity = models.FloatField()
+    seatingCapacity = models.IntegerField()
     standardTransmission = models.CharField(max_length=50)
     bodyType = models.CharField(max_length=50)
     drive = models.CharField(max_length=5)
     wheelBase = models.FloatField()
+    image = models.TextField()
 
     def __str__(self):
         return str(self.id)

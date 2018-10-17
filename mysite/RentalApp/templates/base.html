@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="{% static 'css/tablesort.css' %}"/>
     <link rel="stylesheet" href="{% static 'css/materialize.css' %}"/>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/nouislider.css' %}"/>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}"/>
     {% block extracss %}{% endblock %}
     <title>{% block title %}{% endblock %} | CRDMP</title>
@@ -24,18 +25,20 @@
 </ul>
 
 <ul id='dropdown3' class='dropdown-content'>
+    <li><a href="vehicles">View Vehicles</a></li>
+    <li><a href="vehiclerecommend">Vehicle Recommendation</a></li>
     <li><a href="visualisevehicles">Vehicle Data Visualisation</a></li>
 </ul>
 
 <nav>
     <div class="nav-wrapper">
         <div class="container">
-            <a href="/" class="brand-logo">CRDMP</a>
+            <a href="/" class="brand-logo">CRDMP 🚗</a>
             <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
-                <li><a class='dropdown-trigger btn' href='#' data-target='dropdown1'>Customers</a></li>
-                <li><a class='dropdown-trigger btn' href='#' data-target='dropdown2'>Rentals</a></li>
-                <li><a class='dropdown-trigger btn' href='#' data-target='dropdown3'>Vehicles</a></li>
+                <li><a class='dropdown-trigger ' href='#' data-target='dropdown1'>Customers</a></li>
+                <li><a class='dropdown-trigger ' href='#' data-target='dropdown2'>Rentals</a></li>
+                <li><a class='dropdown-trigger' href='#' data-target='dropdown3'>Vehicles</a></li>
             </ul>
         </div>
     </div>
@@ -55,6 +58,7 @@
         <div class="divider"></div>
     </li>
     <li><a class="subheader">Vehicles</a></li>
+    <li><a href="vehicles">View Vehicles</a></li>
     <li><a href="visualisevehicles">Vehicle Data Visualisation</a></li>
 </ul>
 
@@ -87,11 +91,14 @@
 <script src="{% static 'js/sorts/tablesort.date.min.js' %}"></script>
 <script src="{% static 'js/sorts/tablesort.number.min.js' %}"></script>
 <script src="{% static 'js/sorts/tablesort.monthname.min.js' %}"></script>
+<script src="{% static 'js/nouislider.js' %}"></script>
+
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var elems = document.querySelectorAll('.dropdown-trigger');
-        var options = {'constrainWidth': false};
+        var options = {'constrainWidth': false, 'coverTrigger': false};
         var instances = M.Dropdown.init(elems, options);
     });
 
