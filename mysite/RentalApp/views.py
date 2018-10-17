@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 import csv
-from .models import Store, Customer, Car
+from .models import Store, Customer, Car, Order
 from django.db.models import Count
 import json
 import datetime
