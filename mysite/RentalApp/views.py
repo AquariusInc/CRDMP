@@ -24,12 +24,15 @@ from django.contrib import messages
 def home(request):
     return render(request, 'home.html')
     
+def login(request):
+    return render(request, 'login.html', {'form': form})
+    
 def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
             form.save()
-            form_ = form
+            print(form.clean())
             form = SignUpForm()
             return redirect('/signup/successful')
             

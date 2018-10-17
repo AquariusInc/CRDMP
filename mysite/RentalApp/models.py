@@ -1,5 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User, AbstractUser
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+
 
 # Create your models here.
 
@@ -79,15 +83,21 @@ class Order(models.Model):
         
     
 class MyUser(AbstractUser):
+    username = models.CharField(max_length=150, primary_key=True)
     is_management = models.BooleanField('Management Status', default=False)
-    
-class Staff(models.Model):
-    user = models.OneToOneField(MyUser, on_delete=models.CASCADE, related_name='staff')
-    staffID = models.IntegerField(primary_key=True)
-    firstName = models.CharField(max_length=50)
-    lastName = models.CharField(max_length=50)
+    staffID = models.IntegerField()
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
     branchID = models.IntegerField()
     dob = models.DateField()
+    
+    def __str__(self):
+        return str(self.id)
+
+    def __unicode__(self):
+        return str(self.id)
+       
+        
     
 
     

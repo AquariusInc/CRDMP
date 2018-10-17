@@ -29,5 +29,6 @@ urlpatterns = [
     path('visualisevehicles', views.vehicle_data),
     path('readstore', views.read_store_data),
     path('signup/', views.signup, name='signup'),
-    path('signup/successful', views.signup_success, name='successful signup')
+    path('signup/successful', views.signup_success, name='successful signup'),
+    path('login', views.login, name='login')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
