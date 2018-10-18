@@ -128,4 +128,7 @@ STATICFILES_DIRS = [
     '/var/www/static/',
 ]
 
+# my_project/settings.py
+LOGIN_REDIRECT_URL = '/'
+
 

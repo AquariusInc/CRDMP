@@ -17,19 +17,21 @@ from .forms import SignUpForm
 from .models import MyUser
 from django.contrib import messages
 
+from django.contrib.auth.decorators import login_required
+
 
 # Create your views here.
 # from django.core import serializers
 
 def home(request):
     return render(request, 'home.html')
-    
+
+@login_required
 def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
             form.save()
-            form_ = form
             form = SignUpForm()
             return redirect('/signup/successful')
             
@@ -42,6 +44,7 @@ def signup_success(request):
 
 
 @csrf_exempt
+@login_required
 def customers_table(request):
     if request.GET.get('search_field'):
         field = request.GET['search_field']
@@ -78,6 +81,7 @@ def customers_table(request):
 
 
 @csrf_exempt
+@login_required
 def rental_table(request):
     if request.GET.get('start_date') and request.GET.get('search_field'):
         start_date = request.GET['start_date']
@@ -151,6 +155,7 @@ def rental_table(request):
     return render(request, 'rental_table.html', {'orders': orders})
 
 
+@login_required
 def customer_data(request):
     data = Customer.objects.all()
     order = Order.objects.all()
@@ -194,7 +199,6 @@ def customer_data(request):
     return render(request, 'visualise_customer_data.html', {'js_data': js_data})
 	
 	
-
 def rental_data(request):
 
     data = Customer.objects.all()
@@ -254,7 +258,7 @@ def rental_data(request):
     # return render(request, 'visualise_rental_data.html', {'output': pie3d.render(), 'chartTitle': 'Returns Data Visualization'})
 
 
-
+@login_required
 def vehicle_data(request):
     data = Car.objects.all()
 
@@ -364,7 +368,7 @@ def read_store_data(request):
                 if not Order.objects.filter(id=new['Order_ID']):
                     order = Order()
                     order.id = new['Order_ID']
-                    print(order.id)
+                    # print(order.id)
                     order.createDate = datetime.date(int(new['Order_CreateDate'][0:4]),int(new['Order_CreateDate'][4:6]), int(new['Order_CreateDate'][6:8]))
                     order.pickupDate = datetime.date(int(new['Pickup_Or_Return_Date'][0:4]),int(new['Pickup_Or_Return_Date'][4:6]), int(new['Pickup_Or_Return_Date'][6:8]))
                     order.customer = Customer.objects.get(id=new['Customer_ID'])
@@ -387,7 +391,7 @@ def read_store_data(request):
                                                          int(new['Order_CreateDate'][4:6]),
                                                          int(new['Order_CreateDate'][6:8]))
 
-                    print(order.id)
+                    # print(order.id)
 
                     order.returnStore = Store.objects.get(id=new['Store_ID'])
                     order.returnDate = datetime.date(int(new['Pickup_Or_Return_Date'][0:4]),int(new['Pickup_Or_Return_Date'][4:6]), int(new['Pickup_Or_Return_Date'][6:8]))
@@ -549,7 +553,7 @@ def read_central_db(request):
             #
             #         order.save()
 
-            print(new)
+            # print(new)
 
             order = Order.objects.get(id=new['Order_ID'])
 
