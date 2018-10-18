@@ -30,8 +30,12 @@
     object-fit: cover;
 }
 
-#filter-button {
+#filter-button, #clear-button {
     margin-bottom: 15px;
+}
+
+#clear-button{
+    margin-left: 5px;
 }
 
 #seat-slider {

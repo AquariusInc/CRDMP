@@ -5,10 +5,12 @@
     <div class="container">
         <h3>Available Vehicles</h3>
         <a id="filter-button" class="waves-effect waves-light btn modal-trigger" href="#modal1">Filter Stuff</a>
+        {% if clear_button %}
+            <a id="clear-button" class="waves-effect waves-light btn modal-trigger" href="/vehicles">Clear</a>
+        {% endif %}
         <div id="vehicle_list">
             <div class="row">
                 {% for item in images %}
-
                     <div class="col s4">
                         <div class="card">
                             <div class="card-image waves-effect waves-block waves-light">
@@ -20,8 +22,14 @@
                             <span class="card-title activator grey-text text-darken-4">{{ item.1.make }} {{ item.1.model }}<i
                                     class="material-icons right">info_outline</i></span>
                                 <div class="series">{{ item.1.series }}</div>
-                                <span class="seating"><i class="material-icons">event_seat</i>{{ item.1.seatingCapacity }}</span>
-                                <span><img class="transmission-icon" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAJmSURBVGhD7dm7axRRFMfxrXzhE6KNKAHtfAVSKYrP/AviA+wsLAUFKxELLYIoauwStVAQRUEDUf8MA/FfUGvfivr9wV44XM69M7szy5pwf/BpZuec2ZPNDsmZTklJScmSyzE8wFtMYQ/qZDUu4GXX+e6xOhmDrqVr3scRNMpV/I38winksgnvEdcuYCNyOQNdI669gr5yFHGz4Bu2IJXn8OrkKVIZxXd4dXIYPechvGaBfm28rMNveDWin/ZaeLkIryaYQc95Da9ZcANetsM739I5XtTTOz+YQ8+5Da9ZcBZeluMrvBr5jGXwcg5eTXALPWcnfsBr+BHrkYou6NXJTaSinurt1em97EBfOQF9sW3DD9iLXFbiFWydvIA+sVz24xNs3RccR6M8gm16HXWiL72tEx2rk0uwdXoPjVMGga2TMggapwwCWyf/1SD6a3S8hoOwdaJj3rmxO7B1AxlkGMogNmWQFg1kkHL77R6rkzJILmUQ2Dopg6BxnsE2nUSdaLdl60TH6qT1QS7jD2xT7Z1OIhct4eZh6+QdRlCVVgc5gHiIQP9Db0YqT+DVyWNUpdVBpmGbxbTL9bIG3soz0GtVO+BWB+l3QbcN3vmWzsml1UHuwTaLaZnmZRVyCzq9tgKp7EO829JKqmpxnsxu/IRtGGjvtAGp6JGAVye5baEWdPFOK9CCbhf6ilb88YJOF9KNIBd9KtrT2jqZhV5LZSAr0xA9PtDmXd8JXSi3Ko0zgWtdemBUlYEssYeRqscKupMuimxF7kHPISyanEarj96GGd0x7+IN9OukNVJJSUnJkkmn8w9zFH6hT2RRDAAAAABJRU5ErkJggg==">{{ item.1.standardTransmission }}</span>
+                                <span class="seating"><i
+                                        class="material-icons">event_seat</i>{{ item.1.seatingCapacity }}</span>
+                                <span><img class="transmission-icon"
+                                           src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAJmSURBVGhD7dm7axRRFMfxrXzhE6KNKAHtfAVSKYrP/AviA+wsLAUFKxELLYIoauwStVAQRUEDUf8MA/FfUGvfivr9wV44XM69M7szy5pwf/BpZuec2ZPNDsmZTklJScmSyzE8wFtMYQ/qZDUu4GXX+e6xOhmDrqVr3scRNMpV/I38winksgnvEdcuYCNyOQNdI669gr5yFHGz4Bu2IJXn8OrkKVIZxXd4dXIYPechvGaBfm28rMNveDWin/ZaeLkIryaYQc95Da9ZcANetsM739I5XtTTOz+YQ8+5Da9ZcBZeluMrvBr5jGXwcg5eTXALPWcnfsBr+BHrkYou6NXJTaSinurt1em97EBfOQF9sW3DD9iLXFbiFWydvIA+sVz24xNs3RccR6M8gm16HXWiL72tEx2rk0uwdXoPjVMGga2TMggapwwCWyf/1SD6a3S8hoOwdaJj3rmxO7B1AxlkGMogNmWQFg1kkHL77R6rkzJILmUQ2Dopg6BxnsE2nUSdaLdl60TH6qT1QS7jD2xT7Z1OIhct4eZh6+QdRlCVVgc5gHiIQP9Db0YqT+DVyWNUpdVBpmGbxbTL9bIG3soz0GtVO+BWB+l3QbcN3vmWzsml1UHuwTaLaZnmZRVyCzq9tgKp7EO829JKqmpxnsxu/IRtGGjvtAGp6JGAVye5baEWdPFOK9CCbhf6ilb88YJOF9KNIBd9KtrT2jqZhV5LZSAr0xA9PtDmXd8JXSi3Ko0zgWtdemBUlYEssYeRqscKupMuimxF7kHPISyanEarj96GGd0x7+IN9OukNVJJSUnJkkmn8w9zFH6hT2RRDAAAAABJRU5ErkJggg==">{{ item.1.standardTransmission }}</span>
+                                <div>
+                                    <i class="material-icons">location_on</i>
+                                    {{ item.2 }}
+                                </div>
                             </div>
                             <div class="card-reveal">
                         <span class="card-title grey-text text-darken-4">{{ item.1.make }} {{ item.1.model }} {{ item.1.series }}<i
@@ -31,6 +39,7 @@
                                 <div>Year: {{ item.1.year }}</div>
                                 <div>Body Type: {{ item.1.bodyType }}</div>
                                 <div>Drive: {{ item.1.drive }}</div>
+                                <div>Current Location: {{ item.2 }}</div>
                             </div>
                         </div>
                     </div>
@@ -67,10 +76,10 @@
                 <form>
                     <div class="row">
                         <div class="input-field col s12">
-                            <select id="location-select">
+                            <select name="location-select" id="location-select">
                                 <option value="" disabled selected>Choose your Store</option>
                                 {% for item in list_of_locations %}
-                                <option value="{{ item }}">{{ item }}</option>
+                                    <option value="{{ item }}">{{ item }}</option>
                                 {% endfor %}
                             </select>
                             <label>Location</label>
@@ -79,44 +88,53 @@
                     <div class="row">
                         <iframe class="col s12" id="map" height="400" frameborder="0" style="border:0"
                                 src="https://www.google.com/maps/embed/v1/search?q=brisbane&key=AIzaSyAIgrTrt5LaMsC-JUUK-jZXYkZyeLEc3JU"
-                                allowfullscreen></iframe>
+                        ></iframe>
                     </div>
                     <div class="row">
-                        <label>Seat Number Range</label>
-                        <div id="seat-slider"></div>
+                        <p class="range-field">
+                            <label>Minimum Seat Number (<span id="seat-number-text"></span>)</label>
+                            <input type="range" name="seat-number" id="seat-number" value="4" min="{{ lowest_seats }}"
+                                   max="{{ highest_seats }}"/>
+                        </p>
                     </div>
                     <span value="{{ lowest_seats }}" id="lowest-seats" display="none"></span>
-                     <span value="{{ highest_seats }}" id="highest-seats" display="none"></span>
+                    <span value="{{ highest_seats }}" id="highest-seats" display="none"></span>
                     <div class="row">
                         <label>Transmission Type</label>
                         <p>
                             <label>
-                                <input type="checkbox"/>
+                                <input name="manual" id="manual" type="checkbox"/>
                                 <span>Manual</span>
                             </label>
                         </p>
                         <p>
                             <label>
-                                <input type="checkbox" checked="checked"/>
+                                <input name="auto" id="auto" type="checkbox" checked="checked"/>
                                 <span>Automatic</span>
+                            </label>
+                        </p>
+                        <p>
+                            <label>
+                                <input name="cvt" id="cvt" type="checkbox"/>
+                                <span>CVT</span>
                             </label>
                         </p>
                     </div>
                     <div class="row">
                         <div class="input-field col s6">
-                            <select>
+                            <select name="make" id="make">
                                 <option value="" disabled selected>Choose the Make</option>
                                 {% for item in list_of_makes %}
-                                <option value="{{ item.make }}">{{ item.make }}</option>
+                                    <option value="{{ item.make }}">{{ item.make }}</option>
                                 {% endfor %}
                             </select>
                             <label>Make</label>
                         </div>
                         <div class="input-field col s6">
-                            <select>
+                            <select name="model" id="model">
                                 <option value="" disabled selected>Choose the Model</option>
                                 {% for item in list_of_models %}
-                                <option value="{{ item.model }}">{{ item.model }}</option>
+                                    <option value="{{ item.model }}">{{ item.model }}</option>
                                 {% endfor %}
                             </select>
                             <label>Model</label>
@@ -158,24 +176,18 @@
             $('select').formSelect();
         });
 
-
-        var slider = document.getElementById('seat-slider');
-        noUiSlider.create(slider, {
-            start: [2, 5],
-            connect: true,
-            step: 1,
-            orientation: 'horizontal', range: {
-                'min': parseInt($('#lowest-seats').attr('value')),
-                'max': parseInt($('#highest-seats').attr('value'))
-            },
-            format: wNumb({
-                decimals: 0
-            })
-        });
-
-        $("#location-select").change( function () {
-            $("#map").attr('src', "https://www.google.com/maps/embed/v1/search?q=" + encodeURI($("#location-select").val()+ ", australia") + "&key=AIzaSyAIgrTrt5LaMsC-JUUK-jZXYkZyeLEc3JU")
+        $("#location-select").change(function () {
+            $("#map").attr('src', "https://www.google.com/maps/embed/v1/search?q=" + encodeURI($("#location-select").val() + ", australia") + "&key=AIzaSyAIgrTrt5LaMsC-JUUK-jZXYkZyeLEc3JU")
         })
+
+        var slider = document.getElementById("seat-number");
+        var output = document.getElementById("seat-number-text");
+        output.innerHTML = slider.value; // Display the default slider value
+
+        // Update the current slider value (each time you drag the slider handle)
+        slider.oninput = function () {
+            output.innerHTML = this.value;
+        }
     </script>
 
 
