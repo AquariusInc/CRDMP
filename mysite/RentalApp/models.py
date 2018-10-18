@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User, AbstractUser
 
 # Create your models here.
 
@@ -75,3 +76,19 @@ class Order(models.Model):
 
     def __unicode__(self):
         return str(self.id)
+        
+    
+class MyUser(AbstractUser):
+    is_management = models.BooleanField('Management Status', default=False)
+    
+class Staff(models.Model):
+    user = models.OneToOneField(MyUser, on_delete=models.CASCADE, related_name='staff')
+    staffID = models.IntegerField(primary_key=True)
+    firstName = models.CharField(max_length=50)
+    lastName = models.CharField(max_length=50)
+    branchID = models.IntegerField()
+    dob = models.DateField()
+    
+
+    
+        
