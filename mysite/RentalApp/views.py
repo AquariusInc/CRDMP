@@ -1,12 +1,15 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 import csv
-from .models import Store, Customer, Car, Order
-from django.db.models import Count
+from .models import Store, Customer, Order, Car, AidanStock
+from django.db.models import Count, Avg, Max, Min, Sum
 import json
 import datetime
 from datetime import date, datetime
 import re
+import requests
+import json
+from django.db.models import Q
 
 from .helperfuncs.helperfuncs import chartJSData, chartJSData_bracket, chartJSData_bracket_dt_yr
 from django.views.decorators.csrf import csrf_exempt
@@ -21,10 +24,188 @@ from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
-# from django.core import serializers
+# from django.core import serializers\
+
+import operator
+def fill_stock(request):
+    orders = Order.objects.all()
+
+    car_dict = {}
+
+    for item in orders:
+        if item.car not in car_dict:
+            car_dict[item.car] = [[item.returnStore, item.returnDate]]
+        else:
+            car_dict[item.car].append([item.returnStore, item.returnDate])
+
+    most_recent_order_dict = {}
+    for car in car_dict:
+        sorted_orders = sorted(car_dict[car], key=operator.itemgetter(1), reverse=True)
+        most_recent_order_dict[car] = sorted_orders[0]
+        # save to database
+        stock = AidanStock()
+        stock.car = Car.objects.get(id=car.id)
+        stock.returnStore = sorted_orders[0][0]
+        stock.returnDate = sorted_orders[0][1]
+        stock.save()
+
+    print(most_recent_order_dict)
+    return HttpResponse('OK')
 
 def home(request):
     return render(request, 'home.html')
+
+def vehicles_table(request):
+    if request.GET.get('seat-number'):
+        results = Car.objects.filter(seatingCapacity__gte=request.GET['seat-number'])
+
+        if request.GET.get('make'):
+            # filter by make
+            results = results.filter(make=request.GET['make'])
+
+        if request.GET.get('model'):
+            # filter by model
+            results = results.filter(model=request.GET['model'])
+
+
+        ## transmission types
+        if request.GET.get('manual'):
+            if request.GET.get('auto'):
+                if request.GET.get('cvt'):
+                    pass
+                else:
+                    results = results.filter(Q(standardTransmission__icontains='A')|Q(standardTransmission__icontains='M'))
+            else:
+                results = results.filter(standardTransmission__icontains='M')
+        elif request.GET.get('auto'):
+            if request.GET.get('cvt'):
+                results = results.filter(Q(standardTransmission__icontains='A') | Q(standardTransmission__icontains='CVT'))
+            else:
+                results = results.filter(standardTransmission__icontains='A')
+        elif request.GET.get('cvt'):
+            results = results.filter(standardTransmission__icontains='CVT')
+
+        if request.GET.get('location-select'):
+            # filter by location
+            new_results = []
+            for item in results:
+                location = AidanStock.objects.filter(car=item)
+                if len(location):
+                    if location[0].returnStore.name[0:-6] == request.GET['location-select']:
+                        new_results.append(item)
+            results = new_results
+
+        paginator = Paginator(results, 24)  # Show 24 vehicles per page
+        page = request.GET.get('page')
+        vehicles = paginator.get_page(page)
+
+        # get an image for the car if they dont have one in the database
+        car_images_model = []
+        car_images_dict = {}
+        for car in vehicles:
+            if not car.image:
+                make_model = car.make + '%20' + car.model
+                if make_model not in car_images_dict:
+                    r = requests.get(
+                        'https://api.cognitive.microsoft.com/bing/v7.0/images/search?subscription-key=f4fd9e577543487f9d86b8985dff845f&q=' + car.make + '%20' + car.model + "%20")
+                    image_dict = json.loads(r.text)
+                    image = image_dict['value'][0]['contentUrl']
+                    car_images_dict[make_model] = image
+                else:
+                    image = car_images_dict[make_model]
+                car.image = image
+                car.save()
+            else:
+                image = car.image
+
+            car_location = AidanStock.objects.filter(car=car.id)
+            if len(car_location):
+                car_location_text = car_location[0].returnStore.name[0:-6]
+            else:
+                car_location_text = "Currently in Storage"
+            car_images_model.append([image, car, car_location_text])
+        # fill the modal form in with options
+        # list_of_locations
+
+        list_of_locations = []
+        stores = Store.objects.all()
+        for item in stores:
+            list_of_locations.append(item.name[0:-6])
+
+        # lowest seats, highest seats
+        data = Car.objects.all()
+        lowest_seats = data.aggregate(Min('seatingCapacity'))['seatingCapacity__min']
+        highest_seats = data.aggregate(Max('seatingCapacity'))['seatingCapacity__max']
+
+        list_of_models = Car.objects.values('model').distinct()
+        list_of_makes = Car.objects.values('make').distinct()
+
+        return render(request, 'vehicles_table.html',
+                      {'images': car_images_model, 'data': vehicles, 'list_of_locations': list_of_locations,
+                       'lowest_seats': lowest_seats, 'highest_seats': highest_seats, 'list_of_models': list_of_models,
+                       'list_of_makes': list_of_makes, 'clear_button': True})
+
+
+    data = Car.objects.all()
+
+    paginator = Paginator(data, 24)  # Show 24 vehicles per page
+    page = request.GET.get('page')
+    vehicles = paginator.get_page(page)
+
+    # get an image for the car if they dont have one in the database, and also find its location
+    car_images_model = []
+    car_images_dict = {}
+    for car in vehicles:
+        if not car.image:
+            make_model = car.make + '%20' + car.model
+            if make_model not in car_images_dict:
+                r = requests.get('https://api.cognitive.microsoft.com/bing/v7.0/images/search?subscription-key=f4fd9e577543487f9d86b8985dff845f&q='+car.make+'%20'+car.model+"%20")
+                image_dict = json.loads(r.text)
+                image = image_dict['value'][0]['contentUrl']
+                car_images_dict[make_model] = image
+            else:
+                image = car_images_dict[make_model]
+            car.image = image
+            car.save()
+        else:
+            image = car.image
+
+        car_location = AidanStock.objects.filter(car=car.id)
+        if len(car_location):
+            car_location_text = car_location[0].returnStore.name[0:-6]
+        else:
+            car_location_text = "Currently in Storage"
+        car_images_model.append([image, car, car_location_text])
+    # fill the modal form in with options
+    # list_of_locations
+
+    list_of_locations = []
+    stores = Store.objects.all()
+    for item in stores:
+        list_of_locations.append(item.name[0:-6])
+
+    # lowest seats, highest seats
+    lowest_seats = data.aggregate(Min('seatingCapacity'))['seatingCapacity__min']
+    highest_seats = data.aggregate(Max('seatingCapacity'))['seatingCapacity__max']
+
+    list_of_models = Car.objects.values('model').distinct()
+    list_of_makes = Car.objects.values('make').distinct()
+
+    return render(request, 'vehicles_table.html', {'images': car_images_model, 'data': vehicles, 'list_of_locations': list_of_locations,
+                                                   'lowest_seats': lowest_seats, 'highest_seats':highest_seats, 'list_of_models':list_of_models,
+                                                   'list_of_makes': list_of_makes})
+
+def vehicle_recommend(request):
+    list_of_locations = []
+    stores = Store.objects.all()
+    for item in stores:
+        list_of_locations.append(item.name[0:-6])
+
+    # lowest seats, highest seats
+    data = Car.objects.all()
+    lowest_seats = data.aggregate(Min('seatingCapacity'))['seatingCapacity__min']
+    highest_seats = data.aggregate(Max('seatingCapacity'))['seatingCapacity__max']
+    return render(request, 'recommend_vehicle.html', {'list_of_locations': list_of_locations, 'lowest_seats': lowest_seats, 'highest_seats':highest_seats})
 
 @login_required
 def signup(request):
@@ -302,7 +483,6 @@ def vehicle_data(request):
     js_data = json.dumps(js_dict)
 
     return render(request, 'visualise_vehicle_data.html', {'js_data': js_data})
-
 
 def read_store_data(request):
     with open('/Users/aidan/Desktop/data_in_store.txt', newline='') as csvfile:

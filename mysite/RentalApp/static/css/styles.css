@@ -20,3 +20,45 @@
     margin-left: auto;
     margin-right: auto;
 }
+
+.car-image-div {
+    height: 250px;
+}
+
+.car-image {
+    height: 100%;
+    object-fit: cover;
+}
+
+#filter-button, #clear-button {
+    margin-bottom: 15px;
+}
+
+#clear-button{
+    margin-left: 5px;
+}
+
+#seat-slider {
+    margin-top: 10px;
+}
+
+.material-icons{
+    display: inline-flex;
+    vertical-align: top;
+    margin-right: 5px;
+}
+
+.seating {
+    margin-right: 10px;
+}
+
+.series {
+    padding-bottom: 5px;
+}
+
+.transmission-icon{
+    height: 24px;
+    display: inline-flex;
+    vertical-align: top;
+    margin-right: 5px;
+}
