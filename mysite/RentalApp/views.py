@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 import csv
-from .models import Store, Customer, Order, Car
+from .models import Store, Customer, Order, Car, AidanStock
 from django.db.models import Count, Avg, Max, Min, Sum
 import json
 import datetime
@@ -21,7 +21,33 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
 
 # Create your views here.
-# from django.core import serializers
+# from django.core import serializers\
+
+import operator
+def fill_stock(request):
+    orders = Order.objects.all()
+
+    car_dict = {}
+
+    for item in orders:
+        if item.car not in car_dict:
+            car_dict[item.car] = [[item.returnStore, item.returnDate]]
+        else:
+            car_dict[item.car].append([item.returnStore, item.returnDate])
+
+    most_recent_order_dict = {}
+    for car in car_dict:
+        sorted_orders = sorted(car_dict[car], key=operator.itemgetter(1), reverse=True)
+        most_recent_order_dict[car] = sorted_orders[0]
+        # save to database
+        stock = AidanStock()
+        stock.car = Car.objects.get(id=car.id)
+        stock.returnStore = sorted_orders[0][0]
+        stock.returnDate = sorted_orders[0][1]
+        stock.save()
+
+    print(most_recent_order_dict)
+    return HttpResponse('OK')
 
 def home(request):
     return render(request, 'home.html')

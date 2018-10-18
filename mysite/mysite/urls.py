@@ -29,6 +29,7 @@ urlpatterns = [
     path('visualisevehicles', views.vehicle_data),
     path('readcentral', views.read_central_db),
     path('vehicles', views.vehicles_table),
-    path('vehiclerecommend', views.vehicle_recommend)
+    path('vehiclerecommend', views.vehicle_recommend),
+    path('test', views.fill_stock)
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
