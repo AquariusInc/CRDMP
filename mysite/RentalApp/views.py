@@ -1,24 +1,26 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 import csv
 from .models import Store, Customer, Order, Car, AidanStock
 from django.db.models import Count, Avg, Max, Min, Sum
 import json
 import datetime
-from datetime import date
+from datetime import date, datetime
 import re
 import requests
 import json
 from django.db.models import Q
 
-from django.views.decorators.csrf import csrf_exempt
-from RentalApp.helperfuncs.helperfuncs import chartJSData, chartJSData_bracket
-from RentalApp.helperfuncs.helperfuncs import chartJSData, chartJSData_bracket, chartJSData_bracket_dt_yr
-from datetime import datetime
-import re
-from RentalApp.helperfuncs.helperfuncs import chartJSData, chartJSData_bracket
+from .helperfuncs.helperfuncs import chartJSData, chartJSData_bracket, chartJSData_bracket_dt_yr
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+
+from django.contrib.auth import login, authenticate
+from .forms import SignUpForm
+from .models import MyUser
+from django.contrib import messages
+
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
@@ -205,7 +207,25 @@ def vehicle_recommend(request):
     highest_seats = data.aggregate(Max('seatingCapacity'))['seatingCapacity__max']
     return render(request, 'recommend_vehicle.html', {'list_of_locations': list_of_locations, 'lowest_seats': lowest_seats, 'highest_seats':highest_seats})
 
+@login_required
+def signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            form = SignUpForm()
+            return redirect('/signup/successful')
+            
+    else:
+        form = SignUpForm()
+    return render(request, 'signup.html', {'form': form})
+    
+def signup_success(request):
+    return render(request, 'signup_success.html')
+
+
 @csrf_exempt
+@login_required
 def customers_table(request):
     if request.GET.get('search_field'):
         field = request.GET['search_field']
@@ -242,6 +262,7 @@ def customers_table(request):
 
 
 @csrf_exempt
+@login_required
 def rental_table(request):
     if request.GET.get('start_date') and request.GET.get('search_field'):
         start_date = request.GET['start_date']
@@ -315,6 +336,7 @@ def rental_table(request):
     return render(request, 'rental_table.html', {'orders': orders})
 
 
+@login_required
 def customer_data(request):
     data = Customer.objects.all()
     order = Order.objects.all()
@@ -358,7 +380,6 @@ def customer_data(request):
     return render(request, 'visualise_customer_data.html', {'js_data': js_data})
 	
 	
-
 def rental_data(request):
 
     data = Customer.objects.all()
@@ -418,7 +439,7 @@ def rental_data(request):
     # return render(request, 'visualise_rental_data.html', {'output': pie3d.render(), 'chartTitle': 'Returns Data Visualization'})
 
 
-
+@login_required
 def vehicle_data(request):
     data = Car.objects.all()
 
@@ -482,81 +503,80 @@ def read_store_data(request):
 
             # stores
 
-            # new['Store_ID'] = int(row[0])
-            # new['Store_Name'] = row[1].strip()
-            # new['Store_Address'] = row[2].strip()
-            # new['Store_Phone'] = row[3].strip()
-            # new['Store_City'] = row[4].strip()
-            # new['Store_State_Name'] = row[5].strip()
+            new['Store_ID'] = int(row[0])
+            new['Store_Name'] = row[1].strip()
+            new['Store_Address'] = row[2].strip()
+            new['Store_Phone'] = row[3].strip()
+            new['Store_City'] = row[4].strip()
+            new['Store_State_Name'] = row[5].strip()
 
             # # orders
             #
-            # new['Order_ID'] = int(row[6])
-            # new['Order_CreateDate'] = row[7]
-            # new['Pickup_Or_Return'] = row[8]
-            # new['Pickup_Or_Return_Date'] = row[9]
+            new['Order_ID'] = int(row[6])
+            new['Order_CreateDate'] = row[7]
+            new['Pickup_Or_Return'] = row[8]
+            new['Pickup_Or_Return_Date'] = row[9]
             #
             # customers
 
-            # new['Customer_ID'] = int(row[10])
-            # new['Customer_Name'] = row[11].strip()
-            # new['Customer_Phone'] = re.sub('[*]', '', row[12])
+            new['Customer_ID'] = int(row[10])
+            new['Customer_Name'] = row[11].strip()
+            new['Customer_Phone'] = re.sub('[*]', '', row[12])
             # new['Customer_Addresss'] = re.sub('["]')
-            # new['Customer_Brithday'] = row[14].strip()
-            # new['Customer_Occupation'] = row[15].strip()
-            # new['Customer_Gender'] = row[16].strip()
-            #
-            #  cars
+            new['Customer_Brithday'] = row[14].strip()
+            new['Customer_Occupation'] = row[15].strip()
+            new['Customer_Gender'] = row[16].strip()
 
-            # new['Car_ID'] = int(row[17])
-            # new['Car_MakeName'] = row[18].strip()
-            # new['Car_Model'] = row[19].strip()
-            # new['Car_Series'] = row[20].strip()
-            # new['Car_SeriesYear'] = row[21].strip()
-            # new['Car_PriceNew'] = float(row[22])
-            # new['Car_EngineSize'] = float(row[23][:-1])
-            # new['Car_FuelSystem'] = row[24].strip()
-            # new['Car_TankCapacity'] = float(row[25][:-1])
-            # new['Car_Power'] = float(row[26][:-2])
-            # new['Car_SeatingCapacity'] = float(row[27])
-            # new['Car_StandardTransmission'] = row[28].strip()
-            # new['Car_BodyType'] = row[29].strip()
-            # new['Car_Drive'] = row[30].strip()
-            # new['Car_Wheelbase'] = float(row[31][:-2])
 
-            # if new['Pickup_Or_Return'] == 'Pickup':
-            #     if not Order.objects.filter(id=new['Order_ID']):
-            #         order = Order()
-            #         order.id = new['Order_ID']
-            #         print(order.id)
-            #         order.createDate = datetime.date(int(new['Order_CreateDate'][0:4]),int(new['Order_CreateDate'][4:6]), int(new['Order_CreateDate'][6:8]))
-            #         order.pickupDate = datetime.date(int(new['Pickup_Or_Return_Date'][0:4]),int(new['Pickup_Or_Return_Date'][4:6]), int(new['Pickup_Or_Return_Date'][6:8]))
-            #         order.customer = Customer.objects.get(id=new['Customer_ID'])
-            #         order.car = Car.objects.get(id=new['Car_ID'])
-            #         order.pickupStore = Store.objects.get(id=new['Store_ID'])
-            #
-            #         order.save()
+            new['Car_ID'] = int(row[17])
+            new['Car_MakeName'] = row[18].strip()
+            new['Car_Model'] = row[19].strip()
+            new['Car_Series'] = row[20].strip()
+            new['Car_SeriesYear'] = row[21].strip()
+            new['Car_PriceNew'] = float(row[22])
+            new['Car_EngineSize'] = float(row[23][:-1])
+            new['Car_FuelSystem'] = row[24].strip()
+            new['Car_TankCapacity'] = float(row[25][:-1])
+            new['Car_Power'] = float(row[26][:-2])
+            new['Car_SeatingCapacity'] = float(row[27])
+            new['Car_StandardTransmission'] = row[28].strip()
+            new['Car_BodyType'] = row[29].strip()
+            new['Car_Drive'] = row[30].strip()
+            new['Car_Wheelbase'] = float(row[31][:-2])
 
-            # if new['Pickup_Or_Return'] == 'Return':
-            #     if not Order.objects.filter(returnStore=new['Store_ID']):
-            #         try:
-            #             order = Order.objects.get(id=new['Order_ID'])
-            #
-            #         except:
-            #             order = Order()
-            #             order.id = new['Order_ID']
-            #             order.car = Car.objects.get(id=new['Car_ID'])
-            #             order.customer = Customer.objects.get(id=new['Customer_ID'])
-            #             order.createDate = datetime.date(int(new['Order_CreateDate'][0:4]),
-            #                                              int(new['Order_CreateDate'][4:6]),
-            #                                              int(new['Order_CreateDate'][6:8]))
-            #
-            #         print(order.id)
-            #
-            #         order.returnStore = Store.objects.get(id=new['Store_ID'])
-            #         order.returnDate = datetime.date(int(new['Pickup_Or_Return_Date'][0:4]),int(new['Pickup_Or_Return_Date'][4:6]), int(new['Pickup_Or_Return_Date'][6:8]))
-            #
-            #         order.save()
+            if new['Pickup_Or_Return'] == 'Pickup':
+                if not Order.objects.filter(id=new['Order_ID']):
+                    order = Order()
+                    order.id = new['Order_ID']
+                    # print(order.id)
+                    order.createDate = datetime.date(int(new['Order_CreateDate'][0:4]),int(new['Order_CreateDate'][4:6]), int(new['Order_CreateDate'][6:8]))
+                    order.pickupDate = datetime.date(int(new['Pickup_Or_Return_Date'][0:4]),int(new['Pickup_Or_Return_Date'][4:6]), int(new['Pickup_Or_Return_Date'][6:8]))
+                    order.customer = Customer.objects.get(id=new['Customer_ID'])
+                    order.car = Car.objects.get(id=new['Car_ID'])
+                    order.pickupStore = Store.objects.get(id=new['Store_ID'])
+
+                    order.save()
+
+            if new['Pickup_Or_Return'] == 'Return':
+                if not Order.objects.filter(returnStore=new['Store_ID']):
+                    try:
+                        order = Order.objects.get(id=new['Order_ID'])
+
+                    except:
+                        order = Order()
+                        order.id = new['Order_ID']
+                        order.car = Car.objects.get(id=new['Car_ID'])
+                        order.customer = Customer.objects.get(id=new['Customer_ID'])
+                        order.createDate = datetime.date(int(new['Order_CreateDate'][0:4]),
+                                                         int(new['Order_CreateDate'][4:6]),
+                                                         int(new['Order_CreateDate'][6:8]))
+
+                    # print(order.id)
+
+                    order.returnStore = Store.objects.get(id=new['Store_ID'])
+                    order.returnDate = datetime.date(int(new['Pickup_Or_Return_Date'][0:4]),int(new['Pickup_Or_Return_Date'][4:6]), int(new['Pickup_Or_Return_Date'][6:8]))
+
+                    order.save()
 
             # if not Store.objects.filter(id=new['Store_ID']):
             #     store = Store()
@@ -645,9 +665,9 @@ def read_central_db(request):
             # # orders
             #
             new['Order_ID'] = int(row[0])
-            # new['Order_CreateDate'] = row[1]
-            # new['Pickup_Or_Return_Date'] = row[9]
-            # new['Pickup_Date'] = row[2]
+            new['Order_CreateDate'] = row[1]
+            new['Pickup_Or_Return_Date'] = row[9]
+            new['Pickup_Date'] = row[2]
             new['Return_Date'] = row[9]
             new['Return_Store'] = row[10]
             #
@@ -691,7 +711,7 @@ def read_central_db(request):
             #         order.pickupStore = Store.objects.get(id=new['Store_ID'])
             #
             #         order.save()
-
+            #
             # if new['Pickup_Or_Return'] == 'Return':
             #     if not Order.objects.filter(returnStore=new['Store_ID']):
             #         try:
@@ -713,7 +733,7 @@ def read_central_db(request):
             #
             #         order.save()
 
-            print(new)
+            # print(new)
 
             order = Order.objects.get(id=new['Order_ID'])
 

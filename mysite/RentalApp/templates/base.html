@@ -15,19 +15,23 @@
 <body>
 
 <ul id='dropdown1' class='dropdown-content'>
-    <li><a href="customers">View Customers</a></li>
-    <li><a href="visualisecustomers">Customer Data Visualisation</a></li>
+    <li><a href="/customers">View Customers</a></li>
+    <li><a href="/visualisecustomers">Customer Data Visualisation</a></li>
 </ul>
 
 <ul id='dropdown2' class='dropdown-content'>
-    <li><a href="rentals">View Rentals</a></li>
-    <li><a href="visualiserentals">Rental Data Visualisation</a></li>
+    <li><a href="/rentals">View Rentals</a></li>
+    <li><a href="/visualiserentals">Rental Data Visualisation</a></li>
 </ul>
 
 <ul id='dropdown3' class='dropdown-content'>
-    <li><a href="vehicles">View Vehicles</a></li>
     <li><a href="vehiclerecommend">Vehicle Recommendation</a></li>
     <li><a href="visualisevehicles">Vehicle Data Visualisation</a></li>
+</ul>
+
+<ul id='dropdown4' class='dropdown-content'>
+    <li><a href="/accounts/login">{% if user.is_authenticated %}Signed in as {{ user.username }} {% else %} Login {% endif %}</a></li>
+    <li><a href="/accounts/logout">Logout</a></li>
 </ul>
 
 <nav>
@@ -36,9 +40,10 @@
             <a href="/" class="brand-logo">CRDMP 🚗</a>
             <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
-                <li><a class='dropdown-trigger ' href='#' data-target='dropdown1'>Customers</a></li>
-                <li><a class='dropdown-trigger ' href='#' data-target='dropdown2'>Rentals</a></li>
-                <li><a class='dropdown-trigger' href='#' data-target='dropdown3'>Vehicles</a></li>
+                <li><a class='dropdown-trigger btn' href='#' data-target='dropdown1'>Customers</a></li>
+                <li><a class='dropdown-trigger btn' href='#' data-target='dropdown2'>Rentals</a></li>
+                <li><a class='dropdown-trigger btn' href='#' data-target='dropdown3'>Vehicles</a></li>
+                <li><a class='dropdown-trigger btn' href='#' data-target='dropdown4'>Account</a></li>
             </ul>
         </div>
     </div>

@@ -129,3 +129,5 @@ def chartJSData_bracket_dt_yr(dataSource, columnName, start_date, increment, bra
     data = chartJSData_dict(dict)
 
     return data
+    
+
