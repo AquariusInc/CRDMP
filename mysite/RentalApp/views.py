@@ -134,15 +134,8 @@ def rental_table(request):
 
     return render(request, 'rental_table.html', {'orders': orders})
     
-    
-    
 
 def customer_history(request):
-
-    
-
-    ####
-
     if request.GET.get('search_field'):
         field = request.GET.get('search_field')
         query = request.GET.get('search_box')

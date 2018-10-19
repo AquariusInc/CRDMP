@@ -39,6 +39,7 @@
             <th>DOB</th>
             <th>Occupation</th>
             <th>Gender</th>
+            <th>Order History</th>
         </tr>
         </thead>
 
@@ -52,6 +53,7 @@
             <td>{{ item.dob }}</td>
             <td>{{ item.occupation }}</td>
             <td>{{ item.gender }}</td>
+            <td><a class="btn" href="/customerhistory?search_field=id&search_box={{ item.id }}"><i class="material-icons">insert_drive_file</i></a></td>
         </tr>
         {% endfor %}
         </tbody>
