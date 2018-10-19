@@ -142,7 +142,7 @@ def customer_history(request):
        
         if field == "name":
             data = Customer.objects.filter(name__contains=query)
-            cust_id = Customer.objects.filter(customer__contains=query)
+            cust_id = Customer.objects.filter(customer__contains=query)#doesn't work 
             ordata = Order.objects.filter(customer=cust_id)
         elif field == "id":
             data = Customer.objects.filter(id__contains=query)
@@ -209,7 +209,7 @@ def customer_data(request):
     #customer counter over time - temp 
     orderSQl = chartJSData_bracket_dt_yr(order, 'createDate', start_date=date(2000,1,1), increment=1, bracketCount=10)
     
-    #poo = chartJSData(orderSQL, 'createDate', chartType="line")
+    
  
     # holding dict
     js_dict = {
