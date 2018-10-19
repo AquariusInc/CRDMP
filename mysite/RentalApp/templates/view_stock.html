@@ -1,34 +1,22 @@
 {% extends 'base.html' %}
 {% load static %}
-
-{% block title %}Customer Visualisation{% endblock %}
-
-{% block extracss %}<link rel="stylesheet" href="{% static 'css/visualise-rental.css' %}">{% endblock %}
+{% block title %}View Stock{% endblock %}
+{% block extracss %}<link rel="stylesheet" href="{% static 'css/view-stock.css' %}">{% endblock %}
 
 {% block extrascripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
-<script src="{% static 'js/visualise_rental.js' %}"></script>
+<script src="{% static 'js/view_stock.js' %}"></script>
 {% endblock %}
 
 {% block content %}
 
 <div class="container">
 	<div class="tab">
-	  <!-- <button class="tablinks" onclick="openTab(event, 'Amount of Customers', 'amountChart', obj.id)">Number of Customers</button>
-	  <button class="tablinks" onclick="openTab(event, 'Occupation', 'occupationChart', obj.occupation)">Occupation</button>-->
 	  <button class="tablinks" onclick="openTab(event, 'bodyType', 'bodyTypeChart', obj.bodyType)">Body Type</button>
 	  <button class="tablinks" onclick="openTab(event, 'pickupStore', 'pickupsChart', obj.pickupStore)">Pickup Store</button>
 	  <button class="tablinks" onclick="openTab(event, 'returnStore', 'returnsChart', obj.returnStore)">Return Store</button>
 	 
-	 
-	<!-- </div>
-	
-		<div id="Amount of Customers" class="tabcontent">
-	  <h3>Total Customers Over Time</h3>
-	  <canvas id="amountChart" width="900" height="400"></canvas>
 
-	</div> -->
-	
 		<div id="returnStore" class="tabcontent"><br>
 	  <h3 class="title-thing">Breakdown of Rentals by Return Store </h3>
 	  <canvas id="returnsChart" width="900" height="400"></canvas>
@@ -58,18 +46,6 @@
 	  </div>
 	</div>
 
-	
-	<!-- <div id="Repeat Customers" class="tabcontent">
-	  <h3>Repeat Customers</h3>
-	  <canvas id="repeatChart" width="900" height="400"></canvas>
-	
-	  
-	</div> -->
-	
-	
-	
-
-	
 	
 	<script>
 	var obj = {{ js_data|safe }};

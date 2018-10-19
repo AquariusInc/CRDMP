@@ -3,35 +3,111 @@
 {% block title %}Rentals{% endblock %}
 {% block content %}
 <div class="container">
-    <h3>Rental Data</h2>
-    <!--<table>-->
-        <!--<thead>-->
-          <!--<tr>-->
-              <!--<th>ID</th>-->
-              <!--<th>Create Date</th>-->
-              <!--<th>Pickup Date</th>-->
-              <!--<th>Return Date</th>-->
-              <!--<th>Car ID</th>-->
-              <!--<th>Customer ID</th>-->
-              <!--<th>Pickup Store ID</th>-->
-              <!--<th>Return Store ID</th>-->
-          <!--</tr>-->
-        <!--</thead>-->
+    <h3>Rental Data</h3>
+        <form action="rentals" method="get">
+            <div class="row">
+                <div class="input-field col l3 m4 s5">
+                    <select name="search_field">
+                        <option value="" disabled {% if field is not defined %} selected {% endif %}>Search Field</option>
+                        <option value="id" {% if field == 'id' %}selected{% endif %}>ID</option>
+                        <option value="car_id" {% if field == 'car_id' %}selected{% endif %}>Car ID</option>
+                        <option value="customer_id" {% if field == 'customer_id' %}selected{% endif %}>Customer ID</option>
+                        <option value="pickup_id" {% if field == 'pickup_id' %}selected{% endif %}>Pickup Store ID</option>
+                        <option value="return_id" {% if field == 'return_id' %}selected{% endif %}>Return Store ID</option>
+                    </select>
+                    <label>Field to Search</label>
+                </div>
+                <div class="input-field col l9 m7 s5">
+                    <input id="search_box" name="search_box" type="text" class="" {% if query is not defined %} value="{{ query }}" {% endif %}>
+                    <label for="search_box">Search</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s5">
+                    <input id='start_date' name="start_date" type="text" class="datepicker">
+                    <label for='start_date'>Start Date</label>
+                </div>
+                <div class="col s5">
+                    <input id='end_date' name="end_date" type="text" class="datepicker">
+                    <label for='end_date'>End Date</label>
+                </div>
+                <button id="search_button" class="btn waves-effect waves-light col s2" type="submit" name="action">
+                    <i class="material-icons">search</i>
+                </button>
+            </div>
+        </form>
+    <table id="table-id" class="striped">
+        <thead>
+          <tr>
+              <th>ID</th>
+              <th>Create Date</th>
+              <th>Pickup Date</th>
+              <th>Return Date</th>
+              <th>Car ID</th>
+              <th>Customer ID</th>
+              <th>Pickup Store ID</th>
+              <th>Return Store ID</th>
+          </tr>
+        </thead>
 
-        <!--<tbody>-->
-         <!--{% for item in data %}-->
-         <!--<tr>-->
-             <!--<td>{{ item.id }}</td>-->
-             <!--<td>{{ item.createDate }}</td>-->
-             <!--<td>{{ item.pickupDate }}</td>-->
-             <!--<td>{{ item.returnDate }}</td>-->
-             <!--<td>{{ item.car }}</td>-->
-             <!--<td>{{ item.customer }}</td>-->
-             <!--<td>{{ item.pickupStore }}</td>-->
-             <!--<td>{{ item.returnStore }}</td>-->
-         <!--</tr>-->
-         <!--{% endfor %}-->
-        <!--</tbody>-->
-    <!--</table>-->
+        <tbody>
+         {% for item in orders %}
+         <tr>
+             <td>{{ item.id }}</td>
+             <td>{{ item.createDate }}</td>
+             <td>{{ item.pickupDate }}</td>
+             <td>{{ item.returnDate }}</td>
+             <td>{{ item.car }}</td>
+             <td><a href="customers?search_field=id&search_box={{ item.customer }}&action=" >{{ item.customer }}</a></td>
+             <td>{{ item.pickupStore }}</td>
+             <td>{{ item.returnStore }}</td>
+         </tr>
+         {% endfor %}
+        </tbody>
+    </table>
+
+<div class="pagination center-align">
+    <span class="step-links">
+        {% if orders.has_previous %}
+            <a class="waves-effect waves-light btn" href="?page=1">&laquo; first</a>
+            <a class="waves-effect waves-light btn" href="?page={{ orders.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ orders.number }} of {{ orders.paginator.num_pages }}
+        </span>
+
+        {% if orders.has_next %}
+            <a class="waves-effect waves-light btn" href="?page={{ orders.next_page_number }}">next</a>
+            <a class="waves-effect waves-light btn" href="?page={{ orders.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
 </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+<script>
+    new Tablesort(document.getElementById('table-id'));
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var elems = document.querySelectorAll('select');
+        var instances = M.FormSelect.init(elems, options);
+    });
+
+    $(document).ready(function () {
+        $('select').formSelect();
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('.datepicker');
+    var instances = M.Datepicker.init(elems, options);
+  });
+
+      $(document).ready(function(){
+    $('.datepicker').datepicker();
+  });
+
+  // Or with jQuery
+</script>
 {% endblock %}
