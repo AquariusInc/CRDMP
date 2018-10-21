@@ -28,12 +28,14 @@ def home(request):
 
 @login_required
 def signup(request):
+    if not request.user.is_management:
+        return redirect('/account/login/?next=/accounts/signup/')
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
             form.save()
             form = SignUpForm()
-            return redirect('/signup/successful')
+            return redirect('/accounts/signup/successful')
             
     else:
         form = SignUpForm()
@@ -171,8 +173,7 @@ def customer_data(request):
     #repeat customers - done
     customerSQL = order.values ('customer').annotate(total=Count('customer')).order_by('total')
     customer = chartJSData(customerSQL, 'customer', chartType="line")
-       
-	
+
 	#Customer counts
     idSQL = data.values ('id').annotate(total=Count('id'))
     id = chartJSData(idSQL, 'id', chartType="line")
@@ -198,9 +199,8 @@ def customer_data(request):
 	
     return render(request, 'visualise_customer_data.html', {'js_data': js_data})
 	
-	
+@login_required
 def rental_data(request):
-
     data = Customer.objects.all()
     order = Order.objects.all()
     store = Store.objects.all()
@@ -225,38 +225,6 @@ def rental_data(request):
     }
     js_data = json.dumps(js_dict)
     return render(request, 'visualise_rental_data.html', {'js_data': js_data})
-    # #occupation = chartJSData(occupationSQL, 'occupation')
-    # pie3d = FusionCharts("pie3d","ex2", "100%", "400", "chart-1", "json",
-    #     # The data is passed as a string in the `dataSource` as parameter.
-    # """{
-    #     "chart": {
-    #         "caption": "Rental Returns",
-    #
-    #         "showValues":"1",
-    #         "showPercentInTooltip" : "0",
-    #         "numberPrefix" : "%",
-    #         "enableMultiSlicing":"1",
-    #         "theme": "fusion"
-    #     },
-    #     "data": [{
-    #         "label": "Equity",
-    #         "value": "300000"
-    #     }, {
-    #         "label": "Debt",
-    #         "value": "230000"
-    #     }, {
-    #         "label": "Bullion",
-    #         "value": "180000"
-    #     }, {
-    #         "label": "Real-estate",
-    #         "value": "270000"
-    #     }, {
-    #         "label": "Insurance",
-    #         "value": "20000"
-    #     }]
-    # }""")
-    # return render(request, 'visualise_rental_data.html', {'output': pie3d.render(), 'chartTitle': 'Returns Data Visualization'})
-
 
 @login_required
 def vehicle_data(request):

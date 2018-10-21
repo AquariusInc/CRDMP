@@ -30,6 +30,7 @@
 <ul id='dropdown4' class='dropdown-content'>
     <li><a href="/accounts/login">{% if user.is_authenticated %}Signed in as {{ user.username }} {% else %} Login {% endif %}</a></li>
     <li><a href="/accounts/logout">Logout</a></li>
+    {% if user.is_management %}<li><a href="/accounts/signup">Create User</a></li>{% endif %}
 </ul>
 
 <nav>

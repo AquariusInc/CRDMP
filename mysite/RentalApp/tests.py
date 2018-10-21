@@ -1,26 +1,29 @@
 from django.test import TestCase, Client
 from django.test.client import RequestFactory
 from .views import vehicle_data
+from django.contrib.auth import get_user_model
 from .models import Car
+from django.contrib.auth import authenticate
 
-# Integration testing for Visualise Vehicle Data 
 class visualise_vehicle_data_tests(TestCase):
-    # Should dynamically draw from fixtures
     data_names = ['bodyTypes', 'make', 'model', 'year', 'price', 'seating', 'driveTrain']
 
     # Fixtures
     # Contain a dump of database data
     # Should be updated manually
-    #fixtures = ['dump.json', 'Car']
+    fixtures = ['dumpdata.json']
     
     def setUp(self):
         # Every test needs access to the request factory.
         self.factory = RequestFactory()
+        User = get_user_model()
+        user = User.objects.create(username='testuser', password='12345')
         #Car.objects.create(id=1, make='BMW', model='M3', series='bleh', year=1945, priceNew=30000, engineSize=200, fuelSystem='petrol', tankCapacity=200.0, power=150.0, seatingCapacity=4, standardTransmission='6AMS', bodyType='4 SEDAN', drive='RWD', wheelBase=20.0)
         #Car.objects.create(id=2, make='Mazda', model='E-type', series='yuck', year=1995, priceNew=20000, engineSize=150, fuelSystem='petrol', tankCapacity=200.0, power=150.0, seatingCapacity=7, standardTransmission='3GMS', bodyType='2 Coupe', drive='FWD', wheelBase=30.0)
  
     def test_page_works(self):
         c = Client()
+        c.login(username='testuser', password='12345')
         response = c.get('/visualisevehicles')
         self.assertEquals(response.status_code, 200)
         
