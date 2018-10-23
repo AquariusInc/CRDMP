@@ -37,10 +37,10 @@
         </thead>
 
         <tbody>
-        {% for x, y in car_count.views %}
+        {% for item in car_count %}
         <tr>
-            <td>{{ x }}</td>
-            <td>{{ y }}</td>
+            <td>{{ item.returnStore__name|slice:"-6" }}</td>
+            <td>{{ item.count }}</td>
         </tr>
         {% endfor %}
         </tbody>

@@ -500,7 +500,7 @@ def view_stock(request):
     page = request.GET.get('page')
     stock = paginator.get_page(page)
     # if Stock.car == Store.id
-    return render(request, 'view_stock.html', {'data': stock, 'car_count' : car_count}, )
+    return render(request, 'view_stock.html', {'data': stock, 'car_count': car_count}, )
     
     
 
