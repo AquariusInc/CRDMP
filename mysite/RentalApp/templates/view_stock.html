@@ -1,55 +1,81 @@
 {% extends 'base.html' %}
-{% load static %}
-{% block title %}View Stock{% endblock %}
-{% block extracss %}<link rel="stylesheet" href="{% static 'css/view-stock.css' %}">{% endblock %}
 
-{% block extrascripts %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
-<script src="{% static 'js/view_stock.js' %}"></script>
+{% block title %}Stock{% endblock %}
+{% block content %}
+<div class="container">
+    <h3>View Stock</h3>
+    <!-- <form action="stock" method="get">
+        <div class="row">
+            <div class="input-field col l2 m3 s4">
+                <select name="search_field">
+                    <option value="" disabled {% if field is not defined %} selected {% endif %}>Search Field</option>
+                    <option value="carid" {% if field == 'car' %}selected{% endif %}>Car ID</option>
+                    <option value="returnStore" {% if field == 'returnStore' %}selected{% endif %}>Store Branch</option>
+                    <option value="returnDate" {% if field == 'returnDate' %}selected{% endif %}>Return Date</option>
+                </select>
+                <label>Field to Search</label>
+            </div>
+            <div class="input-field col l9 m7 s5">
+                <input id="search_box" name="search_box" type="text" class="" {% if query is not defined %}
+                       value="{{ query }}" {% endif %}>
+                <label for="search_box">Search</label>
+            </div>
+            <button id="search_button" class="btn waves-effect waves-light" type="submit" name="action">
+                <i class="material-icons">search</i>
+            </button>
+        </div>
+    </form> -->
+
+    <table id="table-id" class="striped">
+        <thead>
+        <tr>
+            <th data-sort-default>Number Of Cars</th>
+            <th>Branch Name</th>
+            <!-- <th>Return Date</th> -->
+            
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for x, y in car_count.views %}
+        <tr>
+            <td>{{ x }}</td>
+            <td>{{ y }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div class="pagination center-align">
+    <span class="step-links">
+        {% if data.has_previous %}
+            <a class="waves-effect waves-light btn" href="?page=1">&laquo; first</a>
+            <a class="waves-effect waves-light btn" href="?page={{ data.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ data.number }} of {{ data.paginator.num_pages }}
+        </span>
+
+        {% if data.has_next %}
+            <a class="waves-effect waves-light btn" href="?page={{ data.next_page_number }}">next</a>
+            <a class="waves-effect waves-light btn" href="?page={{ data.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+    </div>
+</div>
 {% endblock %}
 
-{% block content %}
+{% block extrascripts %}
+<script>
+    new Tablesort(document.getElementById('table-id'));
+    document.addEventListener('DOMContentLoaded', function () {
+        var elems = document.querySelectorAll('select');
+        var instances = M.FormSelect.init(elems, options);
+    });
 
-<div class="container">
-	<div class="tab">
-	  <button class="tablinks" onclick="openTab(event, 'bodyType', 'bodyTypeChart', obj.bodyType)">Body Type</button>
-	  <button class="tablinks" onclick="openTab(event, 'pickupStore', 'pickupsChart', obj.pickupStore)">Pickup Store</button>
-	  <button class="tablinks" onclick="openTab(event, 'returnStore', 'returnsChart', obj.returnStore)">Return Store</button>
-	 
 
-		<div id="returnStore" class="tabcontent"><br>
-	  <h3 class="title-thing">Breakdown of Rentals by Return Store </h3>
-	  <canvas id="returnsChart" width="900" height="400"></canvas>
-	  <div class="buttonContainer">
-	    <button class="buttonGraph" onclick="changeGraph(event, 'returnsChart', 'bar', obj.returnStore)">BAR</button>
-	    <button class="buttonGraph" onclick="changeGraph(event, 'returnsChart', 'pie', obj.returnStore)">PIE</button>		
-	  </div>
-	</div>
-	
-	
-	<div id="pickupStore" class="tabcontent" ><br>
-	  <h3 class="title-thing">Breakdown of Rentals by Pickup Store</h3>
-	  <canvas id="pickupsChart" width="900" height="400"></canvas>
-	  <div class="buttonContainer">
-	    <button class="buttonGraph" onclick="changeGraph(event, 'pickupsChart', 'bar', obj.pickupStore)">BAR</button>
-	    <button class="buttonGraph" onclick="changeGraph(event, 'pickupsChart', 'pie', obj.pickupStore)">PIE</button>		
-	  </div>
-	</div>
-
-	<div id="bodyType" class="tabcontent"><br>
-	  <h3 class="title-thing">Breakdown of Rentals by Body Type</h3>
-	  <canvas id="bodyTypeChart" width="900" height="400"></canvas>
-	  <div class="buttonContainer">
-	    <button class="buttonGraph" onclick="changeGraph(event, 'bodyTypeChart', 'bar', obj.bodyType)">BAR</button>
-	    <button class="buttonGraph" onclick="changeGraph(event, 'bodyTypeChart', 'pie', obj.bodyType)">PIE</button>
-			
-	  </div>
-	</div>
-
-	
-	<script>
-	var obj = {{ js_data|safe }};
-	</script>
-	
-</div>
+    $(document).ready(function () {
+        $('select').formSelect();
+    });
+</script>
 {% endblock %}
