@@ -3,62 +3,102 @@
 {% block title %}Vehicle Recommendation{% endblock %}
 {% block content %}
     <div class="container">
-        <h3>Vehicle Recommendation</h3>
-        <form>
-            <div class="row">
-                <div class="input-field col s12">
-                    <select id="location-select">
-                        <option value="" disabled selected>Choose your Store</option>
-                        {% for item in list_of_locations %}
-                            <option value="{{ item }}">{{ item }}</option>
-                        {% endfor %}
-                    </select>
-                    <label>Location</label>
+        {% if show_form %}
+            <h3>Vehicle Recommendation</h3>
+            <form>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <select id="location-select">
+                            <option value="" disabled selected>Choose your Store</option>
+                            {% for item in list_of_locations %}
+                                <option value="{{ item }}">{{ item }}</option>
+                            {% endfor %}
+                        </select>
+                        <label>Location</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <iframe class="col s12" id="map" height="400" frameborder="0" style="border:0"
+                            src="https://www.google.com/maps/embed/v1/search?q=brisbane&key=AIzaSyAIgrTrt5LaMsC-JUUK-jZXYkZyeLEc3JU"
+                            allowfullscreen></iframe>
+                </div>
+                <div class="row">
+                    <label>Date of Rental</label>
+                    <input type="text" class="datepicker">
+                </div>
+                <div class="row">
+                    <p class="range-field">
+                        <label>Minimum Seat Number (<span id="seat-number-text"></span>)</label>
+                        <input type="range" name="seat-number" id="seat-number" value="4" min="{{ lowest_seats }}"
+                               max="{{ highest_seats }}"/>
+                    </p>
+                </div>
+                <span value="{{ lowest_seats }}" id="lowest-seats" display="none"></span>
+                <span value="{{ highest_seats }}" id="highest-seats" display="none"></span>
+                <div class="row">
+                    <label>Transmission Type</label>
+                    <p>
+                        <label>
+                            <input type="checkbox"/>
+                            <span>Manual</span>
+                        </label>
+                    </p>
+                    <p>
+                        <label>
+                            <input type="checkbox" checked="checked"/>
+                            <span>Automatic</span>
+                        </label>
+                    </p>
+                    <p>
+                        <label>
+                            <input type="checkbox"/>
+                            <span>CVT</span>
+                        </label>
+                    </p>
+                </div>
+                <div class="row">
+                    <button class="btn waves-effect waves-light" type="submit" name="action">Submit
+                        <i class="material-icons right">send</i>
+                    </button>
+                </div>
+            </form>
+        {% endif %}
+        {% if show_results %}
+            <h3>Recommended Vehicle</h3>
+            <div id="vehicle_list">
+                <div class="row">
+                    {% for item in images %}
+                        <div class="card">
+                            <div class="card-image waves-effect waves-block waves-light">
+                                <div class="car-image-div-recommend">
+                                    <img class="activator car-image" src="{{ item.0 }}">
+                                </div>
+                            </div>
+                            <div class="card-content">
+                            <span class="card-title activator grey-text text-darken-4">{{ item.1.make }} {{ item.1.model }}<i
+                                    class="material-icons right">info_outline</i></span>
+                                <div class="series">{{ item.1.series }}</div>
+                                <span class="seating"><i
+                                        class="material-icons">event_seat</i>{{ item.1.seatingCapacity }}</span>
+                                <span><i
+                                        class="material-icons">directions_car</i>{{ item.1.standardTransmission }}</span>
+                            </div>
+                            <div class="card-reveal">
+                        <span class="card-title grey-text text-darken-4">{{ item.1.make }} {{ item.1.model }} {{ item.1.series }}<i
+                                class="material-icons right">close</i></span>
+                                <div>Seating Capacity: {{ item.1.seatingCapacity }}</div>
+                                <div>Transmission: {{ item.1.standardTransmission }}</div>
+                                <div>Year: {{ item.1.year }}</div>
+                                <div>Body Type: {{ item.1.bodyType }}</div>
+                                <div>Drive: {{ item.1.drive }}</div>
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
-            <div class="row">
-                <iframe class="col s12" id="map" height="400" frameborder="0" style="border:0"
-                        src="https://www.google.com/maps/embed/v1/search?q=brisbane&key=AIzaSyAIgrTrt5LaMsC-JUUK-jZXYkZyeLEc3JU"
-                        allowfullscreen></iframe>
-            </div>
-            <div class="row">
-                <label>Date of Rental</label>
-                <input type="text" class="datepicker">
-            </div>
-            <div class="row">
-                <label>Seat Number Range</label>
-                <div id="seat-slider"></div>
-            </div>
-            <span value="{{ lowest_seats }}" id="lowest-seats" display="none"></span>
-            <span value="{{ highest_seats }}" id="highest-seats" display="none"></span>
-            <div class="row">
-                <label>Transmission Type</label>
-                <p>
-                    <label>
-                        <input type="checkbox"/>
-                        <span>Manual</span>
-                    </label>
-                </p>
-                <p>
-                    <label>
-                        <input type="checkbox" checked="checked"/>
-                        <span>Automatic</span>
-                    </label>
-                </p>
-                <p>
-                    <label>
-                        <input type="checkbox" checked="checked"/>
-                        <span>CVT</span>
-                    </label>
-                </p>
-            </div>
-            <div class="row">
-                <button class="btn waves-effect waves-light" type="submit" name="action">Submit
-                    <i class="material-icons right">send</i>
-                </button>
-            </div>
-        </form>
+        {% endif %}
     </div>
+
 {% endblock %}
 
 {% block extrascripts %}
@@ -67,28 +107,22 @@
             $('select').formSelect();
         });
 
-
-        var slider = document.getElementById('seat-slider');
-        noUiSlider.create(slider, {
-            start: [2, 5],
-            connect: true,
-            step: 1,
-            orientation: 'horizontal', range: {
-                'min': parseInt($('#lowest-seats').attr('value')),
-                'max': parseInt($('#highest-seats').attr('value'))
-            },
-            format: wNumb({
-                decimals: 0
-            })
-        });
-
         $("#location-select").change(function () {
             $("#map").attr('src', "https://www.google.com/maps/embed/v1/search?q=" + encodeURI($("#location-select").val() + ", australia") + "&key=AIzaSyAIgrTrt5LaMsC-JUUK-jZXYkZyeLEc3JU")
         })
 
-      $(document).ready(function(){
-    $('.datepicker').datepicker();
-  });
-          
+        $(document).ready(function () {
+            $('.datepicker').datepicker();
+        });
+
+        var slider = document.getElementById("seat-number");
+        var output = document.getElementById("seat-number-text");
+        output.innerHTML = slider.value; // Display the default slider value
+
+        // Update the current slider value (each time you drag the slider handle)
+        slider.oninput = function () {
+            output.innerHTML = this.value;
+        }
+
     </script>
 {% endblock %}
