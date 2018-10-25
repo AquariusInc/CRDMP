@@ -20,7 +20,7 @@
                             </div>
                             <div class="card-content">
                             <span class="card-title activator grey-text text-darken-4">{{ item.1.make }} {{ item.1.model }}<i
-                                    class="material-icons right">info_outline</i></span>
+                                    class="material-icons right info">info_outline</i></span>
                                 <div class="series">{{ item.1.series }}</div>
                                 <span class="seating"><i
                                         class="material-icons">event_seat</i>{{ item.1.seatingCapacity }}</span>
@@ -103,25 +103,25 @@
                         <label>Transmission Type</label>
                         <p>
                             <label>
-                                <input name="manual" id="manual" type="checkbox"/>
+                                <input name="manual" id="manual" type="checkbox" class="transmission-checkbox"/>
                                 <span>Manual</span>
                             </label>
                         </p>
                         <p>
                             <label>
-                                <input name="auto" id="auto" type="checkbox" checked="checked"/>
+                                <input name="auto" id="auto" type="checkbox" checked="checked" class="transmission-checkbox"/>
                                 <span>Automatic</span>
                             </label>
                         </p>
                         <p>
                             <label>
-                                <input name="cvt" id="cvt" type="checkbox"/>
+                                <input name="cvt" id="cvt" type="checkbox" class="transmission-checkbox"/>
                                 <span>CVT</span>
                             </label>
                         </p>
                     </div>
                     <div class="row">
-                        <div class="input-field col s6">
+                        <div class="input-field col s6" id="make-div">
                             <select name="make" id="make">
                                 <option value="" disabled selected>Choose the Make</option>
                                 {% for item in list_of_makes %}
@@ -130,7 +130,7 @@
                             </select>
                             <label>Make</label>
                         </div>
-                        <div class="input-field col s6">
+                        <div class="input-field col s6" id="model-div">
                             <select name="model" id="model">
                                 <option value="" disabled selected>Choose the Model</option>
                                 {% for item in list_of_models %}
@@ -141,7 +141,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <button class="btn waves-effect waves-light" type="submit" name="action">Submit
+                        <button class="btn waves-effect waves-light" type="submit" name="action" id="submit-button">Submit
                             <i class="material-icons right">send</i>
                         </button>
                     </div>

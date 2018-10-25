@@ -58,7 +58,7 @@
              <td>{{ item.pickupDate }}</td>
              <td>{{ item.returnDate }}</td>
              <td>{{ item.car }}</td>
-             <td><a href="customers?search_field=id&search_box={{ item.customer }}&action=" >{{ item.customer }}</a></td>
+             <td><a href="customers?search_field=id&search_box={{ item.customer }}&action=" class="link-to-customer">{{ item.customer }}</a></td>
              <td>{{ item.pickupStore }}</td>
              <td>{{ item.returnStore }}</td>
          </tr>
@@ -78,7 +78,7 @@
         </span>
 
         {% if orders.has_next %}
-            <a class="waves-effect waves-light btn" href="?page={{ orders.next_page_number }}">next</a>
+            <a class="waves-effect waves-light btn" href="?page={{ orders.next_page_number }}" id="next-button">next</a>
             <a class="waves-effect waves-light btn" href="?page={{ orders.paginator.num_pages }}">last &raquo;</a>
         {% endif %}
     </span>
