@@ -16,13 +16,13 @@
 <body>
 
 <ul id='dropdown1' class='dropdown-content'>
-    <li><a href="/staff/customers">View Customers</a></li>
+    <li><a href="/staff/customers" id="view-customers">View Customers</a></li>
     <li><a href="/staff/visualisecustomers">Customer Data Visualisation</a></li>
 
 </ul>
 
 <ul id='dropdown2' class='dropdown-content'>
-    <li><a href="/staff/rentals">View Rentals</a></li>
+    <li><a href="/staff/rentals" id="view-rentals">View Rentals</a></li>
     <li><a href="/staff/visualiserentals">Rental Data Visualisation</a></li>
     <li><a href="/staff/viewstock">View Stock</a></li>
 </ul>
@@ -48,10 +48,10 @@
             <a href="/" class="brand-logo">CRDMP 🚗</a>
             <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
-                <li><a class='dropdown-trigger' href='#' data-target='dropdown1'>Customers</a></li>
-                <li><a class='dropdown-trigger' href='#' data-target='dropdown2'>Rentals</a></li>
-                <li><a class='dropdown-trigger' href='#' data-target='dropdown3'>Vehicles</a></li>
-                <li><a class='dropdown-trigger' href='#' data-target='dropdown4'>Account</a></li>
+                <li><a id='customer-nav' class='dropdown-trigger' href='#' data-target='dropdown1'>Customers</a></li>
+                <li><a id='rental-nav' class='dropdown-trigger' href='#' data-target='dropdown2'>Rentals</a></li>
+                <li><a id="vehicle-nav" class='dropdown-trigger' href='#' data-target='dropdown3'>Vehicles</a></li>
+                <li><a id="account-nav" class='dropdown-trigger' href='#' data-target='dropdown4'>Account</a></li>
             </ul>
         </div>
     </div>

@@ -46,13 +46,6 @@
     font-weight: bold;
 }
 
-#submitBtn {
-    width: 200px;
-    padding: 10px;
-    margin: 10px;
-    margin-left: auto;
-    display: block;
-}
 </style>
 
 <div id="popModal" class="modal">
@@ -100,7 +93,7 @@
         <div class="col s5 push-s2">
         {{ form.last_name.errors }}
         <label for="{{ form.last_name.id_for_label }}">
-        {{ form.last_name }}<span>First Name</span></label>
+        {{ form.last_name }}<span>Last Name</span></label>
         </div>
     </div>
     <div class="row">
@@ -123,7 +116,7 @@
         {{ form.is_management }}<span>Manager</span></label>
         </div>
         <div class="col s3 push-s7">
-        <button id="submitBtn" type="button">Sign up</button>
+        <button id="submitBtn" class="waves-effect waves-light btn" type="button">Sign up</button>
         </div>
     </div>
   </form>
