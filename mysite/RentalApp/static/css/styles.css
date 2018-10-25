@@ -21,6 +21,13 @@
     margin-right: auto;
 }
 
+
+
+.order-history-button {
+    height: 30px;
+    margin-top: 3px;
+}
+
 .car-image-div {
     height: 250px;
 }
@@ -34,8 +41,12 @@
     height: 500px
 }
 
-#filter-button {
+#filter-button, #clear-button {
     margin-bottom: 15px;
+}
+
+#clear-button{
+    margin-left: 5px;
 }
 
 #seat-slider {
@@ -54,4 +65,11 @@
 
 .series {
     padding-bottom: 5px;
+}
+
+.thing {
+    height: 24px;
+    display: inline-flex;
+    vertical-align: top;
+    margin-right: 5px;
 }

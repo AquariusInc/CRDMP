@@ -1,4 +1,9 @@
 from django.db import models
+from django.contrib.auth.models import User, AbstractUser
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+
 
 # Create your models here.
 
@@ -19,6 +24,8 @@ class Customer(models.Model):
         return str(self.id)
 
 
+
+
 class Store(models.Model):
 
     id = models.IntegerField(primary_key=True)
@@ -34,6 +41,17 @@ class Store(models.Model):
     def __unicode__(self):
         return str(self.id)
 
+class Stock(models.Model):
+    car = models.ForeignKey('Car', on_delete=models.CASCADE)
+    returnDate = models.DateField()
+    returnStore = models.ForeignKey('Store', on_delete=models.CASCADE, related_name='stock_return_store')
+
+
+    def __str__(self):
+        return str(self.car)
+
+    def __unicode__(self):
+        return str(self.car)
 
 class Car(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -70,7 +88,7 @@ class Order(models.Model):
     returnDate = models.DateField()
     returnStore = models.ForeignKey('Store', on_delete=models.CASCADE, related_name='return_store')
     store_name = Store.name
-
+    
     def __str__(self):
         return str(self.id)
 
@@ -87,3 +105,31 @@ class AidanStock(models.Model):
 
     def __unicode__(self):
         return str(self.car)
+        
+    
+class MyUser(AbstractUser):
+    username = models.CharField(max_length=150, primary_key=True)
+    is_management = models.BooleanField('Management Status', default=False)
+    staffID = models.IntegerField()
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    branchID = models.IntegerField()
+    dob = models.DateField()
+    
+    def __str__(self):
+        return str(self.id)
+
+    def __unicode__(self):
+        return str(self.id)
+
+class AidanStock(models.Model):
+    car = models.ForeignKey('Car', on_delete=models.CASCADE, related_name='aidan_stock_car')
+    returnDate = models.DateField()
+    returnStore = models.ForeignKey('Store', on_delete=models.CASCADE, related_name='aidan_stock_return_store')
+
+    def __str__(self):
+        return str(self.car)
+
+    def __unicode__(self):
+        return str(self.car)
+

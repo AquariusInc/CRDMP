@@ -1,41 +1,214 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 import csv
-from .models import Store, Customer, Order, Car, AidanStock
+from .models import Store, Customer, Order, Car, AidanStock, Stock
 from django.db.models import Count, Avg, Max, Min, Sum
 import json
 import datetime
-from datetime import date
+from datetime import date, datetime
 import re
 import requests
 import json
 from django.db.models import Q
 from random import randint
 
-from django.views.decorators.csrf import csrf_exempt
-from RentalApp.helperfuncs.helperfuncs import chartJSData, chartJSData_bracket
-from RentalApp.helperfuncs.helperfuncs import chartJSData, chartJSData_bracket, chartJSData_bracket_dt_yr
-from datetime import datetime
-import re
-from RentalApp.helperfuncs.helperfuncs import chartJSData, chartJSData_bracket
+from .helperfuncs.helperfuncs import chartJSData, chartJSData_bracket, chartJSData_bracket_dt_yr
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
+from django.contrib.auth import login, authenticate
+from .forms import SignUpForm
+from .models import MyUser
+from django.contrib import messages
+
+from django.contrib.auth.decorators import login_required
+
+from operator import itemgetter
+from collections import Counter
+# Create your views here.
+# from django.core import serializers\
+
+import operator
+def fill_stock(request):
+    orders = Order.objects.all()
+
+    car_dict = {}
+
+    for item in orders:
+        if item.car not in car_dict:
+            car_dict[item.car] = [[item.returnStore, item.returnDate]]
+        else:
+            car_dict[item.car].append([item.returnStore, item.returnDate])
+
+    most_recent_order_dict = {}
+    for car in car_dict:
+        sorted_orders = sorted(car_dict[car], key=operator.itemgetter(1), reverse=True)
+        most_recent_order_dict[car] = sorted_orders[0]
+        # save to database
+        stock = AidanStock()
+        stock.car = Car.objects.get(id=car.id)
+        stock.returnStore = sorted_orders[0][0]
+        stock.returnDate = sorted_orders[0][1]
+        stock.save()
+
+    print(most_recent_order_dict)
+    return HttpResponse('OK') 
+
+def fake(request):
+    order = Order.objects.all()
+    
+    car_return_date = {}
+        
+    for value in order:
+        if value.car not in car_return_date:
+            car_return_date[value.car]=[value.returnDate, value.returnStore]
+            
+        else:
+            for carid, date in car_return_date.items():
+                if carid == value.car:
+                    if date[0] < value.returnDate:
+                        car_return_date[value.car]=[value.returnDate, value.returnStore]
+                        
+    for carid, date in car_return_date.items():
+        stock = Stock()
+        stock.car = Car.objects.get(id = carid.id)
+        stock.returnDate = date[0]
+        stock.returnStore = date[1]
+        stock.save()
+        
+    return HttpResponse("OK")
+
 
 # Create your views here.
-# from django.core import serializers
+# from django.core import serializers\
+
+import operator
+def fill_stock(request):
+    orders = Order.objects.all()
+
+    car_dict = {}
+
+    for item in orders:
+        if item.car not in car_dict:
+            car_dict[item.car] = [[item.returnStore, item.returnDate]]
+        else:
+            car_dict[item.car].append([item.returnStore, item.returnDate])
+
+    most_recent_order_dict = {}
+    for car in car_dict:
+        sorted_orders = sorted(car_dict[car], key=operator.itemgetter(1), reverse=True)
+        most_recent_order_dict[car] = sorted_orders[0]
+        # save to database
+        stock = AidanStock()
+        stock.car = Car.objects.get(id=car.id)
+        stock.returnStore = sorted_orders[0][0]
+        stock.returnDate = sorted_orders[0][1]
+        stock.save()
+
+    print(most_recent_order_dict)
+    return HttpResponse('OK')
 
 def home(request):
     return render(request, 'home.html')
 
 def vehicles_table(request):
+    if request.GET.get('seat-number'):
+        results = Car.objects.filter(seatingCapacity__gte=request.GET['seat-number'])
+
+        if request.GET.get('make'):
+            # filter by make
+            results = results.filter(make=request.GET['make'])
+
+        if request.GET.get('model'):
+            # filter by model
+            results = results.filter(model=request.GET['model'])
+
+
+        ## transmission types
+        if request.GET.get('manual'):
+            if request.GET.get('auto'):
+                if request.GET.get('cvt'):
+                    pass
+                else:
+                    results = results.filter(Q(standardTransmission__icontains='A')|Q(standardTransmission__icontains='M'))
+            else:
+                results = results.filter(standardTransmission__icontains='M')
+        elif request.GET.get('auto'):
+            if request.GET.get('cvt'):
+                results = results.filter(Q(standardTransmission__icontains='A') | Q(standardTransmission__icontains='CVT'))
+            else:
+                results = results.filter(standardTransmission__icontains='A')
+        elif request.GET.get('cvt'):
+            results = results.filter(standardTransmission__icontains='CVT')
+
+        if request.GET.get('location-select'):
+            # filter by location
+            new_results = []
+            for item in results:
+                location = AidanStock.objects.filter(car=item)
+                if len(location):
+                    if location[0].returnStore.name[0:-6] == request.GET['location-select']:
+                        new_results.append(item)
+            results = new_results
+
+        paginator = Paginator(results, 24)  # Show 24 vehicles per page
+        page = request.GET.get('page')
+        vehicles = paginator.get_page(page)
+
+        # get an image for the car if they dont have one in the database
+        car_images_model = []
+        car_images_dict = {}
+        for car in vehicles:
+            if not car.image:
+                make_model = car.make + '%20' + car.model
+                if make_model not in car_images_dict:
+                    r = requests.get(
+                        'https://api.cognitive.microsoft.com/bing/v7.0/images/search?subscription-key=f4fd9e577543487f9d86b8985dff845f&q=' + car.make + '%20' + car.model + "%20")
+                    image_dict = json.loads(r.text)
+                    image = image_dict['value'][0]['contentUrl']
+                    car_images_dict[make_model] = image
+                else:
+                    image = car_images_dict[make_model]
+                car.image = image
+                car.save()
+            else:
+                image = car.image
+
+            car_location = AidanStock.objects.filter(car=car.id)
+            if len(car_location):
+                car_location_text = car_location[0].returnStore.name[0:-6]
+            else:
+                car_location_text = "Currently in Storage"
+            car_images_model.append([image, car, car_location_text])
+        # fill the modal form in with options
+        # list_of_locations
+
+        list_of_locations = []
+        stores = Store.objects.all()
+        for item in stores:
+            list_of_locations.append(item.name[0:-6])
+
+        # lowest seats, highest seats
+        data = Car.objects.all()
+        lowest_seats = data.aggregate(Min('seatingCapacity'))['seatingCapacity__min']
+        highest_seats = data.aggregate(Max('seatingCapacity'))['seatingCapacity__max']
+
+        list_of_models = Car.objects.values('model').distinct()
+        list_of_makes = Car.objects.values('make').distinct()
+
+        return render(request, 'vehicles_table.html',
+                      {'images': car_images_model, 'data': vehicles, 'list_of_locations': list_of_locations,
+                       'lowest_seats': lowest_seats, 'highest_seats': highest_seats, 'list_of_models': list_of_models,
+                       'list_of_makes': list_of_makes, 'clear_button': True})
+
+
     data = Car.objects.all()
 
     paginator = Paginator(data, 24)  # Show 24 vehicles per page
     page = request.GET.get('page')
     vehicles = paginator.get_page(page)
 
-    # get an image for the car if they dont have one in the database
+    # get an image for the car if they dont have one in the database, and also find its location
     car_images_model = []
     car_images_dict = {}
     for car in vehicles:
@@ -52,9 +225,13 @@ def vehicles_table(request):
             car.save()
         else:
             image = car.image
-        car_images_model.append([image, car])
-        print(image)
 
+        car_location = AidanStock.objects.filter(car=car.id)
+        if len(car_location):
+            car_location_text = car_location[0].returnStore.name[0:-6]
+        else:
+            car_location_text = "Currently in Storage"
+        car_images_model.append([image, car, car_location_text])
     # fill the modal form in with options
     # list_of_locations
 
@@ -68,7 +245,6 @@ def vehicles_table(request):
     highest_seats = data.aggregate(Max('seatingCapacity'))['seatingCapacity__max']
 
     list_of_models = Car.objects.values('model').distinct()
-    print(list_of_models)
     list_of_makes = Car.objects.values('make').distinct()
 
     return render(request, 'vehicles_table.html', {'images': car_images_model, 'data': vehicles, 'list_of_locations': list_of_locations,
@@ -167,7 +343,27 @@ def vehicle_recommend(request):
     return render(request, 'recommend_vehicle.html', {'list_of_locations': list_of_locations, 'lowest_seats': lowest_seats,
                                                       'highest_seats':highest_seats, 'show_form': True})
 
+@login_required
+def signup(request):
+    if not request.user.is_management:
+        return redirect('/account/login/?next=/accounts/signup/')
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            form = SignUpForm()
+            return redirect('/accounts/signup/successful')
+            
+    else:
+        form = SignUpForm()
+    return render(request, 'signup.html', {'form': form})
+    
+def signup_success(request):
+    return render(request, 'signup_success.html')
+
+
 @csrf_exempt
+@login_required
 def customers_table(request):
     if request.GET.get('search_field'):
         field = request.GET['search_field']
@@ -201,14 +397,19 @@ def customers_table(request):
     customers = paginator.get_page(page)
 
     return render(request, 'customers_table.html', {'data': customers})
+    paginator = Paginator(data, 25)  # Show 25 contacts per page
+    page = request.GET.get('page')
+    customers = paginator.get_page(page)
+
+    return render(request, 'customers_table.html', {'data': customers})
 
 
 @csrf_exempt
+@login_required
 def rental_table(request):
     if request.GET.get('start_date') and request.GET.get('search_field'):
         start_date = request.GET['start_date']
         end_date = request.GET['end_date']
-
         start_date_datetime = datetime.strptime(start_date, '%b %d, %Y')
         end_date_datetime = datetime.strptime(end_date, '%b %d, %Y')
 
@@ -275,12 +476,60 @@ def rental_table(request):
     orders = paginator.get_page(page)
 
     return render(request, 'rental_table.html', {'orders': orders})
+    
+
+def customer_history(request):
+    if request.GET.get('search_field'):
+        field = request.GET.get('search_field')
+        query = request.GET.get('search_box')
+       
+        if field == "name":
+            data = Customer.objects.filter(name__contains=query)
+            cust_id = Customer.objects.filter(customer__contains=query)#doesn't work 
+            ordata = Order.objects.filter(customer=cust_id)
+        elif field == "id":
+            data = Customer.objects.filter(id__contains=query)
+            ordata = Order.objects.filter(customer=query)  
+        
+        paginator = Paginator(data, 25)  # Show 25 contacts per page
+        page = request.GET.get('page')
+        customers = paginator.get_page(page)
+        
+      
+        paginator = Paginator(ordata, 25)  # Show 25 contacts per page
+        page = request.GET.get('page')
+        orders = paginator.get_page(page)
 
 
+        return render(request, 'customer_history.html', {'data': customers,  'query': query, 'field': field, 'orders': orders })
+
+    data = Customer.objects.all() 
+    paginator = Paginator(data, 25)  # Show 25 contacts per page
+    page = request.GET.get('page')
+    customers = paginator.get_page(page)
+
+    return render(request, 'customer_history.html', {'data': customers})
+
+    
+
+    
+    
+    
+
+@login_required
 def customer_data(request):
+
+    if request.GET.get('start_date') and request.GET.get('search_field'):
+        start_date = request.GET['start_date']
+        end_date = request.GET['end_date']
+
+        start_date_datetime = datetime.strptime(start_date, '%b %d, %Y')
+        end_date_datetime = datetime.strptime(end_date, '%b %d, %Y')
+        
     data = Customer.objects.all()
     order = Order.objects.all()
 	
+    
 	# Occupation counts - done
     occupationSQL = data.values('occupation').annotate(total=Count('occupation')).order_by('-total')
     occupation = chartJSData(occupationSQL, 'occupation')
@@ -292,8 +541,7 @@ def customer_data(request):
     #repeat customers - done
     customerSQL = order.values ('customer').annotate(total=Count('customer')).order_by('total')
     customer = chartJSData(customerSQL, 'customer', chartType="line")
-       
-	
+
 	#Customer counts
     idSQL = data.values ('id').annotate(total=Count('id'))
     id = chartJSData(idSQL, 'id', chartType="line")
@@ -303,7 +551,8 @@ def customer_data(request):
    
     #customer counter over time - temp 
     orderSQl = chartJSData_bracket_dt_yr(order, 'createDate', start_date=date(2000,1,1), increment=1, bracketCount=10)
-    #poo = chartJSData(orderSQL, 'createDate', chartType="line")
+    
+    
  
     # holding dict
     js_dict = {
@@ -318,11 +567,10 @@ def customer_data(request):
     js_data = json.dumps(js_dict)
 	
     return render(request, 'visualise_customer_data.html', {'js_data': js_data})
-	
-	
 
+	
+@login_required
 def rental_data(request):
-
     data = Customer.objects.all()
     order = Order.objects.all()
     store = Store.objects.all()
@@ -337,9 +585,6 @@ def rental_data(request):
     bodyTypeSQL = car.values('bodyType').annotate(total=Count('bodyType')).order_by('-total')
     bodyType = chartJSData(bodyTypeSQL, 'bodyType', maxLabels=15)
 
-    # totalCountSQL = order.values('id').annotate(total=Count('id')).order_by('-total')
-    # totalCount = chartJSData(totalCountSQL, 'pickupStore__name', maxLabels=15)
-
     js_dict = {
         'returnStore': returnStore,
         'pickupStore': pickupStore,
@@ -347,40 +592,19 @@ def rental_data(request):
     }
     js_data = json.dumps(js_dict)
     return render(request, 'visualise_rental_data.html', {'js_data': js_data})
-    # #occupation = chartJSData(occupationSQL, 'occupation')
-    # pie3d = FusionCharts("pie3d","ex2", "100%", "400", "chart-1", "json",
-    #     # The data is passed as a string in the `dataSource` as parameter.
-    # """{
-    #     "chart": {
-    #         "caption": "Rental Returns",
-    #
-    #         "showValues":"1",
-    #         "showPercentInTooltip" : "0",
-    #         "numberPrefix" : "%",
-    #         "enableMultiSlicing":"1",
-    #         "theme": "fusion"
-    #     },
-    #     "data": [{
-    #         "label": "Equity",
-    #         "value": "300000"
-    #     }, {
-    #         "label": "Debt",
-    #         "value": "230000"
-    #     }, {
-    #         "label": "Bullion",
-    #         "value": "180000"
-    #     }, {
-    #         "label": "Real-estate",
-    #         "value": "270000"
-    #     }, {
-    #         "label": "Insurance",
-    #         "value": "20000"
-    #     }]
-    # }""")
-    # return render(request, 'visualise_rental_data.html', {'output': pie3d.render(), 'chartTitle': 'Returns Data Visualization'})
 
-
-
+@login_required    
+def view_stock(request):
+    data = Stock.objects.all()
+    store_data = Store.objects.all()
+    car_count = data.values('returnStore__name').annotate(count=Count('returnStore__name'))
+    
+    list_of_store_lists = []
+    for store in store_data:
+        list_of_store_lists.append(data.filter(returnStore=store))
+    return render(request, 'view_stock.html', {'data': data, 'car_count': car_count, 'store_lists': list_of_store_lists} )
+    
+@login_required
 def vehicle_data(request):
     data = Car.objects.all()
 
@@ -444,81 +668,80 @@ def read_store_data(request):
 
             # stores
 
-            # new['Store_ID'] = int(row[0])
-            # new['Store_Name'] = row[1].strip()
-            # new['Store_Address'] = row[2].strip()
-            # new['Store_Phone'] = row[3].strip()
-            # new['Store_City'] = row[4].strip()
-            # new['Store_State_Name'] = row[5].strip()
+            new['Store_ID'] = int(row[0])
+            new['Store_Name'] = row[1].strip()
+            new['Store_Address'] = row[2].strip()
+            new['Store_Phone'] = row[3].strip()
+            new['Store_City'] = row[4].strip()
+            new['Store_State_Name'] = row[5].strip()
 
             # # orders
             #
-            # new['Order_ID'] = int(row[6])
-            # new['Order_CreateDate'] = row[7]
-            # new['Pickup_Or_Return'] = row[8]
-            # new['Pickup_Or_Return_Date'] = row[9]
+            new['Order_ID'] = int(row[6])
+            new['Order_CreateDate'] = row[7]
+            new['Pickup_Or_Return'] = row[8]
+            new['Pickup_Or_Return_Date'] = row[9]
             #
             # customers
 
-            # new['Customer_ID'] = int(row[10])
-            # new['Customer_Name'] = row[11].strip()
-            # new['Customer_Phone'] = re.sub('[*]', '', row[12])
+            new['Customer_ID'] = int(row[10])
+            new['Customer_Name'] = row[11].strip()
+            new['Customer_Phone'] = re.sub('[*]', '', row[12])
             # new['Customer_Addresss'] = re.sub('["]')
-            # new['Customer_Brithday'] = row[14].strip()
-            # new['Customer_Occupation'] = row[15].strip()
-            # new['Customer_Gender'] = row[16].strip()
-            #
-            #  cars
+            new['Customer_Brithday'] = row[14].strip()
+            new['Customer_Occupation'] = row[15].strip()
+            new['Customer_Gender'] = row[16].strip()
 
-            # new['Car_ID'] = int(row[17])
-            # new['Car_MakeName'] = row[18].strip()
-            # new['Car_Model'] = row[19].strip()
-            # new['Car_Series'] = row[20].strip()
-            # new['Car_SeriesYear'] = row[21].strip()
-            # new['Car_PriceNew'] = float(row[22])
-            # new['Car_EngineSize'] = float(row[23][:-1])
-            # new['Car_FuelSystem'] = row[24].strip()
-            # new['Car_TankCapacity'] = float(row[25][:-1])
-            # new['Car_Power'] = float(row[26][:-2])
-            # new['Car_SeatingCapacity'] = float(row[27])
-            # new['Car_StandardTransmission'] = row[28].strip()
-            # new['Car_BodyType'] = row[29].strip()
-            # new['Car_Drive'] = row[30].strip()
-            # new['Car_Wheelbase'] = float(row[31][:-2])
 
-            # if new['Pickup_Or_Return'] == 'Pickup':
-            #     if not Order.objects.filter(id=new['Order_ID']):
-            #         order = Order()
-            #         order.id = new['Order_ID']
-            #         print(order.id)
-            #         order.createDate = datetime.date(int(new['Order_CreateDate'][0:4]),int(new['Order_CreateDate'][4:6]), int(new['Order_CreateDate'][6:8]))
-            #         order.pickupDate = datetime.date(int(new['Pickup_Or_Return_Date'][0:4]),int(new['Pickup_Or_Return_Date'][4:6]), int(new['Pickup_Or_Return_Date'][6:8]))
-            #         order.customer = Customer.objects.get(id=new['Customer_ID'])
-            #         order.car = Car.objects.get(id=new['Car_ID'])
-            #         order.pickupStore = Store.objects.get(id=new['Store_ID'])
-            #
-            #         order.save()
+            new['Car_ID'] = int(row[17])
+            new['Car_MakeName'] = row[18].strip()
+            new['Car_Model'] = row[19].strip()
+            new['Car_Series'] = row[20].strip()
+            new['Car_SeriesYear'] = row[21].strip()
+            new['Car_PriceNew'] = float(row[22])
+            new['Car_EngineSize'] = float(row[23][:-1])
+            new['Car_FuelSystem'] = row[24].strip()
+            new['Car_TankCapacity'] = float(row[25][:-1])
+            new['Car_Power'] = float(row[26][:-2])
+            new['Car_SeatingCapacity'] = float(row[27])
+            new['Car_StandardTransmission'] = row[28].strip()
+            new['Car_BodyType'] = row[29].strip()
+            new['Car_Drive'] = row[30].strip()
+            new['Car_Wheelbase'] = float(row[31][:-2])
 
-            # if new['Pickup_Or_Return'] == 'Return':
-            #     if not Order.objects.filter(returnStore=new['Store_ID']):
-            #         try:
-            #             order = Order.objects.get(id=new['Order_ID'])
-            #
-            #         except:
-            #             order = Order()
-            #             order.id = new['Order_ID']
-            #             order.car = Car.objects.get(id=new['Car_ID'])
-            #             order.customer = Customer.objects.get(id=new['Customer_ID'])
-            #             order.createDate = datetime.date(int(new['Order_CreateDate'][0:4]),
-            #                                              int(new['Order_CreateDate'][4:6]),
-            #                                              int(new['Order_CreateDate'][6:8]))
-            #
-            #         print(order.id)
-            #
-            #         order.returnStore = Store.objects.get(id=new['Store_ID'])
-            #         order.returnDate = datetime.date(int(new['Pickup_Or_Return_Date'][0:4]),int(new['Pickup_Or_Return_Date'][4:6]), int(new['Pickup_Or_Return_Date'][6:8]))
-            #
-            #         order.save()
+            if new['Pickup_Or_Return'] == 'Pickup':
+                if not Order.objects.filter(id=new['Order_ID']):
+                    order = Order()
+                    order.id = new['Order_ID']
+                    # print(order.id)
+                    order.createDate = datetime.date(int(new['Order_CreateDate'][0:4]),int(new['Order_CreateDate'][4:6]), int(new['Order_CreateDate'][6:8]))
+                    order.pickupDate = datetime.date(int(new['Pickup_Or_Return_Date'][0:4]),int(new['Pickup_Or_Return_Date'][4:6]), int(new['Pickup_Or_Return_Date'][6:8]))
+                    order.customer = Customer.objects.get(id=new['Customer_ID'])
+                    order.car = Car.objects.get(id=new['Car_ID'])
+                    order.pickupStore = Store.objects.get(id=new['Store_ID'])
+
+                    order.save()
+
+            if new['Pickup_Or_Return'] == 'Return':
+                if not Order.objects.filter(returnStore=new['Store_ID']):
+                    try:
+                        order = Order.objects.get(id=new['Order_ID'])
+
+                    except:
+                        order = Order()
+                        order.id = new['Order_ID']
+                        order.car = Car.objects.get(id=new['Car_ID'])
+                        order.customer = Customer.objects.get(id=new['Customer_ID'])
+                        order.createDate = datetime.date(int(new['Order_CreateDate'][0:4]),
+                                                         int(new['Order_CreateDate'][4:6]),
+                                                         int(new['Order_CreateDate'][6:8]))
+
+                    # print(order.id)
+
+                    order.returnStore = Store.objects.get(id=new['Store_ID'])
+                    order.returnDate = datetime.date(int(new['Pickup_Or_Return_Date'][0:4]),int(new['Pickup_Or_Return_Date'][4:6]), int(new['Pickup_Or_Return_Date'][6:8]))
+
+                    order.save()
 
             # if not Store.objects.filter(id=new['Store_ID']):
             #     store = Store()
@@ -607,9 +830,9 @@ def read_central_db(request):
             # # orders
             #
             new['Order_ID'] = int(row[0])
-            # new['Order_CreateDate'] = row[1]
-            # new['Pickup_Or_Return_Date'] = row[9]
-            # new['Pickup_Date'] = row[2]
+            new['Order_CreateDate'] = row[1]
+            new['Pickup_Or_Return_Date'] = row[9]
+            new['Pickup_Date'] = row[2]
             new['Return_Date'] = row[9]
             new['Return_Store'] = row[10]
             #
@@ -653,7 +876,7 @@ def read_central_db(request):
             #         order.pickupStore = Store.objects.get(id=new['Store_ID'])
             #
             #         order.save()
-
+            #
             # if new['Pickup_Or_Return'] == 'Return':
             #     if not Order.objects.filter(returnStore=new['Store_ID']):
             #         try:
@@ -675,7 +898,7 @@ def read_central_db(request):
             #
             #         order.save()
 
-            print(new)
+            # print(new)
 
             order = Order.objects.get(id=new['Order_ID'])
 

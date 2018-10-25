@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles'
 ]
 
+AUTH_USER_MODEL = 'RentalApp.MyUser'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -125,5 +127,8 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
     '/var/www/static/',
 ]
+
+# my_project/settings.py
+LOGIN_REDIRECT_URL = '/'
 
 

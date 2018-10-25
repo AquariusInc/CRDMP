@@ -3,37 +3,53 @@
 
 {% block title %}Customer Visualisation{% endblock %}
 
-{% block extracss %}<link rel="stylesheet" href="{% static 'css/visualise-customer.css' %}">{% endblock %}
+{% block extracss %}<link rel="stylesheet" href="{% static 'css/visualise.css' %}">{% endblock %}
 
 {% block extrascripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
-<script src="{% static 'js/visualise_customer.js' %}"></script>
+<script src="{% static 'js/visualise.js' %}"></script>
 {% endblock %}
 
 {% block content %}
 
 <div class="container">
+<h3 class="card-panel" align="center">Customer Visualisation</h3>
+
 	<div class="tab">
-	  <button class="tablinks" onclick="openTab(event, 'Amount', 'amountChart', obj.createDate)">Number of Customers</button>
+	  <button id="loadbtn" class="tablinks" onclick="openTab(event, 'Amount', 'amountChart', obj.createDate)">Number of Customers</button>
 	  <button class="tablinks" onclick="openTab(event, 'Occupation', 'occupationChart', obj.occupation)">Occupation</button>
 	  <button class="tablinks" onclick="openTab(event, 'Gender', 'genderChart', obj.gender)">Gender</button>
 	  <button class="tablinks" onclick="openTab(event, 'Repeat Customers', 'repeatChart', obj.customer)">Repeat Customers</button>
 	  <button class="tablinks" onclick="openTab(event, 'dob', 'dobChart', obj.dob)">Age</button>
-	 
-	 
+
 	</div>
 	
-		<div id="Amount" class="tabcontent">
-	  <h3>Total Customers Over Time</h3>
+
+    <div id="Amount" class="tabcontent">
+      <h4 align="center">Total Customers Over Time</h4>
+
 	  <canvas id="amountChart" width="900" height="400"></canvas>
-  <div class="buttonContainer">
+       <div class="buttonContainer">
 	    <button class="buttonGraph" onclick="changeGraph(event, 'amountChart', 'bar', obj.createDate)">BAR</button>
 	   	<button class="buttonGraph" onclick="changeGraph(event, 'amountChart', 'pie', obj.createDate)">PIE</button>
+
+		  <div class="row">
+                <div class="col s5">
+                    <input id='start_date' name="start_date" type="text" class="datepicker">
+                    <label for='start_date'>Start Date</label>
+                </div>
+                <div class="col s5">
+                    <input id='end_date' name="end_date" type="text" class="datepicker">
+                    <label for='end_date'>End Date</label>
+                </div>
 	  </div>
+	  </div>
+
 	</div>
 	
 		<div id="dob" class="tabcontent">
-	  <h3>Customer Age Brackets</h3>
+      <h4 align="center">Customer Age Brackets</h4>
+
 	  <canvas id="dobChart" width="900" height="400"></canvas>
 	  <div class="buttonContainer">
 	    <button class="buttonGraph" onclick="changeGraph(event, 'dobChart', 'bar', obj.dob)">BAR</button>
@@ -43,7 +59,7 @@
 	
 	
 	<div id="Occupation" class="tabcontent">
-	  <h3>Customer Occupation</h3>
+      <h4 align="center">Customer Occupation</h4>
 	  <canvas id="occupationChart" width="900" height="400"></canvas>
 	  <div class="buttonContainer">
 	    <button class="buttonGraph" onclick="changeGraph(event, 'occupationChart', 'bar', obj.occupation)">BAR</button>
@@ -52,7 +68,7 @@
 	</div>
 
 	<div id="Gender" class="tabcontent">
-	  <h3>Customer Gender</h3>
+      <h4 align="center">Customer Gender</h4>
 	  <canvas id="genderChart" width="900" height="400"></canvas>
 	  <div class="buttonContainer">
 	    <button class="buttonGraph" onclick="changeGraph(event, 'genderChart', 'bar', obj.gender)">BAR</button>
@@ -60,19 +76,10 @@
 			
 	  </div>
 	</div>
-
-	
 	<div id="Repeat Customers" class="tabcontent">
-	  <h3>Repeat Customers</h3>
+      <h4 align="center">Repeat Customers</h4>
 	  <canvas id="repeatChart" width="900" height="400"></canvas>
-	
-	  
 	</div>
-	
-	
-	
-
-	
 	
 	<script>
 	var obj = {{ js_data|safe }};
