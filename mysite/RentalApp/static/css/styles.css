@@ -37,6 +37,10 @@
     object-fit: cover;
 }
 
+.car-image-div-recommend {
+    height: 500px
+}
+
 #filter-button, #clear-button {
     margin-bottom: 15px;
 }
