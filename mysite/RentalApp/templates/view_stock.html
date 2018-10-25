@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Stock{% endblock %}
+
+{% block extracss %}<link rel="stylesheet" href="{% static 'css/view-stock.css' %}">
+{% endblock %}
+{% block extrascripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+<script src="{% static 'js/visualise.js' %}"></script>
+<script>
+new Tablesort(document.getElementById('table-id'));
+    document.addEventListener('DOMContentLoaded', function () {
+        var elems = document.querySelectorAll('select');
+        var instances = M.FormSelect.init(elems, options);
+    });
+
+
+    $(document).ready(function () {
+        $('select').formSelect();
+    });
+
+    $(document).ready(function(){
+        $('.modal').modal();
+      });
+</script>
+{% endblock %}
+
+{% block content %}
+
+{% for store in store_lists %}
+<div id="modal{{ forloop.counter }}" class="modal">
+    <div class="modal-content">
+        <table id="table-id-two" class="striped">
+        <thead>
+        <tr>
+            <th data-sort-default>Card ID</th>
+            <th>Body Type</th>
+            <th>Make</th>
+            <th>Model</th>            
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in store %}
+        <tr>
+            <td>{{ item.car }}</td>
+            <td>{{ item.car.bodyType }}</td>
+            <td>{{ item.car.make }}</td>
+            <td>{{ item.car.model }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">OK</a>
+    </div>
+  </div>
+{% endfor %}
+
+<div class="container">
+    <h3>View Stock</h3>
+
+    <table id="table-id" class="striped">
+        <thead>
+        <tr>
+            <th data-sort-default>Branch</th>
+            <th>Total Cars</th>            
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for item in car_count %}
+        <tr>
+            <td>{{ item.returnStore__name|slice:"-6" }}</td>
+            <td>{{ item.count }}<button data-target="modal{{ forloop.counter }}" class="btn modal-trigger" style="float: right">View Stock Info</button>
+        </tr></td>
+            
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

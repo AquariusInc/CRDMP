@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 import csv
-from .models import Store, Customer, Order, Car, AidanStock
+from .models import Store, Customer, Order, Car, AidanStock, Stock
 from django.db.models import Count, Avg, Max, Min, Sum
 import json
 import datetime
@@ -21,6 +21,61 @@ from .models import MyUser
 from django.contrib import messages
 
 from django.contrib.auth.decorators import login_required
+
+from operator import itemgetter
+from collections import Counter
+# Create your views here.
+# from django.core import serializers\
+
+import operator
+def fill_stock(request):
+    orders = Order.objects.all()
+
+    car_dict = {}
+
+    for item in orders:
+        if item.car not in car_dict:
+            car_dict[item.car] = [[item.returnStore, item.returnDate]]
+        else:
+            car_dict[item.car].append([item.returnStore, item.returnDate])
+
+    most_recent_order_dict = {}
+    for car in car_dict:
+        sorted_orders = sorted(car_dict[car], key=operator.itemgetter(1), reverse=True)
+        most_recent_order_dict[car] = sorted_orders[0]
+        # save to database
+        stock = AidanStock()
+        stock.car = Car.objects.get(id=car.id)
+        stock.returnStore = sorted_orders[0][0]
+        stock.returnDate = sorted_orders[0][1]
+        stock.save()
+
+    print(most_recent_order_dict)
+    return HttpResponse('OK') 
+
+def fake(request):
+    order = Order.objects.all()
+    
+    car_return_date = {}
+        
+    for value in order:
+        if value.car not in car_return_date:
+            car_return_date[value.car]=[value.returnDate, value.returnStore]
+            
+        else:
+            for carid, date in car_return_date.items():
+                if carid == value.car:
+                    if date[0] < value.returnDate:
+                        car_return_date[value.car]=[value.returnDate, value.returnStore]
+                        
+    for carid, date in car_return_date.items():
+        stock = Stock()
+        stock.car = Car.objects.get(id = carid.id)
+        stock.returnDate = date[0]
+        stock.returnStore = date[1]
+        stock.save()
+        
+    return HttpResponse("OK")
 
 
 # Create your views here.
@@ -261,6 +316,11 @@ def customers_table(request):
     customers = paginator.get_page(page)
 
     return render(request, 'customers_table.html', {'data': customers})
+    paginator = Paginator(data, 25)  # Show 25 contacts per page
+    page = request.GET.get('page')
+    customers = paginator.get_page(page)
+
+    return render(request, 'customers_table.html', {'data': customers})
 
 
 @csrf_exempt
@@ -269,7 +329,6 @@ def rental_table(request):
     if request.GET.get('start_date') and request.GET.get('search_field'):
         start_date = request.GET['start_date']
         end_date = request.GET['end_date']
-
         start_date_datetime = datetime.strptime(start_date, '%b %d, %Y')
         end_date_datetime = datetime.strptime(end_date, '%b %d, %Y')
 
@@ -445,9 +504,6 @@ def rental_data(request):
     bodyTypeSQL = car.values('bodyType').annotate(total=Count('bodyType')).order_by('-total')
     bodyType = chartJSData(bodyTypeSQL, 'bodyType', maxLabels=15)
 
-    # totalCountSQL = order.values('id').annotate(total=Count('id')).order_by('-total')
-    # totalCount = chartJSData(totalCountSQL, 'pickupStore__name', maxLabels=15)
-
     js_dict = {
         'returnStore': returnStore,
         'pickupStore': pickupStore,
@@ -456,6 +512,17 @@ def rental_data(request):
     js_data = json.dumps(js_dict)
     return render(request, 'visualise_rental_data.html', {'js_data': js_data})
 
+@login_required    
+def view_stock(request):
+    data = Stock.objects.all()
+    store_data = Store.objects.all()
+    car_count = data.values('returnStore__name').annotate(count=Count('returnStore__name'))
+    
+    list_of_store_lists = []
+    for store in store_data:
+        list_of_store_lists.append(data.filter(returnStore=store))
+    return render(request, 'view_stock.html', {'data': data, 'car_count': car_count, 'store_lists': list_of_store_lists} )
+    
 @login_required
 def vehicle_data(request):
     data = Car.objects.all()

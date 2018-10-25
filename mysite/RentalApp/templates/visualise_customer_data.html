@@ -13,7 +13,6 @@
 {% block content %}
 
 <div class="container">
-
 <h3 class="card-panel" align="center">Customer Visualisation</h3>
 
 	<div class="tab">
@@ -22,6 +21,7 @@
 	  <button class="tablinks" onclick="openTab(event, 'Gender', 'genderChart', obj.gender)">Gender</button>
 	  <button class="tablinks" onclick="openTab(event, 'Repeat Customers', 'repeatChart', obj.customer)">Repeat Customers</button>
 	  <button class="tablinks" onclick="openTab(event, 'dob', 'dobChart', obj.dob)">Age</button>
+
 	</div>
 	
 
@@ -49,6 +49,7 @@
 	
 		<div id="dob" class="tabcontent">
       <h4 align="center">Customer Age Brackets</h4>
+
 	  <canvas id="dobChart" width="900" height="400"></canvas>
 	  <div class="buttonContainer">
 	    <button class="buttonGraph" onclick="changeGraph(event, 'dobChart', 'bar', obj.dob)">BAR</button>
@@ -75,7 +76,6 @@
 			
 	  </div>
 	</div>
-
 	<div id="Repeat Customers" class="tabcontent">
       <h4 align="center">Repeat Customers</h4>
 	  <canvas id="repeatChart" width="900" height="400"></canvas>
