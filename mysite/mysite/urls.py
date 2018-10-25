@@ -21,13 +21,13 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-
     path('staff/', views.home, name='home'),
     path('staff/customers', views.customers_table, name="customers_table"),
     path('staff/rentals', views.rental_table, name="rentals_table"),
     path('staff/visualisecustomers', views.customer_data),
     path('staff/customerhistory', views.customer_history),
     path('staff/visualiserentals', views.rental_data),
+    path('staff/viewstock', views.view_stock),
     path('staff/visualisevehicles', views.vehicle_data),
     path('staff/readcentral', views.read_central_db),
     path('', views.vehicles_table),
@@ -36,5 +36,4 @@ urlpatterns = [
     path('accounts/signup/', views.signup, name='signup'),
     path('accounts/signup/successful', views.signup_success, name='successful signup'),
     path('accounts/', include('django.contrib.auth.urls'), name='login')
-
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

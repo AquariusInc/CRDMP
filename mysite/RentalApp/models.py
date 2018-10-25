@@ -24,6 +24,8 @@ class Customer(models.Model):
         return str(self.id)
 
 
+
+
 class Store(models.Model):
 
     id = models.IntegerField(primary_key=True)
@@ -39,6 +41,17 @@ class Store(models.Model):
     def __unicode__(self):
         return str(self.id)
 
+class Stock(models.Model):
+    car = models.ForeignKey('Car', on_delete=models.CASCADE)
+    returnDate = models.DateField()
+    returnStore = models.ForeignKey('Store', on_delete=models.CASCADE, related_name='stock_return_store')
+
+
+    def __str__(self):
+        return str(self.car)
+
+    def __unicode__(self):
+        return str(self.car)
 
 class Car(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -75,7 +88,7 @@ class Order(models.Model):
     returnDate = models.DateField()
     returnStore = models.ForeignKey('Store', on_delete=models.CASCADE, related_name='return_store')
     store_name = Store.name
-
+    
     def __str__(self):
         return str(self.id)
 
@@ -108,6 +121,7 @@ class MyUser(AbstractUser):
 
     def __unicode__(self):
         return str(self.id)
+
        
         
     
