@@ -82,30 +82,6 @@ def fake(request):
         
     return HttpResponse("OK")
 
-# def fake(request):
-#     order = Order.objects.all()
-    
-#     car_return_date = {}
-        
-#     for value in order:
-#         if value.car not in car_return_date:
-#             car_return_date[value.car]=[value.returnDate, value.returnStore, value.store_name]
-            
-#         else:
-#             for carid, date in car_return_date.items():
-#                 if carid == value.car:
-#                     if date[0] < value.returnDate:
-#                         car_return_date[value.car]=[value.returnDate, value.returnStore, value.store_name]
-                        
-#     for carid, date in car_return_date.items():
-#         stock = Stock()
-#         stock.car = Car.objects.get(id = carid.id)
-#         stock.returnDate = date[0]
-#         stock.returnStore = date[1]
-#         stock.storeName = date[2]
-#         stock.save()
-        
-#     return HttpResponse("OK")
 
 def home(request):
     return render(request, 'home.html')
@@ -434,7 +410,7 @@ def customer_data(request):
 	
     return render(request, 'visualise_customer_data.html', {'js_data': js_data})
 	
-	
+@login_required	
 def rental_data(request):
 
     data = Customer.objects.all()
@@ -451,9 +427,6 @@ def rental_data(request):
     bodyTypeSQL = car.values('bodyType').annotate(total=Count('bodyType')).order_by('-total')
     bodyType = chartJSData(bodyTypeSQL, 'bodyType', maxLabels=15)
 
-    # totalCountSQL = order.values('id').annotate(total=Count('id')).order_by('-total')
-    # totalCount = chartJSData(totalCountSQL, 'pickupStore__name', maxLabels=15)
-
     js_dict = {
         'returnStore': returnStore,
         'pickupStore': pickupStore,
@@ -461,47 +434,17 @@ def rental_data(request):
     }
     js_data = json.dumps(js_dict)
     return render(request, 'visualise_rental_data.html', {'js_data': js_data})
-    
+
+@login_required    
 def view_stock(request):
-    
-    # if request.GET.get('search_field'):
-
-    #     field = request.GET['search_field']
-    #     query = request.GET['search_box']
-
-    #     if field == "carid":
-    #         data = Stock.objects.filter(car__contains=query)
-    #     elif field == "returnStore":
-    #         data = Stock.objects.filter(returnStore__contains=query)
-    #     elif field == "address":
-    #         data = Stock.objects.filter(returnDate__contains=query)
-
-    #     paginator = Paginator(data, 25)  # Show 25 contacts per page
-    #     page = request.GET.get('page')
-    #     stock = paginator.get_page(page)
-
-    #     return render(request, 'view_stock.html', {'data': stock, 'query': query, 'field': field})
-
-
     data = Stock.objects.all()
     store_data = Store.objects.all()
+    car_count = data.values('returnStore__name').annotate(count=Count('returnStore__name'))
     
-    car_count = Stock.objects.order_by('returnStore__name').values('returnStore__name').annotate(count=Count('returnStore__name'))
-
-    # car_list =[]
-    # # for key, value in car_count.values():
-    # #     temp = [key,value]
-    # #     car_list.append(temp)
-
-    # print(car_count)
-
-
-    paginator = Paginator(data, 25)  # Show 25 contacts per page
-    page = request.GET.get('page')
-    stock = paginator.get_page(page)
-    # if Stock.car == Store.id
-    return render(request, 'view_stock.html', {'data': stock, 'car_count': car_count}, )
-    
+    list_of_store_lists = []
+    for store in store_data:
+        list_of_store_lists.append(data.filter(returnStore=store))
+    return render(request, 'view_stock.html', {'data': data, 'car_count': car_count, 'store_lists': list_of_store_lists} )
     
 
 
