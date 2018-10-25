@@ -336,13 +336,60 @@ def rental_table(request):
     orders = paginator.get_page(page)
 
     return render(request, 'rental_table.html', {'orders': orders})
+    
 
+def customer_history(request):
+    if request.GET.get('search_field'):
+        field = request.GET.get('search_field')
+        query = request.GET.get('search_box')
+       
+        if field == "name":
+            data = Customer.objects.filter(name__contains=query)
+            cust_id = Customer.objects.filter(customer__contains=query)#doesn't work 
+            ordata = Order.objects.filter(customer=cust_id)
+        elif field == "id":
+            data = Customer.objects.filter(id__contains=query)
+            ordata = Order.objects.filter(customer=query)  
+        
+        paginator = Paginator(data, 25)  # Show 25 contacts per page
+        page = request.GET.get('page')
+        customers = paginator.get_page(page)
+        
+      
+        paginator = Paginator(ordata, 25)  # Show 25 contacts per page
+        page = request.GET.get('page')
+        orders = paginator.get_page(page)
+
+
+        return render(request, 'customer_history.html', {'data': customers,  'query': query, 'field': field, 'orders': orders })
+
+    data = Customer.objects.all() 
+    paginator = Paginator(data, 25)  # Show 25 contacts per page
+    page = request.GET.get('page')
+    customers = paginator.get_page(page)
+
+    return render(request, 'customer_history.html', {'data': customers})
+
+    
+
+    
+    
+    
 
 @login_required
 def customer_data(request):
+
+    if request.GET.get('start_date') and request.GET.get('search_field'):
+        start_date = request.GET['start_date']
+        end_date = request.GET['end_date']
+
+        start_date_datetime = datetime.strptime(start_date, '%b %d, %Y')
+        end_date_datetime = datetime.strptime(end_date, '%b %d, %Y')
+        
     data = Customer.objects.all()
     order = Order.objects.all()
 	
+    
 	# Occupation counts - done
     occupationSQL = data.values('occupation').annotate(total=Count('occupation')).order_by('-total')
     occupation = chartJSData(occupationSQL, 'occupation')
@@ -364,7 +411,8 @@ def customer_data(request):
    
     #customer counter over time - temp 
     orderSQl = chartJSData_bracket_dt_yr(order, 'createDate', start_date=date(2000,1,1), increment=1, bracketCount=10)
-    #poo = chartJSData(orderSQL, 'createDate', chartType="line")
+    
+    
  
     # holding dict
     js_dict = {
@@ -379,6 +427,7 @@ def customer_data(request):
     js_data = json.dumps(js_dict)
 	
     return render(request, 'visualise_customer_data.html', {'js_data': js_data})
+
 	
 @login_required
 def rental_data(request):

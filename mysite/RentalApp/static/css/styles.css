@@ -21,6 +21,11 @@
     margin-right: auto;
 }
 
+
+.order-history-button {
+    height: 30px;
+    margin-top: 3px;
+
 .car-image-div {
     height: 250px;
 }
@@ -61,4 +66,5 @@
     display: inline-flex;
     vertical-align: top;
     margin-right: 5px;
+
 }

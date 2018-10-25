@@ -13,7 +13,9 @@
 {% block content %}
 
 <div class="container">
+
 <h3 class="card-panel" align="center">Customer Visualisation</h3>
+
 	<div class="tab">
 	  <button id="loadbtn" class="tablinks" onclick="openTab(event, 'Amount', 'amountChart', obj.createDate)">Number of Customers</button>
 	  <button class="tablinks" onclick="openTab(event, 'Occupation', 'occupationChart', obj.occupation)">Occupation</button>
@@ -22,13 +24,27 @@
 	  <button class="tablinks" onclick="openTab(event, 'dob', 'dobChart', obj.dob)">Age</button>
 	</div>
 	
+
     <div id="Amount" class="tabcontent">
       <h4 align="center">Total Customers Over Time</h4>
+
 	  <canvas id="amountChart" width="900" height="400"></canvas>
        <div class="buttonContainer">
 	    <button class="buttonGraph" onclick="changeGraph(event, 'amountChart', 'bar', obj.createDate)">BAR</button>
 	   	<button class="buttonGraph" onclick="changeGraph(event, 'amountChart', 'pie', obj.createDate)">PIE</button>
-	   </div>
+
+		  <div class="row">
+                <div class="col s5">
+                    <input id='start_date' name="start_date" type="text" class="datepicker">
+                    <label for='start_date'>Start Date</label>
+                </div>
+                <div class="col s5">
+                    <input id='end_date' name="end_date" type="text" class="datepicker">
+                    <label for='end_date'>End Date</label>
+                </div>
+	  </div>
+	  </div>
+
 	</div>
 	
 		<div id="dob" class="tabcontent">

@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}Customers{% endblock %}
+{% block content %}
+<div class="container">
+    <h3>Customer Rental History Reports</h3>
+	
+
+	
+	   
+
+
+    <table id="table-id" class="striped">
+        <thead>
+        <tr>
+            <th data-sort-default>ID</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th>DOB</th>
+            <th>Occupation</th>
+            <th>Gender</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for item in data %}
+        <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.phone }}</td>
+            <td>{{ item.address }}</td>
+            <td>{{ item.dob }}</td>
+            <td>{{ item.occupation }}</td>
+            <td>{{ item.gender }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+	
+	
+	<table id="table-id" class="striped">
+        <thead>
+          <tr>
+              <th>ID</th>
+              <th>Create Date</th>
+              <th>Pickup Date</th>
+              <th>Return Date</th>
+              <th>Car ID</th>
+              <th>Customer ID</th>
+              <th>Pickup Store ID</th>
+              <th>Return Store ID</th>
+          </tr>
+        </thead>
+
+        <tbody>
+         {% for item in orders %}
+         <tr>
+             <td>{{ item.id }}</td>
+             <td>{{ item.createDate }}</td>
+             <td>{{ item.pickupDate }}</td>
+             <td>{{ item.returnDate }}</td>
+             <td>{{ item.car }}</td>
+             <td><a href="customers?search_field=id&search_box={{ item.customer }}&action=" >{{ item.customer }}</a></td>
+             <td>{{ item.pickupStore }}</td>
+             <td>{{ item.returnStore }}</td>
+         </tr>
+         {% endfor %}
+        </tbody>
+    </table>
+    <div class="pagination center-align">
+    <span class="step-links">
+        {% if data.has_previous %}
+            <a class="waves-effect waves-light btn" href="?page=1">&laquo; first</a>
+            <a class="waves-effect waves-light btn" href="?page={{ data.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ data.number }} of {{ data.paginator.num_pages }}
+        </span>
+
+        {% if data.has_next %}
+            <a class="waves-effect waves-light btn" href="?page={{ data.next_page_number }}">next</a>
+            <a class="waves-effect waves-light btn" href="?page={{ data.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+    </div>
+</div>
+{% endblock %}
+
+{% block extrascripts %}
+<script>
+    new Tablesort(document.getElementById('table-id'));
+    document.addEventListener('DOMContentLoaded', function () {
+        var elems = document.querySelectorAll('select');
+        var instances = M.FormSelect.init(elems, options);
+    });
+
+
+    $(document).ready(function () {
+        $('select').formSelect();
+    });
+</script>
+{% endblock %}
