@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 import csv
-from .models import Store, Customer, Order, Car, AidanStock
+from .models import Store, Customer, Order, Car, AidanStock, Stock
 from django.db.models import Count, Avg, Max, Min, Sum
 import json
 import datetime

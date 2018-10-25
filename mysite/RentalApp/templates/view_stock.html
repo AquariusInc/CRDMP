@@ -1,73 +1,14 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}Stock{% endblock %}
-{% block content %}
-<div class="container">
-    <h3>View Stock</h3>
-    <!-- <form action="stock" method="get">
-        <div class="row">
-            <div class="input-field col l2 m3 s4">
-                <select name="search_field">
-                    <option value="" disabled {% if field is not defined %} selected {% endif %}>Search Field</option>
-                    <option value="carid" {% if field == 'car' %}selected{% endif %}>Car ID</option>
-                    <option value="returnStore" {% if field == 'returnStore' %}selected{% endif %}>Store Branch</option>
-                    <option value="returnDate" {% if field == 'returnDate' %}selected{% endif %}>Return Date</option>
-                </select>
-                <label>Field to Search</label>
-            </div>
-            <div class="input-field col l9 m7 s5">
-                <input id="search_box" name="search_box" type="text" class="" {% if query is not defined %}
-                       value="{{ query }}" {% endif %}>
-                <label for="search_box">Search</label>
-            </div>
-            <button id="search_button" class="btn waves-effect waves-light" type="submit" name="action">
-                <i class="material-icons">search</i>
-            </button>
-        </div>
-    </form> -->
 
-    <table id="table-id" class="striped">
-        <thead>
-        <tr>
-            <th data-sort-default>Number Of Cars</th>
-            <th>Branch Name</th>
-            <!-- <th>Return Date</th> -->
-            
-        </tr>
-        </thead>
-
-        <tbody>
-        {% for item in car_count %}
-        <tr>
-            <td>{{ item.returnStore__name|slice:"-6" }}</td>
-            <td>{{ item.count }}</td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    <div class="pagination center-align">
-    <span class="step-links">
-        {% if data.has_previous %}
-            <a class="waves-effect waves-light btn" href="?page=1">&laquo; first</a>
-            <a class="waves-effect waves-light btn" href="?page={{ data.previous_page_number }}">previous</a>
-        {% endif %}
-
-        <span class="current">
-            Page {{ data.number }} of {{ data.paginator.num_pages }}
-        </span>
-
-        {% if data.has_next %}
-            <a class="waves-effect waves-light btn" href="?page={{ data.next_page_number }}">next</a>
-            <a class="waves-effect waves-light btn" href="?page={{ data.paginator.num_pages }}">last &raquo;</a>
-        {% endif %}
-    </span>
-    </div>
-</div>
+{% block extracss %}<link rel="stylesheet" href="{% static 'css/view-stock.css' %}">
 {% endblock %}
-
 {% block extrascripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+<script src="{% static 'js/visualise.js' %}"></script>
 <script>
-    new Tablesort(document.getElementById('table-id'));
+new Tablesort(document.getElementById('table-id'));
     document.addEventListener('DOMContentLoaded', function () {
         var elems = document.querySelectorAll('select');
         var instances = M.FormSelect.init(elems, options);
@@ -77,5 +18,65 @@
     $(document).ready(function () {
         $('select').formSelect();
     });
+
+    $(document).ready(function(){
+        $('.modal').modal();
+      });
 </script>
+{% endblock %}
+
+{% block content %}
+
+{% for store in store_lists %}
+<div id="modal{{ forloop.counter }}" class="modal">
+    <div class="modal-content">
+        <table id="table-id-two" class="striped">
+        <thead>
+        <tr>
+            <th data-sort-default>Card ID</th>
+            <th>Body Type</th>
+            <th>Make</th>
+            <th>Model</th>            
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in store %}
+        <tr>
+            <td>{{ item.car }}</td>
+            <td>{{ item.car.bodyType }}</td>
+            <td>{{ item.car.make }}</td>
+            <td>{{ item.car.model }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">OK</a>
+    </div>
+  </div>
+{% endfor %}
+
+<div class="container">
+    <h3>View Stock</h3>
+
+    <table id="table-id" class="striped">
+        <thead>
+        <tr>
+            <th data-sort-default>Branch</th>
+            <th>Total Cars</th>            
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for item in car_count %}
+        <tr>
+            <td>{{ item.returnStore__name|slice:"-6" }}</td>
+            <td>{{ item.count }}<button data-target="modal{{ forloop.counter }}" class="btn modal-trigger" style="float: right">View Stock Info</button>
+        </tr></td>
+            
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}
