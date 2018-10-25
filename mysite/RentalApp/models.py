@@ -88,7 +88,7 @@ class Order(models.Model):
     returnDate = models.DateField()
     returnStore = models.ForeignKey('Store', on_delete=models.CASCADE, related_name='return_store')
     store_name = Store.name
-
+    
     def __str__(self):
         return str(self.id)
 
@@ -121,6 +121,7 @@ class MyUser(AbstractUser):
 
     def __unicode__(self):
         return str(self.id)
+
        
         
     

@@ -15,20 +15,26 @@
 <body>
 
 <ul id='dropdown1' class='dropdown-content'>
-    <li><a href="/customers">View Customers</a></li>
-    <li><a href="/visualisecustomers">Customer Data Visualisation</a></li>
+    <li><a href="/staff/customers">View Customers</a></li>
+    <li><a href="/staff/visualisecustomers">Customer Data Visualisation</a></li>
+
 </ul>
 
 <ul id='dropdown2' class='dropdown-content'>
-    <li><a href="/rentals">View Rentals</a></li>
-    <li><a href="/visualiserentals">Rental Data Visualisation</a></li>
-    <li><a href="/viewstock">View Stock</a></li>
+    <li><a href="/staff/rentals">View Rentals</a></li>
+    <li><a href="/staff/visualiserentals">Rental Data Visualisation</a></li>
 </ul>
 
 <ul id='dropdown3' class='dropdown-content'>
-    <li><a href="vehicles">View Vehicles</a></li>
-    <li><a href="vehiclerecommend">Vehicle Recommendation</a></li>
-    <li><a href="visualisevehicles">Vehicle Data Visualisation</a></li>
+    <li><a href="/">View Vehicles</a></li>
+    <li><a href="/vehiclerecommend">Vehicle Recommendation</a></li>
+    <li><a href="/staff/visualisevehicles">Vehicle Data Visualisation</a></li>
+</ul>
+
+<ul id='dropdown4' class='dropdown-content'>
+    <li><a href="/accounts/login">{% if user.is_authenticated %}Signed in as {{ user.username }} {% else %} Login {% endif %}</a></li>
+    {% if user.is_authenticated %}<li><a href="/accounts/logout">Logout</a></li>{% endif %}
+    {% if user.is_management %}<li><a href="/accounts/signup">Create User</a></li>{% endif %}
 </ul>
 
 <ul id='dropdown4' class='dropdown-content'>
@@ -53,14 +59,16 @@
 
 <ul class="sidenav" id="mobile-demo">
     <li><a class="subheader">Customers</a></li>
-    <li><a href="customers">View Customers</a></li>
-    <li><a href="visualisecustomers">Customer Data Visualisation</a></li>
+
+    <li><a href="/staff/customers">View Customers</a></li>
+    <li><a href="/staff/visualisecustomers">Customer Data Visualisation</a></li>
+
     <li>
         <div class="divider"></div>
     </li>
     <li><a class="subheader">Rentals</a></li>
-    <li><a href="rentals">View Rentals</a></li>
-    <li><a href="visualiserentals">Rental Data Visualisation</a></li>
+    <li><a href="/staff/rentals">View Rentals</a></li>
+    <li><a href="/staff/visualiserentals">Rental Data Visualisation</a></li>
     <li>
         <div class="divider"></div>
     </li>

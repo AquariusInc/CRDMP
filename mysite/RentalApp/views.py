@@ -1,13 +1,8 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 import csv
-
 from .models import Store, Customer, Order, Car, AidanStock
 from django.db.models import Count, Avg, Max, Min, Sum
-
-from .models import Store, Customer, Car, Order, Stock
-from django.db.models import Count
-
 import json
 import datetime
 from datetime import date, datetime
@@ -82,6 +77,35 @@ def fake(request):
         
     return HttpResponse("OK")
 
+
+# Create your views here.
+# from django.core import serializers\
+
+import operator
+def fill_stock(request):
+    orders = Order.objects.all()
+
+    car_dict = {}
+
+    for item in orders:
+        if item.car not in car_dict:
+            car_dict[item.car] = [[item.returnStore, item.returnDate]]
+        else:
+            car_dict[item.car].append([item.returnStore, item.returnDate])
+
+    most_recent_order_dict = {}
+    for car in car_dict:
+        sorted_orders = sorted(car_dict[car], key=operator.itemgetter(1), reverse=True)
+        most_recent_order_dict[car] = sorted_orders[0]
+        # save to database
+        stock = AidanStock()
+        stock.car = Car.objects.get(id=car.id)
+        stock.returnStore = sorted_orders[0][0]
+        stock.returnDate = sorted_orders[0][1]
+        stock.save()
+
+    print(most_recent_order_dict)
+    return HttpResponse('OK')
 
 def home(request):
     return render(request, 'home.html')
@@ -240,12 +264,14 @@ def vehicle_recommend(request):
 
 @login_required
 def signup(request):
+    if not request.user.is_management:
+        return redirect('/account/login/?next=/accounts/signup/')
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
             form.save()
             form = SignUpForm()
-            return redirect('/signup/successful')
+            return redirect('/accounts/signup/successful')
             
     else:
         form = SignUpForm()
@@ -290,6 +316,11 @@ def customers_table(request):
     customers = paginator.get_page(page)
 
     return render(request, 'customers_table.html', {'data': customers})
+    paginator = Paginator(data, 25)  # Show 25 contacts per page
+    page = request.GET.get('page')
+    customers = paginator.get_page(page)
+
+    return render(request, 'customers_table.html', {'data': customers})
 
 
 @csrf_exempt
@@ -298,7 +329,6 @@ def rental_table(request):
     if request.GET.get('start_date') and request.GET.get('search_field'):
         start_date = request.GET['start_date']
         end_date = request.GET['end_date']
-
         start_date_datetime = datetime.strptime(start_date, '%b %d, %Y')
         end_date_datetime = datetime.strptime(end_date, '%b %d, %Y')
 
@@ -365,13 +395,60 @@ def rental_table(request):
     orders = paginator.get_page(page)
 
     return render(request, 'rental_table.html', {'orders': orders})
+    
 
+def customer_history(request):
+    if request.GET.get('search_field'):
+        field = request.GET.get('search_field')
+        query = request.GET.get('search_box')
+       
+        if field == "name":
+            data = Customer.objects.filter(name__contains=query)
+            cust_id = Customer.objects.filter(customer__contains=query)#doesn't work 
+            ordata = Order.objects.filter(customer=cust_id)
+        elif field == "id":
+            data = Customer.objects.filter(id__contains=query)
+            ordata = Order.objects.filter(customer=query)  
+        
+        paginator = Paginator(data, 25)  # Show 25 contacts per page
+        page = request.GET.get('page')
+        customers = paginator.get_page(page)
+        
+      
+        paginator = Paginator(ordata, 25)  # Show 25 contacts per page
+        page = request.GET.get('page')
+        orders = paginator.get_page(page)
+
+
+        return render(request, 'customer_history.html', {'data': customers,  'query': query, 'field': field, 'orders': orders })
+
+    data = Customer.objects.all() 
+    paginator = Paginator(data, 25)  # Show 25 contacts per page
+    page = request.GET.get('page')
+    customers = paginator.get_page(page)
+
+    return render(request, 'customer_history.html', {'data': customers})
+
+    
+
+    
+    
+    
 
 @login_required
 def customer_data(request):
+
+    if request.GET.get('start_date') and request.GET.get('search_field'):
+        start_date = request.GET['start_date']
+        end_date = request.GET['end_date']
+
+        start_date_datetime = datetime.strptime(start_date, '%b %d, %Y')
+        end_date_datetime = datetime.strptime(end_date, '%b %d, %Y')
+        
     data = Customer.objects.all()
     order = Order.objects.all()
 	
+    
 	# Occupation counts - done
     occupationSQL = data.values('occupation').annotate(total=Count('occupation')).order_by('-total')
     occupation = chartJSData(occupationSQL, 'occupation')
@@ -383,8 +460,7 @@ def customer_data(request):
     #repeat customers - done
     customerSQL = order.values ('customer').annotate(total=Count('customer')).order_by('total')
     customer = chartJSData(customerSQL, 'customer', chartType="line")
-       
-	
+
 	#Customer counts
     idSQL = data.values ('id').annotate(total=Count('id'))
     id = chartJSData(idSQL, 'id', chartType="line")
@@ -394,7 +470,8 @@ def customer_data(request):
    
     #customer counter over time - temp 
     orderSQl = chartJSData_bracket_dt_yr(order, 'createDate', start_date=date(2000,1,1), increment=1, bracketCount=10)
-    #poo = chartJSData(orderSQL, 'createDate', chartType="line")
+    
+    
  
     # holding dict
     js_dict = {
@@ -409,10 +486,10 @@ def customer_data(request):
     js_data = json.dumps(js_dict)
 	
     return render(request, 'visualise_customer_data.html', {'js_data': js_data})
-	
-@login_required	
-def rental_data(request):
 
+	
+@login_required
+def rental_data(request):
     data = Customer.objects.all()
     order = Order.objects.all()
     store = Store.objects.all()
@@ -446,8 +523,6 @@ def view_stock(request):
         list_of_store_lists.append(data.filter(returnStore=store))
     return render(request, 'view_stock.html', {'data': data, 'car_count': car_count, 'store_lists': list_of_store_lists} )
     
-
-
 @login_required
 def vehicle_data(request):
     data = Car.objects.all()
