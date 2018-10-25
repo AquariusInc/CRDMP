@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+<style>
+.errorlist {
+    color: red;
+    font-weight: bold;
+}
+
+#submitBtn {
+    width: 200px;
+    padding: 10px;
+    margin: 10px;
+    margin-left: auto;
+    display: block;
+}
+</style>
+
+<div class="container">
+    {% if user.is_authenticated %}
+      <h2>You are already logged in as {{ user.username }}!</h2>
+    {% else %}
+      <h2>Log in</h2>
+    {% endif %}
+    <form id="submitForm" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input id="submitBtn" type="submit" value="Login">
+    </form>
+
+</div>
+  
+{% endblock %}

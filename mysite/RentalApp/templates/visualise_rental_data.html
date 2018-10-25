@@ -1,36 +1,27 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Customer Visualisation{% endblock %}
+{% block title %}Rental Visualisation{% endblock %}
 
-{% block extracss %}<link rel="stylesheet" href="{% static 'css/visualise-rental.css' %}">{% endblock %}
+{% block extracss %}<link rel="stylesheet" href="{% static 'css/visualise.css' %}">{% endblock %}
 
 {% block extrascripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
-<script src="{% static 'js/visualise_rental.js' %}"></script>
+<script src="{% static 'js/visualise.js' %}"></script>
 {% endblock %}
 
 {% block content %}
 
 <div class="container">
+<h3 class="card-panel" align="center">Rental Visualisation</h3>
 	<div class="tab">
-	  <!-- <button class="tablinks" onclick="openTab(event, 'Amount of Customers', 'amountChart', obj.id)">Number of Customers</button>
-	  <button class="tablinks" onclick="openTab(event, 'Occupation', 'occupationChart', obj.occupation)">Occupation</button>-->
-	  <button class="tablinks" onclick="openTab(event, 'bodyType', 'bodyTypeChart', obj.bodyType)">Body Type</button>
+	  <button id="loadbtn" class="tablinks" onclick="openTab(event, 'bodyType', 'bodyTypeChart', obj.bodyType)">Body Type</button>
 	  <button class="tablinks" onclick="openTab(event, 'pickupStore', 'pickupsChart', obj.pickupStore)">Pickup Store</button>
 	  <button class="tablinks" onclick="openTab(event, 'returnStore', 'returnsChart', obj.returnStore)">Return Store</button>
-	 
-	 
-	<!-- </div>
+    </div>
 	
-		<div id="Amount of Customers" class="tabcontent">
-	  <h3>Total Customers Over Time</h3>
-	  <canvas id="amountChart" width="900" height="400"></canvas>
-
-	</div> -->
-	
-		<div id="returnStore" class="tabcontent"><br>
-	  <h3 class="title-thing">Breakdown of Rentals by Return Store </h3>
+	<div id="returnStore" class="tabcontent"><br>
+      <h4 align="center">Breakdown of Rentals by Return Store</h4>
 	  <canvas id="returnsChart" width="900" height="400"></canvas>
 	  <div class="buttonContainer">
 	    <button class="buttonGraph" onclick="changeGraph(event, 'returnsChart', 'bar', obj.returnStore)">BAR</button>
@@ -38,9 +29,8 @@
 	  </div>
 	</div>
 	
-	
 	<div id="pickupStore" class="tabcontent" ><br>
-	  <h3 class="title-thing">Breakdown of Rentals by Pickup Store</h3>
+      <h4 align="center">Breakdown of Rentals by Pickup Store</h4>
 	  <canvas id="pickupsChart" width="900" height="400"></canvas>
 	  <div class="buttonContainer">
 	    <button class="buttonGraph" onclick="changeGraph(event, 'pickupsChart', 'bar', obj.pickupStore)">BAR</button>
@@ -49,7 +39,7 @@
 	</div>
 
 	<div id="bodyType" class="tabcontent"><br>
-	  <h3 class="title-thing">Breakdown of Rentals by Body Type</h3>
+      <h4 align="center">Breakdown of Rentals by Body Type</h4>
 	  <canvas id="bodyTypeChart" width="900" height="400"></canvas>
 	  <div class="buttonContainer">
 	    <button class="buttonGraph" onclick="changeGraph(event, 'bodyTypeChart', 'bar', obj.bodyType)">BAR</button>
@@ -57,18 +47,6 @@
 			
 	  </div>
 	</div>
-
-	
-	<!-- <div id="Repeat Customers" class="tabcontent">
-	  <h3>Repeat Customers</h3>
-	  <canvas id="repeatChart" width="900" height="400"></canvas>
-	
-	  
-	</div> -->
-	
-	
-	
-
 	
 	
 	<script>
