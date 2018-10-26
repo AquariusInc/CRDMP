@@ -95,17 +95,6 @@ class Order(models.Model):
     def __unicode__(self):
         return str(self.id)
 
-class AidanStock(models.Model):
-    car = models.ForeignKey('Car', on_delete=models.CASCADE, related_name='aidan_stock_car')
-    returnDate = models.DateField()
-    returnStore = models.ForeignKey('Store', on_delete=models.CASCADE, related_name='aidan_stock_return_store')
-
-    def __str__(self):
-        return str(self.car)
-
-    def __unicode__(self):
-        return str(self.car)
-        
     
 class MyUser(AbstractUser):
     username = models.CharField(max_length=150, primary_key=True)
