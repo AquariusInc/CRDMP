@@ -102,21 +102,3 @@ class visualise_vehicle_live_tests(LiveServerTestCase):
         submit.send_keys(Keys.RETURN)
         
         assert 'Vehicle Data Visualisation' in selenium.page_source
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
-   
