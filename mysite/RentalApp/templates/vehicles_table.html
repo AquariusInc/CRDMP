@@ -40,7 +40,7 @@
                                 <div>Body Type: {{ item.1.bodyType }}</div>
                                 <div>Drive: {{ item.1.drive }}</div>
                                 <div>Current Location: {{ item.2 }}</div>
-                                {% if user.is_authenticated %}<div class="car-price">Price New: {{ item.1.priceNew }}</div>{% endif %}
+                                {% if user.is_authenticated %}<div class="car-price">Price New: ${{ item.1.priceNew }}</div>{% endif %}
                             </div>
                         </div>
                     </div>
