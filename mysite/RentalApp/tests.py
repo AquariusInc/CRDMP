@@ -627,6 +627,17 @@ class VehicleTableTestsLoggedIn(LiveServerTestCase):
 
         assert first_item == "Alexandria"
 
+    def test_car_prices(self):
+        selenium = self.selenium
+        selenium.get('http://localhost:8000/')
+        delay = 10
+        WebDriverWait(selenium, delay).until(EC.presence_of_element_located((By.ID, 'filter-button')))
+        try:
+            selenium.find_element_by_xpath("//div[contains(@class, 'car-price')]")
+        except NoSuchElementException:
+            raise
+        return True
+
     def test_slider_exists(self):
         selenium = self.selenium
         selenium.get('http://localhost:8000/')
