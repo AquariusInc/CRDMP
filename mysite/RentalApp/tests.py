@@ -165,7 +165,7 @@ class staff_account_creation_live_tests(LiveServerTestCase):
         selenium.find_element_by_id('id_password2').send_keys('word1234')
         selenium.find_element_by_id('submitBtn').click()
         
-        time.sleep(2)
+        time.sleep(5)
         assert 'Signup was successful!' in selenium.page_source
         
     def test_new_account_login(self):
@@ -183,9 +183,9 @@ class staff_account_creation_live_tests(LiveServerTestCase):
         selenium.find_element_by_id('id_password2').send_keys('word1234')
         selenium.find_element_by_id('submitBtn').click()
         
-        time.sleep(2)
+        time.sleep(5)
         selenium.find_element_by_partial_link_text('Logout').click()
-        time.sleep(2)
+        time.sleep(5)
         selenium.get("http://localhost:8081/accounts/login")
         self.log_in()
    
@@ -345,12 +345,12 @@ class CustomerTableTests(LiveServerTestCase):
         delay = 10
         WebDriverWait(selenium, delay).until(EC.presence_of_element_located((By.ID, 'table-id')))
         selenium.find_element_by_xpath('//*[@id="background"]/div/form/div/div[1]/div').click()
-        time.sleep(2)
+        time.sleep(5)
         selenium.find_element_by_xpath("//div[@class='select-wrapper']/ul/li[3]/span").click()
         search_bar = selenium.find_element_by_id('search_box')
         search_bar.send_keys('Clinton')
         search_bar.send_keys(Keys.RETURN)
-        time.sleep(2)
+        time.sleep(5)
         assert '11116' in selenium.page_source
 
     def test_search_by_address(self):
@@ -359,12 +359,12 @@ class CustomerTableTests(LiveServerTestCase):
         delay = 10
         WebDriverWait(selenium, delay).until(EC.presence_of_element_located((By.ID, 'table-id')))
         selenium.find_element_by_xpath('//*[@id="background"]/div/form/div/div[1]/div').click()
-        time.sleep(2)
+        time.sleep(5)
         selenium.find_element_by_xpath("//div[@class='select-wrapper']/ul/li[5]/span").click()
         search_bar = selenium.find_element_by_id('search_box')
         search_bar.send_keys('7943 Cunha Ct.')
         search_bar.send_keys(Keys.RETURN)
-        time.sleep(2)
+        time.sleep(5)
         assert '11116' in selenium.page_source
 
     def test_search_by_phone(self):
@@ -373,12 +373,12 @@ class CustomerTableTests(LiveServerTestCase):
         delay = 10
         WebDriverWait(selenium, delay).until(EC.presence_of_element_located((By.ID, 'table-id')))
         selenium.find_element_by_xpath('//*[@id="background"]/div/form/div/div[1]/div').click()
-        time.sleep(2)
+        time.sleep(5)
         selenium.find_element_by_xpath("//div[@class='select-wrapper']/ul/li[4]/span").click()
         search_bar = selenium.find_element_by_id('search_box')
         search_bar.send_keys('1 (11) 543 535-012')
         search_bar.send_keys(Keys.RETURN)
-        time.sleep(2)
+        time.sleep(5)
         assert '11055' in selenium.page_source
 
     def test_search_by_occupation(self):
@@ -387,12 +387,12 @@ class CustomerTableTests(LiveServerTestCase):
         delay = 10
         WebDriverWait(selenium, delay).until(EC.presence_of_element_located((By.ID, 'table-id')))
         selenium.find_element_by_xpath('//*[@id="background"]/div/form/div/div[1]/div').click()
-        time.sleep(2)
+        time.sleep(5)
         selenium.find_element_by_xpath("//div[@class='select-wrapper']/ul/li[6]/span").click()
         search_bar = selenium.find_element_by_id('search_box')
         search_bar.send_keys('Retiree')
         search_bar.send_keys(Keys.RETURN)
-        time.sleep(2)
+        time.sleep(5)
         assert '11119' in selenium.page_source
 
     def test_search_by_gender(self):
@@ -401,12 +401,12 @@ class CustomerTableTests(LiveServerTestCase):
         delay = 10
         WebDriverWait(selenium, delay).until(EC.presence_of_element_located((By.ID, 'table-id')))
         selenium.find_element_by_xpath('//*[@id="background"]/div/form/div/div[1]/div').click()
-        time.sleep(2)
+        time.sleep(5)
         selenium.find_element_by_xpath("//div[@class='select-wrapper']/ul/li[7]/span").click()
         search_bar = selenium.find_element_by_id('search_box')
         search_bar.send_keys('F')
         search_bar.send_keys(Keys.RETURN)
-        time.sleep(2)
+        time.sleep(5)
         assert '11219' in selenium.page_source
 
     def test_number_of_order_history_buttons(self):
@@ -475,12 +475,12 @@ class RentalTableTests(LiveServerTestCase):
         delay = 10
         WebDriverWait(selenium, delay).until(EC.presence_of_element_located((By.ID, 'table-id')))
         selenium.find_element_by_xpath('//*[@id="background"]/div/form/div/div[1]/div').click()
-        time.sleep(2)
+        time.sleep(5)
         selenium.find_element_by_xpath("//div[@class='select-wrapper']/ul/li[2]/span").click()
         search_bar = selenium.find_element_by_id('search_box')
         search_bar.send_keys('37')
         search_bar.send_keys(Keys.RETURN)
-        time.sleep(2)
+        time.sleep(5)
         assert '11013' in selenium.page_source
 
     def test_search_by_car_id(self):
@@ -489,12 +489,12 @@ class RentalTableTests(LiveServerTestCase):
         delay = 10
         WebDriverWait(selenium, delay).until(EC.presence_of_element_located((By.ID, 'table-id')))
         selenium.find_element_by_xpath('//*[@id="background"]/div/form/div/div[1]/div').click()
-        time.sleep(2)
+        time.sleep(5)
         selenium.find_element_by_xpath("//div[@class='select-wrapper']/ul/li[3]/span").click()
         search_bar = selenium.find_element_by_id('search_box')
         search_bar.send_keys('15165')
         search_bar.send_keys(Keys.RETURN)
-        time.sleep(2)
+        time.sleep(5)
         assert '377' in selenium.page_source
 
     def test_search_by_customer_id(self):
@@ -503,12 +503,12 @@ class RentalTableTests(LiveServerTestCase):
         delay = 10
         WebDriverWait(selenium, delay).until(EC.presence_of_element_located((By.ID, 'table-id')))
         selenium.find_element_by_xpath('//*[@id="background"]/div/form/div/div[1]/div').click()
-        time.sleep(2)
+        time.sleep(5)
         selenium.find_element_by_xpath("//div[@class='select-wrapper']/ul/li[4]/span").click()
         search_bar = selenium.find_element_by_id('search_box')
         search_bar.send_keys('11312')
         search_bar.send_keys(Keys.RETURN)
-        time.sleep(2)
+        time.sleep(5)
         assert '377' in selenium.page_source
 
     def test_search_by_pickup_store_id(self):
@@ -517,7 +517,7 @@ class RentalTableTests(LiveServerTestCase):
         delay = 10
         WebDriverWait(selenium, delay).until(EC.presence_of_element_located((By.ID, 'table-id')))
         selenium.find_element_by_xpath('//*[@id="background"]/div/form/div/div[1]/div').click()
-        time.sleep(2)
+        time.sleep(5)
         selenium.find_element_by_xpath("//div[@class='select-wrapper']/ul/li[5]/span").click()
         search_bar = selenium.find_element_by_id('search_box')
         search_bar.send_keys('12')
@@ -531,7 +531,7 @@ class RentalTableTests(LiveServerTestCase):
         delay = 10
         WebDriverWait(selenium, delay).until(EC.presence_of_element_located((By.ID, 'table-id')))
         selenium.find_element_by_xpath('//*[@id="background"]/div/form/div/div[1]/div').click()
-        time.sleep(2)
+        time.sleep(5)
         selenium.find_element_by_xpath("//div[@class='select-wrapper']/ul/li[6]/span").click()
         search_bar = selenium.find_element_by_id('search_box')
         search_bar.send_keys('17')
@@ -622,7 +622,7 @@ class VehicleTableTestsLoggedIn(LiveServerTestCase):
         WebDriverWait(selenium, delay).until(EC.presence_of_element_located((By.ID, 'filter-button')))
         selenium.find_element_by_id('filter-button').click()
         selenium.find_element_by_xpath('//*[@class="modal-content"]/div/form/div/div[1]/div').click()
-        time.sleep(2)
+        time.sleep(5)
         first_item = selenium.find_element_by_xpath("//div[@class='select-wrapper']/ul/li[2]/span").text
 
         assert first_item == "Alexandria"
@@ -665,7 +665,7 @@ class VehicleTableTestsLoggedIn(LiveServerTestCase):
         WebDriverWait(selenium, delay).until(EC.presence_of_element_located((By.ID, 'filter-button')))
         selenium.find_element_by_id('filter-button').click()
         selenium.find_element_by_xpath('//*[@class="modal-content"]/div/form/div[5]/div[1]/div').click()
-        time.sleep(2)
+        time.sleep(5)
         first_item = selenium.find_element_by_xpath("//div[@id='make-div']/div/ul/li[2]/span").text
 
         assert first_item == "LAND ROVER"
@@ -677,7 +677,7 @@ class VehicleTableTestsLoggedIn(LiveServerTestCase):
         WebDriverWait(selenium, delay).until(EC.presence_of_element_located((By.ID, 'filter-button')))
         selenium.find_element_by_id('filter-button').click()
         selenium.find_element_by_xpath('//*[@class="modal-content"]/div/form/div[5]/div[2]/div').click()
-        time.sleep(2)
+        time.sleep(5)
         first_item = selenium.find_element_by_xpath("//div[@id='model-div']/div/ul/li[2]/span").text
         assert first_item == "DISCOVERY 3"
 
@@ -688,10 +688,10 @@ class VehicleTableTestsLoggedIn(LiveServerTestCase):
         WebDriverWait(selenium, delay).until(EC.presence_of_element_located((By.ID, 'filter-button')))
         selenium.find_element_by_id('filter-button').click()
         selenium.find_element_by_xpath('//*[@class="modal-content"]/div/form/div/div[1]/div').click()
-        time.sleep(2)
+        time.sleep(5)
         first_item = selenium.find_element_by_xpath("//div[@class='select-wrapper']/ul/li[17]/span").text
         selenium.find_element_by_xpath('//*[@class="modal-content"]/div/form/div[5]/div[1]/div').click()
-        time.sleep(2)
+        time.sleep(5)
         selenium.find_element_by_xpath("//div[@id='make-div']/div/ul/li[2]/span").click()
         selenium.find_element_by_id('submit-button').click()
         WebDriverWait(selenium, delay).until(EC.presence_of_element_located((By.ID, 'clear-button')))
@@ -779,7 +779,7 @@ class VehicleRecommendTests(LiveServerTestCase):
         delay = 10
         WebDriverWait(selenium, delay).until(EC.presence_of_element_located((By.ID, 'recommend-submit')))
         selenium.find_element_by_xpath('//*[@id="background"]/div/form/div/div[1]/div').click()
-        time.sleep(2)
+        time.sleep(5)
         first_item = selenium.find_element_by_xpath("//div[@class='select-wrapper']/ul/li[2]/span").text
 
         assert first_item == "Alexandria"
