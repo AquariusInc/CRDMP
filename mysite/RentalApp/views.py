@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 import csv
-from .models import Store, Customer, Order, Car, Stock, Stock
+from .models import Store, Customer, Order, Car, AidanStock, Stock
 from django.db.models import Count, Avg, Max, Min, Sum
 import json
 import datetime
@@ -45,7 +45,7 @@ def fill_stock(request):
         sorted_orders = sorted(car_dict[car], key=operator.itemgetter(1), reverse=True)
         most_recent_order_dict[car] = sorted_orders[0]
         # save to database
-        stock = Stock()
+        stock = AidanStock()
         stock.car = Car.objects.get(id=car.id)
         stock.returnStore = sorted_orders[0][0]
         stock.returnDate = sorted_orders[0][1]
@@ -99,7 +99,7 @@ def fill_stock(request):
         sorted_orders = sorted(car_dict[car], key=operator.itemgetter(1), reverse=True)
         most_recent_order_dict[car] = sorted_orders[0]
         # save to database
-        stock = Stock()
+        stock = AidanStock()
         stock.car = Car.objects.get(id=car.id)
         stock.returnStore = sorted_orders[0][0]
         stock.returnDate = sorted_orders[0][1]
@@ -145,7 +145,7 @@ def vehicles_table(request):
             # filter by location
             new_results = []
             for item in results:
-                location = Stock.objects.filter(car=item)
+                location = AidanStock.objects.filter(car=item)
                 if len(location):
                     if location[0].returnStore.name[0:-6] == request.GET['location-select']:
                         new_results.append(item)
@@ -174,7 +174,7 @@ def vehicles_table(request):
             else:
                 image = car.image
 
-            car_location = Stock.objects.filter(car=car.id)
+            car_location = AidanStock.objects.filter(car=car.id)
             if len(car_location):
                 car_location_text = car_location[0].returnStore.name[0:-6]
             else:
@@ -226,7 +226,7 @@ def vehicles_table(request):
         else:
             image = car.image
 
-        car_location = Stock.objects.filter(car=car.id)
+        car_location = AidanStock.objects.filter(car=car.id)
         if len(car_location):
             car_location_text = car_location[0].returnStore.name[0:-6]
         else:
@@ -278,7 +278,7 @@ def vehicle_recommend(request):
             # filter by location
             new_results = []
             for item in results:
-                location = Stock.objects.filter(car=item)
+                location = AidanStock.objects.filter(car=item)
                 if len(location):
                     if location[0].returnStore.name[0:-6] == request.GET['location-select']:
                         new_results.append(item)
@@ -306,7 +306,7 @@ def vehicle_recommend(request):
             else:
                 image = car.image
 
-            car_location = Stock.objects.filter(car=car.id)
+            car_location = AidanStock.objects.filter(car=car.id)
             if len(car_location):
                 car_location_text = car_location[0].returnStore.name[0:-6]
             else:
@@ -346,7 +346,7 @@ def vehicle_recommend(request):
 @login_required
 def signup(request):
     if not request.user.is_management:
-        return redirect('/account/login/?next=/accounts/signup/')
+        return redirect('/accounts/login/?next=/accounts/signup/')
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():

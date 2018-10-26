@@ -63,7 +63,7 @@
         </span>
 
         {% if data.has_next %}
-            <a class="waves-effect waves-light btn" href="?page={{ data.next_page_number }}" id="next-button">next</a>
+            <a class="waves-effect waves-light btn" href="?page={{ data.next_page_number }}">next</a>
             <a class="waves-effect waves-light btn" href="?page={{ data.paginator.num_pages }}">last &raquo;</a>
         {% endif %}
     </span>
