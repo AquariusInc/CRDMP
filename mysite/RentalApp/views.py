@@ -346,7 +346,7 @@ def vehicle_recommend(request):
 @login_required
 def signup(request):
     if not request.user.is_management:
-        return redirect('/account/login/?next=/accounts/signup/')
+        return redirect('/accounts/login/?next=/accounts/signup/')
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
